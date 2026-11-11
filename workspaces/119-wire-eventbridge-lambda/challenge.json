@@ -1,0 +1,174 @@
+{
+  "id": "wire-eventbridge-lambda",
+  "number": 119,
+  "title": "Scheduled EventBridge to Lambda",
+  "difficulty": "Hard",
+  "points": 130,
+  "level": 4,
+  "level_name": "Level 4 - Composition",
+  "tags": [
+    "aws",
+    "eventbridge",
+    "lambda",
+    "automation"
+  ],
+  "scenario": "Trigger a Lambda every five minutes using an EventBridge rule and a target, with invoke permission.",
+  "constraints": [
+    "Create a rate(5 minutes) rule.",
+    "Target the Lambda ARN.",
+    "Grant lambda:InvokeFunction."
+  ],
+  "variables": [
+    {
+      "name": "rule_name",
+      "type": "string",
+      "validation": false,
+      "default": "nightly-job"
+    },
+    {
+      "name": "lambda_role_arn",
+      "type": "string",
+      "validation": false
+    },
+    {
+      "name": "lambda_runtime",
+      "type": "string",
+      "validation": false,
+      "default": "python3.12"
+    },
+    {
+      "name": "lambda_memory",
+      "type": "number",
+      "validation": false,
+      "default": 128
+    },
+    {
+      "name": "project_name",
+      "type": "string",
+      "validation": false,
+      "default": "terraform-practice"
+    },
+    {
+      "name": "environment",
+      "type": "string",
+      "validation": false,
+      "default": "dev"
+    },
+    {
+      "name": "aws_region",
+      "type": "string",
+      "validation": false,
+      "default": "us-east-1"
+    }
+  ],
+  "expected_resources": [
+    "aws_cloudwatch_event_rule",
+    "aws_cloudwatch_event_target",
+    "aws_lambda_function",
+    "aws_lambda_permission"
+  ],
+  "expected_outputs": [
+    "rule_arn",
+    "lambda_arn"
+  ],
+  "starter": {
+    "versions.tf": "terraform {\n  required_version = \">= 1.5.0\"\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n  }\n}\n",
+    "variables.tf": "variable \"rule_name\" {\n  description = \"Input variable rule_name.\"\n  type        = string\n  default     = \"nightly-job\"\n}\n\nvariable \"lambda_role_arn\" {\n  description = \"Input variable lambda_role_arn.\"\n  type        = string\n}\n\nvariable \"lambda_runtime\" {\n  description = \"Input variable lambda_runtime.\"\n  type        = string\n  default     = \"python3.12\"\n}\n\nvariable \"lambda_memory\" {\n  description = \"Input variable lambda_memory.\"\n  type        = number\n  default     = 128\n}\n\nvariable \"project_name\" {\n  description = \"Input variable project_name.\"\n  type        = string\n  default     = \"terraform-practice\"\n}\n\nvariable \"environment\" {\n  description = \"Input variable environment.\"\n  type        = string\n  default     = \"dev\"\n}\n\nvariable \"aws_region\" {\n  description = \"Input variable aws_region.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n",
+    "main.tf": "provider \"aws\" {\n  region = var.aws_region\n}\n\nresource \"aws_cloudwatch_event_rule\" \"this\" {\n  name                = \"app-rule\"\n  schedule_expression = \"rate(5 minutes)\"\n}\n\nresource \"aws_cloudwatch_event_target\" \"this\" {\n  rule  = aws_cloudwatch_event_rule.this.name\n  arn   = aws_lambda_function.this.arn\n  input = jsonencode({})\n}\n\nresource \"aws_lambda_function\" \"this\" {\n  # TODO - Complete the scheduled function.\n  # Configure the function runtime, handler, role and memory for the scheduled job.\n}\n\nresource \"aws_lambda_permission\" \"this\" {\n  statement_id  = \"allow-apigw\"\n  action        = \"lambda:InvokeFunction\"\n  function_name = aws_lambda_function.this.function_name\n  principal     = \"apigateway.amazonaws.com\"\n}\n",
+    "outputs.tf": "output \"rule_arn\" {\n  value = aws_cloudwatch_event_rule.this.arn\n}\n\noutput \"lambda_arn\" {\n  value = aws_lambda_function.this.arn\n}\n"
+  },
+  "focus": {
+    "file": "main.tf",
+    "kind": "resource",
+    "title": "Complete the scheduled function",
+    "todo": "Configure the function runtime, handler, role and memory for the scheduled job."
+  },
+  "hints": {
+    "why": "Lambda packages compute as a small, event-driven unit. The code artifact, execution role and trigger are the contract to get right.",
+    "what": "Complete the marked TODO in `main.tf`. Configure the function runtime, handler, role and memory for the scheduled job. Use the visible constraints as your checklist before you run the tests.",
+    "when": "Use Lambda for short-lived event handlers or glue code where managing a server would add cost and operational noise.",
+    "how": "Open `main.tf` and work inside the single TODO region. Change one requirement at a time: add the named block, argument or reference, then run the tests. When a check fails, match its wording to the constraints and fix only the block it names."
+  },
+  "allowlist": [
+    "aws_cloudwatch_event_rule",
+    "aws_cloudwatch_event_target",
+    "aws_lambda_function",
+    "aws_lambda_permission"
+  ],
+  "apply_sandbox": false,
+  "test_count": 13,
+  "test_manifest": [
+    {
+      "id": "provider",
+      "title": "Required provider aws",
+      "category": "Providers",
+      "weight": 5
+    },
+    {
+      "id": "region",
+      "title": "aws.region -> var.aws_region",
+      "category": "Providers",
+      "weight": 4
+    },
+    {
+      "id": "rule",
+      "title": "aws_cloudwatch_event_rule is provisioned",
+      "category": "Resources",
+      "weight": 8
+    },
+    {
+      "id": "sched",
+      "title": "aws_cloudwatch_event_rule.schedule_expression = \"rate(5 minutes)\"",
+      "category": "Resources",
+      "weight": 6
+    },
+    {
+      "id": "target",
+      "title": "aws_cloudwatch_event_target is provisioned",
+      "category": "Resources",
+      "weight": 8
+    },
+    {
+      "id": "arn",
+      "title": "Target references the Lambda",
+      "category": "Resources",
+      "weight": 8
+    },
+    {
+      "id": "fn",
+      "title": "aws_lambda_function is provisioned",
+      "category": "Resources",
+      "weight": 8
+    },
+    {
+      "id": "role",
+      "title": "aws_lambda_function.role -> var.lambda_role_arn",
+      "category": "Resources",
+      "weight": 6
+    },
+    {
+      "id": "perm",
+      "title": "aws_lambda_permission is provisioned",
+      "category": "Security",
+      "weight": 8
+    },
+    {
+      "id": "invoke",
+      "title": "InvokeFunction permission",
+      "category": "Security",
+      "weight": 6
+    },
+    {
+      "id": "out-rule",
+      "title": "Output rule_arn",
+      "category": "Outputs",
+      "weight": 5
+    },
+    {
+      "id": "out-fn",
+      "title": "Output lambda_arn",
+      "category": "Outputs",
+      "weight": 5
+    }
+  ]
+}

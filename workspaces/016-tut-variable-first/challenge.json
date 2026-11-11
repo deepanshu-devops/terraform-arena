@@ -1,0 +1,71 @@
+{
+  "id": "tut-variable-first",
+  "number": 16,
+  "title": "Tutorial: Reuse a Value With a Variable",
+  "difficulty": "Easy",
+  "points": 64,
+  "level": 0,
+  "level_name": "Level 0 - HCL Foundations",
+  "tags": [
+    "terraform",
+    "tutorial",
+    "variables"
+  ],
+  "scenario": "Welcome to the guided track. A variable is a named input: the caller can change it without editing the block that uses it. Declare one input variable and expose it through an output.",
+  "constraints": [
+    "Declare variable app_name.",
+    "Use type string and default demo-app.",
+    "Create output app_name that reads var.app_name."
+  ],
+  "variables": [
+    {
+      "name": "app_name",
+      "type": "string",
+      "validation": false,
+      "default": "demo-app"
+    }
+  ],
+  "expected_resources": [],
+  "expected_outputs": [
+    "app_name"
+  ],
+  "starter": {
+    "variables.tf": "variable \"app_name\" {\n  # TODO - Declare the input variable.\n  # Add the variable metadata, its type and a default value.\n}\n",
+    "outputs.tf": "output \"app_name\" {\n  value = var.app_name\n}\n"
+  },
+  "focus": {
+    "file": "variables.tf",
+    "kind": "top",
+    "title": "Declare the input variable",
+    "todo": "Add the variable metadata, its type and a default value."
+  },
+  "hints": {
+    "why": "Variables are the seam between a reusable configuration and the environment that calls it. Once a value is an input, changing environments does not require editing resource code.",
+    "what": "Complete the variable block in variables.tf. It needs a description, a string type and the default shown in the constraints. The output already shows how the caller reads it.",
+    "when": "Reach for an input variable when a value changes per environment, must be supplied securely, or should be controlled by whoever calls the configuration.",
+    "how": "Start at the top of the variable block. Add the three arguments in the order description, type, default. Keep the quotes around the default because it is a string, then run the tests and compare the failures with the constraint list."
+  },
+  "allowlist": [],
+  "apply_sandbox": false,
+  "test_count": 4,
+  "test_manifest": [
+    {
+      "id": "var",
+      "title": "app_name is declared with the expected type and default",
+      "category": "Variables",
+      "weight": 14
+    },
+    {
+      "id": "desc",
+      "title": "the variable has a description",
+      "category": "Variables",
+      "weight": 8
+    },
+    {
+      "id": "out",
+      "title": "the app_name output references the variable",
+      "category": "Outputs",
+      "weight": 8
+    }
+  ]
+}

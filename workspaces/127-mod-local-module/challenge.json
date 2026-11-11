@@ -1,0 +1,65 @@
+{
+  "id": "mod-local-module",
+  "number": 127,
+  "title": "Call a Local Module",
+  "difficulty": "Medium",
+  "points": 80,
+  "level": 5,
+  "level_name": "Level 5 - Modules & Capstones",
+  "tags": [
+    "terraform",
+    "modules"
+  ],
+  "scenario": "Refactor an S3 bucket into a local module and call it from the root configuration.",
+  "constraints": [
+    "Create a module block.",
+    "source points at ./modules/s3.",
+    "Pass inputs through the module."
+  ],
+  "variables": [],
+  "expected_resources": [
+    "module"
+  ],
+  "expected_outputs": [],
+  "starter": {
+    "versions.tf": "terraform {\n  required_version = \">= 1.5.0\"\n}\n",
+    "main.tf": "module \"this\" {\n  # TODO - Complete the module call.\n  # Point the module at ./modules/s3 and pass the bucket inputs.\n}\n"
+  },
+  "focus": {
+    "file": "main.tf",
+    "kind": "top",
+    "title": "Complete the module call",
+    "todo": "Point the module at ./modules/s3 and pass the bucket inputs."
+  },
+  "hints": {
+    "why": "Modules package a group of resources behind a small input/output contract. They turn copy-pasted infrastructure into something a team can version, review and reuse.",
+    "what": "Complete the marked TODO in `main.tf`. Point the module at ./modules/s3 and pass the bucket inputs. Use the visible constraints as your checklist before you run the tests.",
+    "when": "Use a module when the same group of resources appears more than once, when a team needs a supported interface, or when you want to test a component independently.",
+    "how": "Open `main.tf` and work inside the single TODO region. Change one requirement at a time: add the named block, argument or reference, then run the tests. When a check fails, match its wording to the constraints and fix only the block it names."
+  },
+  "allowlist": [
+    "module"
+  ],
+  "apply_sandbox": false,
+  "test_count": 4,
+  "test_manifest": [
+    {
+      "id": "module",
+      "title": "module block with local source",
+      "category": "Modularity",
+      "weight": 16
+    },
+    {
+      "id": "source",
+      "title": "source attribute present",
+      "category": "Modularity",
+      "weight": 8
+    },
+    {
+      "id": "call",
+      "title": "Module receives inputs",
+      "category": "Modularity",
+      "weight": 6
+    }
+  ]
+}

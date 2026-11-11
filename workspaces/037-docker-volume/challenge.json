@@ -1,0 +1,83 @@
+{
+  "id": "docker-volume",
+  "number": 37,
+  "title": "Create a Docker Volume",
+  "difficulty": "Easy",
+  "points": 40,
+  "level": 2,
+  "level_name": "Level 2 - First Resources",
+  "tags": [
+    "docker",
+    "sandbox",
+    "storage"
+  ],
+  "scenario": "Create a named volume for persistent container data.",
+  "constraints": [
+    "Declare the docker provider.",
+    "docker_volume name from var.volume_name.",
+    "Export volume_id."
+  ],
+  "variables": [
+    {
+      "name": "volume_name",
+      "type": "string",
+      "validation": false,
+      "default": "app-data"
+    }
+  ],
+  "expected_resources": [
+    "docker_volume"
+  ],
+  "expected_outputs": [
+    "volume_id"
+  ],
+  "starter": {
+    "versions.tf": "terraform {\n  required_version = \">= 1.5.0\"\n  required_providers {\n    docker = {\n      source  = \"kreuzwerker/docker\"\n      version = \"~> 3.0\"\n    }\n  }\n}\n",
+    "variables.tf": "variable \"volume_name\" {\n  description = \"Input variable volume_name.\"\n  type        = string\n  default     = \"app-data\"\n}\n",
+    "main.tf": "provider \"docker\" {\n  host = var.docker_host\n}\n\nresource \"docker_volume\" \"this\" {\n  # TODO - Complete the docker_volume resource.\n  # Add the arguments and nested blocks required for docker_volume.\n}\n",
+    "outputs.tf": "output \"volume_id\" {\n  value = docker_volume.this.id\n}\n"
+  },
+  "focus": {
+    "file": "main.tf",
+    "kind": "resource",
+    "title": "Complete the docker_volume resource",
+    "todo": "Add the arguments and nested blocks required for docker_volume."
+  },
+  "hints": {
+    "why": "The Docker provider gives a fast local sandbox for learning Terraform's resource lifecycle without cloud credentials.",
+    "what": "Complete the marked TODO in `main.tf`. Add the arguments and nested blocks required for docker_volume. Use the visible constraints as your checklist before you run the tests.",
+    "when": "Use local container resources for practice and integration tests, not as a replacement for production orchestration.",
+    "how": "Open `main.tf` and work inside the single TODO region. Change one requirement at a time: add the named block, argument or reference, then run the tests. When a check fails, match its wording to the constraints and fix only the block it names."
+  },
+  "allowlist": [
+    "docker_volume"
+  ],
+  "apply_sandbox": false,
+  "test_count": 5,
+  "test_manifest": [
+    {
+      "id": "provider",
+      "title": "Docker provider declared",
+      "category": "Providers",
+      "weight": 8
+    },
+    {
+      "id": "vol",
+      "title": "docker_volume is provisioned",
+      "category": "Resources",
+      "weight": 14
+    },
+    {
+      "id": "name",
+      "title": "docker_volume.name -> var.volume_name",
+      "category": "Resources",
+      "weight": 6
+    },
+    {
+      "id": "out",
+      "title": "Output volume_id",
+      "category": "Outputs",
+      "weight": 5
+    }
+  ]
+}

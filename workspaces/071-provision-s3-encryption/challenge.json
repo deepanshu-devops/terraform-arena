@@ -1,0 +1,107 @@
+{
+  "id": "provision-s3-encryption",
+  "number": 71,
+  "title": "Provision S3 Encryption Configuration",
+  "difficulty": "Easy",
+  "points": 50,
+  "level": 2,
+  "level_name": "Level 2 - First Resources",
+  "tags": [
+    "aws",
+    "s3",
+    "provisioning"
+  ],
+  "scenario": "Your platform team needs S3 Encryption Configuration for encrypting objects at rest with AES256. Write a reusable Terraform configuration that provisions it, drives every input through variables, applies the standard tags, and exports the operational identifiers.",
+  "constraints": [
+    "Provider: aws (region from var.aws_region).",
+    "Create exactly one resource of type aws_s3_bucket_server_side_encryption_configuration.",
+    "All configurable values must come from variables declared in variables.tf.",
+    "No hardcoded AWS credentials.",
+    "Code must pass terraform fmt conventions (2-space indents, trailing newline, no tabs).",
+    "Allowed supporting resources: aws_s3_bucket."
+  ],
+  "variables": [
+    {
+      "name": "bucket_name",
+      "type": "string",
+      "validation": false
+    },
+    {
+      "name": "aws_region",
+      "type": "string",
+      "validation": false,
+      "default": "us-east-1"
+    }
+  ],
+  "expected_resources": [
+    "aws_s3_bucket_server_side_encryption_configuration"
+  ],
+  "expected_outputs": [],
+  "starter": {
+    "versions.tf": "terraform {\n  required_version = \">= 1.5.0\"\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n  }\n}\n",
+    "variables.tf": "variable \"bucket_name\" {\n  description = \"Input variable bucket_name.\"\n  type        = string\n}\n\nvariable \"aws_region\" {\n  description = \"Input variable aws_region.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n",
+    "main.tf": "provider \"aws\" {\n  region = var.aws_region\n}\n\nresource \"aws_s3_bucket_server_side_encryption_configuration\" \"this\" {\n  # TODO - Complete the aws_s3_bucket_server_side_encryption_configuration resource.\n  # Add the arguments and nested blocks required for aws_s3_bucket_server_side_encryption_configuration.\n}\n"
+  },
+  "focus": {
+    "file": "main.tf",
+    "kind": "resource",
+    "title": "Complete the aws_s3_bucket_server_side_encryption_configuration resource",
+    "todo": "Add the arguments and nested blocks required for aws_s3_bucket_server_side_encryption_configuration."
+  },
+  "hints": {
+    "why": "S3 is usually the first shared service in an AWS configuration. Bucket settings, versioning, encryption and public-access blocks are common review findings.",
+    "what": "Complete the marked TODO in `main.tf`. Add the arguments and nested blocks required for aws_s3_bucket_server_side_encryption_configuration. Use the visible constraints as your checklist before you run the tests.",
+    "when": "Use S3 when you need durable object storage for assets, logs, backups or static content, and lock down access from the start.",
+    "how": "Open `main.tf` and work inside the single TODO region. Change one requirement at a time: add the named block, argument or reference, then run the tests. When a check fails, match its wording to the constraints and fix only the block it names."
+  },
+  "allowlist": [
+    "aws_s3_bucket_server_side_encryption_configuration",
+    "aws_s3_bucket"
+  ],
+  "apply_sandbox": false,
+  "test_count": 8,
+  "test_manifest": [
+    {
+      "id": "provider",
+      "title": "AWS provider + region variable",
+      "category": "Providers",
+      "weight": 5
+    },
+    {
+      "id": "region",
+      "title": "Provider region references var.aws_region",
+      "category": "Providers",
+      "weight": 4
+    },
+    {
+      "id": "res",
+      "title": "aws_s3_bucket_server_side_encryption_configuration is provisioned",
+      "category": "Resources",
+      "weight": 14
+    },
+    {
+      "id": "a0",
+      "title": "bucket references var.bucket_name",
+      "category": "Resources",
+      "weight": 6
+    },
+    {
+      "id": "sse",
+      "title": "AES256 is the default algorithm",
+      "category": "Security",
+      "weight": 12
+    },
+    {
+      "id": "var-bucket_name",
+      "title": "Variable bucket_name is declared",
+      "category": "Variables",
+      "weight": 3
+    },
+    {
+      "id": "var-aws_region",
+      "title": "Variable aws_region is declared",
+      "category": "Variables",
+      "weight": 3
+    }
+  ]
+}

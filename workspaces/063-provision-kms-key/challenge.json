@@ -1,0 +1,148 @@
+{
+  "id": "provision-kms-key",
+  "number": 63,
+  "title": "Provision KMS Customer Key",
+  "difficulty": "Easy",
+  "points": 50,
+  "level": 2,
+  "level_name": "Level 2 - First Resources",
+  "tags": [
+    "aws",
+    "kms",
+    "provisioning"
+  ],
+  "scenario": "Your platform team needs KMS Customer Key for a rotating customer-managed encryption key. Write a reusable Terraform configuration that provisions it, drives every input through variables, applies the standard tags, and exports the operational identifiers.",
+  "constraints": [
+    "Provider: aws (region from var.aws_region).",
+    "Create exactly one resource of type aws_kms_key.",
+    "All configurable values must come from variables declared in variables.tf.",
+    "No hardcoded AWS credentials.",
+    "Code must pass terraform fmt conventions (2-space indents, trailing newline, no tabs).",
+    "Tag the resource with Project, Environment and ManagedBy = \"terraform\".",
+    "Expose outputs: key_arn, key_id."
+  ],
+  "variables": [
+    {
+      "name": "environment",
+      "type": "string",
+      "validation": false,
+      "default": "dev"
+    },
+    {
+      "name": "project_name",
+      "type": "string",
+      "validation": false,
+      "default": "terraform-practice"
+    },
+    {
+      "name": "aws_region",
+      "type": "string",
+      "validation": false,
+      "default": "us-east-1"
+    }
+  ],
+  "expected_resources": [
+    "aws_kms_key"
+  ],
+  "expected_outputs": [
+    "key_arn",
+    "key_id"
+  ],
+  "starter": {
+    "versions.tf": "terraform {\n  required_version = \">= 1.5.0\"\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n  }\n}\n",
+    "variables.tf": "variable \"environment\" {\n  description = \"Input variable environment.\"\n  type        = string\n  default     = \"dev\"\n}\n\nvariable \"project_name\" {\n  description = \"Input variable project_name.\"\n  type        = string\n  default     = \"terraform-practice\"\n}\n\nvariable \"aws_region\" {\n  description = \"Input variable aws_region.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n",
+    "main.tf": "provider \"aws\" {\n  region = var.aws_region\n}\n\nresource \"aws_kms_key\" \"this\" {\n  # TODO - Complete the aws_kms_key resource.\n  # Add the arguments and nested blocks required for aws_kms_key.\n}\n",
+    "outputs.tf": "output \"key_arn\" {\n  value = aws_kms_key.this.arn\n}\n\noutput \"key_id\" {\n  value = aws_kms_key.this.arn\n}\n"
+  },
+  "focus": {
+    "file": "main.tf",
+    "kind": "resource",
+    "title": "Complete the aws_kms_key resource",
+    "todo": "Add the arguments and nested blocks required for aws_kms_key."
+  },
+  "hints": {
+    "why": "Encryption keys are a security boundary. Key policies and rotation settings determine who can protect and recover data.",
+    "what": "Complete the marked TODO in `main.tf`. Add the arguments and nested blocks required for aws_kms_key. Use the visible constraints as your checklist before you run the tests.",
+    "when": "Use a customer-managed key when you need control over encryption policy, rotation or cross-account access.",
+    "how": "Open `main.tf` and work inside the single TODO region. Change one requirement at a time: add the named block, argument or reference, then run the tests. When a check fails, match its wording to the constraints and fix only the block it names."
+  },
+  "allowlist": [
+    "aws_kms_key"
+  ],
+  "apply_sandbox": false,
+  "test_count": 13,
+  "test_manifest": [
+    {
+      "id": "provider",
+      "title": "AWS provider + region variable",
+      "category": "Providers",
+      "weight": 5
+    },
+    {
+      "id": "region",
+      "title": "Provider region references var.aws_region",
+      "category": "Providers",
+      "weight": 4
+    },
+    {
+      "id": "res",
+      "title": "aws_kms_key is provisioned",
+      "category": "Resources",
+      "weight": 14
+    },
+    {
+      "id": "a0",
+      "title": "description is set correctly",
+      "category": "Resources",
+      "weight": 6
+    },
+    {
+      "id": "a1",
+      "title": "enable_key_rotation is set correctly",
+      "category": "Resources",
+      "weight": 6
+    },
+    {
+      "id": "a2",
+      "title": "deletion_window_in_days is set correctly",
+      "category": "Resources",
+      "weight": 6
+    },
+    {
+      "id": "tags",
+      "title": "Standard tags are applied",
+      "category": "Lifecycle",
+      "weight": 8
+    },
+    {
+      "id": "out-key_arn",
+      "title": "Output key_arn is exported",
+      "category": "Outputs",
+      "weight": 5
+    },
+    {
+      "id": "out-key_id",
+      "title": "Output key_id is exported",
+      "category": "Outputs",
+      "weight": 5
+    },
+    {
+      "id": "var-environment",
+      "title": "Variable environment is declared",
+      "category": "Variables",
+      "weight": 3
+    },
+    {
+      "id": "var-project_name",
+      "title": "Variable project_name is declared",
+      "category": "Variables",
+      "weight": 3
+    },
+    {
+      "id": "var-aws_region",
+      "title": "Variable aws_region is declared",
+      "category": "Variables",
+      "weight": 3
+    }
+  ]
+}

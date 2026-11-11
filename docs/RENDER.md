@@ -88,5 +88,6 @@ After the deploy finishes, open the service URL and check:
 GET /api/health
 ```
 
-Expected values include `"ok": true`, `"challenges": 125`, and
-`"live": { "apply_enabled": false }`.
+Expected values include `"ok": true`, `"challenges": 135`, and
+`"live": { "apply_enabled": false }`. The health endpoint is also available at
+`/health` and `/healthz` after deployment; `/api/health` works on older builds.

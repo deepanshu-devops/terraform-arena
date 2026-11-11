@@ -1,0 +1,78 @@
+{
+  "id": "tut-for-expression",
+  "number": 20,
+  "title": "Tutorial: Transform a List With for",
+  "difficulty": "Easy",
+  "points": 68,
+  "level": 0,
+  "level_name": "Level 0 - HCL Foundations",
+  "tags": [
+    "terraform",
+    "tutorial",
+    "expressions",
+    "collections"
+  ],
+  "scenario": "A for expression builds a new collection from an existing one. Use it to turn a list of team names into uppercase labels and a map of owners, without writing each entry twice.",
+  "constraints": [
+    "Define local.teams with platform and security.",
+    "Use a for expression to build local.upper_teams.",
+    "Use a for expression to build local.team_owners.",
+    "Export both derived collections."
+  ],
+  "variables": [],
+  "expected_resources": [],
+  "expected_outputs": [
+    "upper_teams",
+    "team_owners"
+  ],
+  "starter": {
+    "main.tf": "locals {\n  # TODO - Derive the collections.\n  # Create the source list, then transform it into a list and a map.\n}\n\noutput \"upper_teams\" {\n  value = local.upper_teams\n}\n\noutput \"team_owners\" {\n  value = local.team_owners\n}\n"
+  },
+  "focus": {
+    "file": "main.tf",
+    "kind": "top",
+    "title": "Derive the collections",
+    "todo": "Create the source list, then transform it into a list and a map."
+  },
+  "hints": {
+    "why": "for expressions are the bridge between a plain collection and the shape a resource or module needs. They remove the copy-paste step that causes drift.",
+    "what": "Create one source list and two derived locals. One derived value is a list of uppercase names; the other is a map from each name to an owner string.",
+    "when": "Use a for expression when you need to transform every item in a collection. Use a map comprehension when each result needs a key.",
+    "how": "Write the source list first. Then read the output blocks to see the expected shapes. A list comprehension uses square brackets and a colon; a map comprehension uses braces and an arrow between key and value."
+  },
+  "allowlist": [],
+  "apply_sandbox": false,
+  "test_count": 6,
+  "test_manifest": [
+    {
+      "id": "for",
+      "title": "a list comprehension is used",
+      "category": "Expressions",
+      "weight": 10
+    },
+    {
+      "id": "upper",
+      "title": "names are uppercased",
+      "category": "Expressions",
+      "weight": 8
+    },
+    {
+      "id": "map",
+      "title": "a map comprehension is used",
+      "category": "Expressions",
+      "weight": 8
+    },
+    {
+      "id": "out-list",
+      "title": "upper_teams is exported",
+      "category": "Outputs",
+      "weight": 6
+    },
+    {
+      "id": "out-map",
+      "title": "team_owners is exported",
+      "category": "Outputs",
+      "weight": 6
+    }
+  ]
+}

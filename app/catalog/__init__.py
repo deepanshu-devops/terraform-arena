@@ -9,6 +9,7 @@ from functools import lru_cache
 
 from ..declarative import build_challenge
 from ..evaluator import Challenge
+from .hints import build_hints
 from .reference import (
     build_reference,
     choose_focus,
@@ -49,6 +50,17 @@ def render_readme(challenge: Challenge) -> str:
     lines.append(f"- Task: {focus.get('title', 'Complete the graded block')}")
     if focus.get("todo"):
         lines.append(f"- {focus['todo']}")
+    hints = challenge.hints or {}
+    if any(hints.get(key) for key in ("why", "what", "when", "how")):
+        lines += ["", "## Hints", ""]
+        for key, label in (
+            ("why", "Why it matters"),
+            ("what", "What to do"),
+            ("when", "When to use it"),
+            ("how", "How to approach it"),
+        ):
+            if hints.get(key):
+                lines += [f"**{label}:** {hints[key]}", ""]
     lines += ["", "## Constraints", ""]
     lines += [f"- {c}" for c in challenge.constraints] or ["- None."]
     lines += ["", "## Input variables", "", "| Name | Type | Default |", "| --- | --- | --- |"]
@@ -89,6 +101,7 @@ def prepare_spec(spec: dict) -> dict:
     spec["reference"] = reference
     focus = choose_focus(spec)
     spec["focus"] = focus.public()
+    spec["hints"] = build_hints(spec, spec["focus"])
     spec["starter"] = render_starter(spec)
     return spec
 

@@ -1,0 +1,70 @@
+{
+  "id": "tut-map-first",
+  "number": 18,
+  "title": "Tutorial: Look Up Values in a Map",
+  "difficulty": "Easy",
+  "points": 66,
+  "level": 0,
+  "level_name": "Level 0 - HCL Foundations",
+  "tags": [
+    "terraform",
+    "tutorial",
+    "collections"
+  ],
+  "scenario": "A map gives every value a name. Instead of remembering an index, a caller looks up a key. Build a map of instance sizes and read one entry by key.",
+  "constraints": [
+    "Define local.instance_types as a map with dev and prod keys.",
+    "Use a small instance size for dev and a larger one for prod.",
+    "Output dev_instance_type with local.instance_types[\"dev\"]."
+  ],
+  "variables": [],
+  "expected_resources": [],
+  "expected_outputs": [
+    "dev_instance_type",
+    "all_instance_types"
+  ],
+  "starter": {
+    "main.tf": "locals {\n  # TODO - Create the lookup map.\n  # Add a two-entry map with a small dev size and a larger prod size.\n}\n\noutput \"dev_instance_type\" {\n  value = local.instance_types[\"dev\"]\n}\n\noutput \"all_instance_types\" {\n  value = local.instance_types\n}\n"
+  },
+  "focus": {
+    "file": "main.tf",
+    "kind": "top",
+    "title": "Create the lookup map",
+    "todo": "Add a two-entry map with a small dev size and a larger prod size."
+  },
+  "hints": {
+    "why": "Maps turn positional data into named data. That is what makes for_each and module inputs readable: the key documents what the value is for.",
+    "what": "Create a local map named instance_types with dev and prod keys. The outputs show both a single-key lookup and the whole map.",
+    "when": "Use a map when each item has a meaningful name, when the order should not matter, or when you want stable keys for for_each.",
+    "how": "Use curly braces for the map and separate entries with newlines or commas. Keep the keys unquoted if they are valid identifiers, and quote the values because instance sizes are strings."
+  },
+  "allowlist": [],
+  "apply_sandbox": false,
+  "test_count": 5,
+  "test_manifest": [
+    {
+      "id": "map",
+      "title": "the map contains the production size",
+      "category": "Collections",
+      "weight": 12
+    },
+    {
+      "id": "lookup",
+      "title": "the dev entry is read by key",
+      "category": "Collections",
+      "weight": 8
+    },
+    {
+      "id": "out",
+      "title": "dev_instance_type is exported",
+      "category": "Outputs",
+      "weight": 6
+    },
+    {
+      "id": "out-map",
+      "title": "all_instance_types is exported",
+      "category": "Outputs",
+      "weight": 6
+    }
+  ]
+}

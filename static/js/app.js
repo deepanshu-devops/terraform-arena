@@ -532,6 +532,36 @@ function renderStatement(challenge) {
     </div>`
     : "";
 
+  const hints = challenge.hints || {};
+  const hintSections = [
+    ["why", "Why it matters"],
+    ["what", "What to do"],
+    ["when", "When to use it"],
+    ["how", "How to approach it"],
+  ]
+    .filter(([key]) => hints[key])
+    .map(
+      ([key, label]) => `
+      <div class="hint-block">
+        <div class="hint-label">${label}</div>
+        <div class="hint-body">${escapeHtml(hints[key])}</div>
+      </div>`,
+    )
+    .join("");
+  const hintsHtml = hintSections
+    ? `
+    <details class="hints-panel">
+      <summary>
+        <span>Hints &amp; explanation</span>
+        <span class="hints-summary-note">why · what · when · how</span>
+      </summary>
+      <div class="hints-body">
+        <div class="hints-intro">Open a hint when you want a nudge. These explain the concept without revealing the exact answer.</div>
+        ${hintSections}
+      </div>
+    </details>`
+    : "";
+
   statement.innerHTML = `
     <div class="statement-meta">
       <span class="badge level">${escapeHtml(challenge.level_name || `Level ${challenge.level}`)}</span>
@@ -543,6 +573,7 @@ function renderStatement(challenge) {
     <h1>${escapeHtml(challenge.title)}</h1>
     <div class="scenario">${escapeHtml(challenge.scenario)}</div>
     ${focusHtml}
+    ${hintsHtml}
 
     <div class="section-title">Constraints</div>
     <ul class="constraints">

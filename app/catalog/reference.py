@@ -1945,6 +1945,8 @@ def level_for_spec(spec: dict) -> tuple[int, str]:
     difficulty = spec.get("difficulty", "Easy")
     if sid.startswith("intro-"):
         level = 0
+    elif sid.startswith("tut-"):
+        level = 0
     elif sid.startswith("lang-"):
         level = 1
     elif sid.startswith("provision-"):

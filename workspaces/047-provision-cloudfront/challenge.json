@@ -1,0 +1,164 @@
+{
+  "id": "provision-cloudfront",
+  "number": 47,
+  "title": "Provision CloudFront Distribution",
+  "difficulty": "Easy",
+  "points": 50,
+  "level": 2,
+  "level_name": "Level 2 - First Resources",
+  "tags": [
+    "aws",
+    "cloudfront",
+    "provisioning"
+  ],
+  "scenario": "Your platform team needs CloudFront Distribution for a global CDN in front of an origin. Write a reusable Terraform configuration that provisions it, drives every input through variables, applies the standard tags, and exports the operational identifiers.",
+  "constraints": [
+    "Provider: aws (region from var.aws_region).",
+    "Create exactly one resource of type aws_cloudfront_distribution.",
+    "All configurable values must come from variables declared in variables.tf.",
+    "No hardcoded AWS credentials.",
+    "Code must pass terraform fmt conventions (2-space indents, trailing newline, no tabs).",
+    "Tag the resource with Project, Environment and ManagedBy = \"terraform\".",
+    "Expose outputs: domain_name."
+  ],
+  "variables": [
+    {
+      "name": "origin_domain_name",
+      "type": "string",
+      "validation": false,
+      "default": "example.com"
+    },
+    {
+      "name": "certificate_arn",
+      "type": "string",
+      "validation": false
+    },
+    {
+      "name": "environment",
+      "type": "string",
+      "validation": false,
+      "default": "dev"
+    },
+    {
+      "name": "project_name",
+      "type": "string",
+      "validation": false,
+      "default": "terraform-practice"
+    },
+    {
+      "name": "aws_region",
+      "type": "string",
+      "validation": false,
+      "default": "us-east-1"
+    }
+  ],
+  "expected_resources": [
+    "aws_cloudfront_distribution"
+  ],
+  "expected_outputs": [
+    "domain_name"
+  ],
+  "starter": {
+    "versions.tf": "terraform {\n  required_version = \">= 1.5.0\"\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n  }\n}\n",
+    "variables.tf": "variable \"origin_domain_name\" {\n  description = \"Input variable origin_domain_name.\"\n  type        = string\n  default     = \"example.com\"\n}\n\nvariable \"certificate_arn\" {\n  description = \"Input variable certificate_arn.\"\n  type        = string\n}\n\nvariable \"environment\" {\n  description = \"Input variable environment.\"\n  type        = string\n  default     = \"dev\"\n}\n\nvariable \"project_name\" {\n  description = \"Input variable project_name.\"\n  type        = string\n  default     = \"terraform-practice\"\n}\n\nvariable \"aws_region\" {\n  description = \"Input variable aws_region.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n",
+    "main.tf": "provider \"aws\" {\n  region = var.aws_region\n}\n\nresource \"aws_cloudfront_distribution\" \"this\" {\n  # TODO - Complete the aws_cloudfront_distribution resource.\n  # Add the arguments and nested blocks required for aws_cloudfront_distribution.\n}\n",
+    "outputs.tf": "output \"domain_name\" {\n  value = aws_cloudfront_distribution.this.domain_name\n}\n"
+  },
+  "focus": {
+    "file": "main.tf",
+    "kind": "resource",
+    "title": "Complete the aws_cloudfront_distribution resource",
+    "todo": "Add the arguments and nested blocks required for aws_cloudfront_distribution."
+  },
+  "hints": {
+    "why": "A CDN changes latency, caching and the public attack surface. Origin and cache settings are part of the application contract.",
+    "what": "Complete the marked TODO in `main.tf`. Add the arguments and nested blocks required for aws_cloudfront_distribution. Use the visible constraints as your checklist before you run the tests.",
+    "when": "Use CloudFront when content is served globally or when you need TLS, caching and origin protection in front of HTTP services.",
+    "how": "Open `main.tf` and work inside the single TODO region. Change one requirement at a time: add the named block, argument or reference, then run the tests. When a check fails, match its wording to the constraints and fix only the block it names."
+  },
+  "allowlist": [
+    "aws_cloudfront_distribution"
+  ],
+  "apply_sandbox": false,
+  "test_count": 14,
+  "test_manifest": [
+    {
+      "id": "provider",
+      "title": "AWS provider + region variable",
+      "category": "Providers",
+      "weight": 5
+    },
+    {
+      "id": "region",
+      "title": "Provider region references var.aws_region",
+      "category": "Providers",
+      "weight": 4
+    },
+    {
+      "id": "res",
+      "title": "aws_cloudfront_distribution is provisioned",
+      "category": "Resources",
+      "weight": 14
+    },
+    {
+      "id": "a0",
+      "title": "enabled is set correctly",
+      "category": "Resources",
+      "weight": 6
+    },
+    {
+      "id": "https",
+      "title": "Viewer protocol redirects to HTTPS",
+      "category": "Security",
+      "weight": 10
+    },
+    {
+      "id": "tls",
+      "title": "Modern TLS minimum",
+      "category": "Security",
+      "weight": 8
+    },
+    {
+      "id": "tags",
+      "title": "Standard tags are applied",
+      "category": "Lifecycle",
+      "weight": 8
+    },
+    {
+      "id": "out-domain_name",
+      "title": "Output domain_name is exported",
+      "category": "Outputs",
+      "weight": 5
+    },
+    {
+      "id": "var-origin_domain_name",
+      "title": "Variable origin_domain_name is declared",
+      "category": "Variables",
+      "weight": 3
+    },
+    {
+      "id": "var-certificate_arn",
+      "title": "Variable certificate_arn is declared",
+      "category": "Variables",
+      "weight": 3
+    },
+    {
+      "id": "var-environment",
+      "title": "Variable environment is declared",
+      "category": "Variables",
+      "weight": 3
+    },
+    {
+      "id": "var-project_name",
+      "title": "Variable project_name is declared",
+      "category": "Variables",
+      "weight": 3
+    },
+    {
+      "id": "var-aws_region",
+      "title": "Variable aws_region is declared",
+      "category": "Variables",
+      "weight": 3
+    }
+  ]
+}

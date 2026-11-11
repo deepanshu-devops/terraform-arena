@@ -1,0 +1,95 @@
+{
+  "id": "harden-sqs-dlq",
+  "number": 103,
+  "title": "SQS Queue With Dead-Letter Queue",
+  "difficulty": "Medium",
+  "points": 100,
+  "level": 3,
+  "level_name": "Level 3 - Real Infrastructure",
+  "tags": [
+    "aws",
+    "sqs",
+    "resilience"
+  ],
+  "scenario": "Build a durable queue with a dead-letter queue for poison messages and server-side encryption.",
+  "constraints": [
+    "Create a main queue and a DLQ.",
+    "Main queue redrive_policy points at the DLQ.",
+    "sqs_managed_sse_enabled = true."
+  ],
+  "variables": [
+    {
+      "name": "queue_name",
+      "type": "string",
+      "validation": false,
+      "default": "jobs"
+    },
+    {
+      "name": "dlq_name",
+      "type": "string",
+      "validation": false,
+      "default": "jobs-dlq"
+    }
+  ],
+  "expected_resources": [
+    "aws_sqs_queue"
+  ],
+  "expected_outputs": [
+    "queue_url"
+  ],
+  "starter": {
+    "versions.tf": "terraform {\n  required_version = \">= 1.5.0\"\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n  }\n}\n",
+    "variables.tf": "variable \"queue_name\" {\n  description = \"Input variable queue_name.\"\n  type        = string\n  default     = \"jobs\"\n}\n\nvariable \"dlq_name\" {\n  description = \"Input variable dlq_name.\"\n  type        = string\n  default     = \"jobs-dlq\"\n}\n\nvariable \"aws_region\" {\n  description = \"Input variable aws_region.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n",
+    "main.tf": "provider \"aws\" {\n  region = var.aws_region\n}\n\nresource \"aws_sqs_queue\" \"this\" {\n  # TODO - Complete the main queue.\n  # Add the queue name, server-side encryption and redrive policy pointing at the DLQ.\n}\n\nresource \"aws_sqs_queue\" \"dlq\" {\n  name = var.dlq_name\n}\n",
+    "outputs.tf": "output \"queue_url\" {\n  value = aws_sqs_queue.this.url\n}\n"
+  },
+  "focus": {
+    "file": "main.tf",
+    "kind": "resource",
+    "title": "Complete the main queue",
+    "todo": "Add the queue name, server-side encryption and redrive policy pointing at the DLQ."
+  },
+  "hints": {
+    "why": "Queues decouple producers from consumers and absorb bursts. Visibility timeouts and retention settings are part of the reliability contract.",
+    "what": "Complete the marked TODO in `main.tf`. Add the queue name, server-side encryption and redrive policy pointing at the DLQ. Use the visible constraints as your checklist before you run the tests.",
+    "when": "Use a queue when work can be processed asynchronously or when two components should not fail together.",
+    "how": "Open `main.tf` and work inside the single TODO region. Change one requirement at a time: add the named block, argument or reference, then run the tests. When a check fails, match its wording to the constraints and fix only the block it names."
+  },
+  "allowlist": [
+    "aws_sqs_queue"
+  ],
+  "apply_sandbox": false,
+  "test_count": 6,
+  "test_manifest": [
+    {
+      "id": "queue",
+      "title": "aws_sqs_queue is provisioned",
+      "category": "Resources",
+      "weight": 12
+    },
+    {
+      "id": "count",
+      "title": "Two queues (main + DLQ)",
+      "category": "Resources",
+      "weight": 10
+    },
+    {
+      "id": "redrive",
+      "title": "redrive_policy references the DLQ",
+      "category": "Resilience",
+      "weight": 10
+    },
+    {
+      "id": "sse",
+      "title": "aws_sqs_queue.sqs_managed_sse_enabled = true",
+      "category": "Security",
+      "weight": 8
+    },
+    {
+      "id": "out",
+      "title": "Output queue_url",
+      "category": "Outputs",
+      "weight": 5
+    }
+  ]
+}

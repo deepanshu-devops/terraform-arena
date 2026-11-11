@@ -1,0 +1,92 @@
+{
+  "id": "tut-functions-first",
+  "number": 19,
+  "title": "Tutorial: Compose Strings With Functions",
+  "difficulty": "Easy",
+  "points": 67,
+  "level": 0,
+  "level_name": "Level 0 - HCL Foundations",
+  "tags": [
+    "terraform",
+    "tutorial",
+    "functions",
+    "strings"
+  ],
+  "scenario": "Terraform's built-in functions transform values without hardcoding the result. Build a URL-friendly slug from an input, then format a versioned label from that slug.",
+  "constraints": [
+    "Use var.app_name as the source value.",
+    "Build local.slug with lower() and replace().",
+    "Build local.label with format().",
+    "Export both values as outputs."
+  ],
+  "variables": [
+    {
+      "name": "app_name",
+      "type": "string",
+      "validation": false,
+      "default": "My App"
+    }
+  ],
+  "expected_resources": [],
+  "expected_outputs": [
+    "slug",
+    "label"
+  ],
+  "starter": {
+    "variables.tf": "variable \"app_name\" {\n  description = \"Human-readable application name.\"\n  type        = string\n  default     = \"My App\"\n}\n",
+    "main.tf": "locals {\n  # TODO - Build the derived strings.\n  # Create a lowercase, hyphenated slug and a formatted version label.\n}\n\noutput \"slug\" {\n  value = local.slug\n}\n\noutput \"label\" {\n  value = local.label\n}\n"
+  },
+  "focus": {
+    "file": "main.tf",
+    "kind": "top",
+    "title": "Build the derived strings",
+    "todo": "Create a lowercase, hyphenated slug and a formatted version label."
+  },
+  "hints": {
+    "why": "Functions make derived values declarative. A slug built from the same input every time is easier to trust than a value someone copied into the file.",
+    "what": "Compute two locals. The first should turn the input name into a lowercase string with spaces replaced by hyphens. The second should combine that slug with a version suffix using format().",
+    "when": "Use string functions when a value is composed from inputs and should update automatically. Avoid them when a plain literal is clearer.",
+    "how": "Work inside out. First decide which function changes case, then which one replaces characters, then nest them. For the label, look at format() as a small template with placeholders and arguments."
+  },
+  "allowlist": [],
+  "apply_sandbox": false,
+  "test_count": 7,
+  "test_manifest": [
+    {
+      "id": "var",
+      "title": "app_name is declared",
+      "category": "Variables",
+      "weight": 8
+    },
+    {
+      "id": "lower",
+      "title": "lower() is used",
+      "category": "Functions",
+      "weight": 8
+    },
+    {
+      "id": "replace",
+      "title": "replace() is used",
+      "category": "Functions",
+      "weight": 8
+    },
+    {
+      "id": "format",
+      "title": "format() is used",
+      "category": "Functions",
+      "weight": 8
+    },
+    {
+      "id": "out-slug",
+      "title": "slug is exported",
+      "category": "Outputs",
+      "weight": 5
+    },
+    {
+      "id": "out-label",
+      "title": "label is exported",
+      "category": "Outputs",
+      "weight": 5
+    }
+  ]
+}

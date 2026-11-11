@@ -21,9 +21,9 @@ Everything runs offline. No AWS calls are made by default.
 
 | | |
 | --- | --- |
-| Challenges | **125** (15 level-0 intros + 105 catalog scenarios + 5 capstones) |
-| Progression | Level 0 (HCL basics) through level 5 (capstones) |
-| Physical workspaces | `workspaces/001-...` through `workspaces/125-...` |
+| Challenges | **135** (15 level-0 syntax intros + 10 guided tutorials + 105 catalog scenarios + 5 capstones) |
+| Progression | Level 0 (HCL basics and guided tutorial) through level 5 (capstones) |
+| Physical workspaces | `workspaces/001-...` through `workspaces/135-...` |
 | Backend | Python 3.12 + FastAPI + SQLite |
 | Queue | ThreadPoolExecutor + `jobs` table (Celery/Redis-shaped) |
 | Evaluation | Custom HCL lexer/parser + rule engine |
@@ -103,6 +103,23 @@ tests, and the complete configuration around it should snap into place.
 One deliberate exception is the level-0 formatting drill: it gives you working
 code in bad style and asks you to reformat it instead of filling a TODO.
 
+### Guided tutorial and hints
+
+Challenges `016`-`025` form a guided beginner tutorial. They build in order:
+variables, lists, maps, string functions, `for` expressions, `count`,
+`for_each`, calling a module, reading a module output, and a final composition
+exercise. Filter the catalog by the `tutorial` tag to see only that track.
+
+Every challenge ships a **Hints & explanation** panel with four sections:
+
+- **Why it matters** - the concept outside this exercise
+- **What to do** - the focused task
+- **When to use it** - the real-world decision
+- **How to approach it** - a nudge that does not reveal the exact solution
+
+Hints are public. Hidden test assertions remain hidden until a submission. The
+same hints are written into each workspace README for offline use.
+
 ---
 
 ## VS Code workflow (recommended)
@@ -171,12 +188,12 @@ The catalog is sorted by level, then points, then title. Numbering starts at 1.
 
 | Level | Name | Range | Focus |
 | --- | --- | --- | --- |
-| 0 | HCL Foundations | `001`-`015` | blocks, arguments, strings, formatting, collections, providers, locals, functions, conditionals, for/splat expressions, sensitive outputs, file layout |
-| 1 | Terraform Language | `016`-`025` | variables, validation, locals, count, for_each, conditionals, data sources, lifecycle, depends_on |
-| 2 | First Resources | `026`-`071` | one resource at a time: S3, VPC, EC2, RDS, DynamoDB, Lambda, IAM, Docker and more |
-| 3 | Real Infrastructure | `072`-`094` | encryption, TLS, retention, IMDSv2, least privilege, public-access lockdown |
-| 4 | Composition | `095`-`114` | multi-resource wiring: ALB, Lambda, ECS, RDS, DNS, KMS, messaging, observability |
-| 5 | Modules & Capstones | `115`-`125` | modules, state, refactoring, import, plus the five full-capstone builds |
+| 0 | HCL Foundations | `001`-`025` | blocks, arguments, strings, formatting, collections, providers, locals, functions, conditionals, for/splat expressions, sensitive outputs, file layout, then a ten-step guided tutorial from variables through modules |
+| 1 | Terraform Language | `026`-`035` | variables, validation, locals, count, for_each, conditionals, data sources, lifecycle, depends_on |
+| 2 | First Resources | `036`-`081` | one resource at a time: S3, VPC, EC2, RDS, DynamoDB, Lambda, IAM, Docker and more |
+| 3 | Real Infrastructure | `082`-`104` | encryption, TLS, retention, IMDSv2, least privilege, public-access lockdown |
+| 4 | Composition | `105`-`124` | multi-resource wiring: ALB, Lambda, ECS, RDS, DNS, KMS, messaging, observability |
+| 5 | Modules & Capstones | `125`-`135` | modules, state, refactoring, import, plus the five full-capstone builds |
 
 Themes recur across levels: S3 security, VPC design, EC2 hardening, RDS,
 DynamoDB, Lambda, API Gateway, IAM least privilege, KMS, messaging,
@@ -188,11 +205,11 @@ Open `workspaces/INDEX.md` for the full table with each focus block.
 
 | # | Challenge | Difficulty |
 | --- | --- | --- |
-| 120 | Docker Nginx Sandbox | Easy |
-| 122 | Secure S3 Bucket Provisioning | Easy |
-| 123 | Highly Available VPC Foundation | Medium |
-| 124 | Auto Scaling Web Tier | Hard |
-| 125 | Serverless Item API | Hard |
+| 130 | Docker Nginx Sandbox | Easy |
+| 132 | Secure S3 Bucket Provisioning | Easy |
+| 133 | Highly Available VPC Foundation | Medium |
+| 134 | Auto Scaling Web Tier | Hard |
+| 135 | Serverless Item API | Hard |
 
 Each capstone supplies every supporting file and masks one central resource
 body (bucket, container, subnet, Auto Scaling group, or Lambda function).
@@ -219,9 +236,10 @@ body (bucket, container, subnet, Auto Scaling group, or Lambda function).
 The result is `PASS` only when the syntax is clean, every required test passes,
 and the security policy is not violated.
 
-`python judge.py verify` is the developer gate: it checks that all 125 reference
-solutions pass, every masked starter fails, starters parse cleanly, and focus
-markers never leak into learner files.
+`python judge.py verify` is the developer gate: it checks that all 135 reference
+solutions pass, every masked starter fails, starters parse cleanly, focus
+markers never leak into learner files, and every challenge has complete
+why/what/when/how hints.
 
 ---
 
@@ -286,6 +304,7 @@ No AWS resources are ever created by the default workflow.
 | GET | `/api/submissions` | recent submissions |
 | GET | `/api/submissions/{id}` | full result |
 | GET | `/api/progress` | per-challenge progress |
+| GET | `/api/health`, `/health`, `/healthz` | health check (aliases) |
 | GET | `/api/terraform/status` | CLI detection |
 
 OAuth routes: `/auth/google/login`, `/auth/google/callback`, and `/auth/logout`.
@@ -307,8 +326,10 @@ terraform-arena/
     declarative.py    spec -> Challenge compiler
     catalog/
       intro.py        level-0 HCL fundamentals
+      tutorial.py     guided variable -> collections -> modules tutorial
       specs.py        provision resource blueprints
       extra.py        hardening, wiring, language, module, Docker specs
+      hints.py        public why/what/when/how hints for every challenge
       reference.py    reference synthesis, focus selection, masking
       __init__.py     catalog loader + README rendering
     challenges/       hand-authored capstones + registry
@@ -319,7 +340,7 @@ terraform-arena/
     workspace.py      workspace export helpers + safe starter refresh
     main.py           FastAPI app
   static/             HackerRank-style UI
-  workspaces/         125 folders of incomplete .tf files
+  workspaces/         135 folders of incomplete .tf files
   scripts/            workspace generator + Terraform installer + ref checks
   docs/               architecture blueprint + API notes
   judge.py            local CLI (list/show/start/test/test-all/verify/live)
@@ -331,8 +352,8 @@ terraform-arena/
 ## Adding challenges
 
 Add a resource tuple to `app/catalog/specs.py` (`RESOURCES`), a spec to one of
-the lists in `app/catalog/extra.py`, or a hand-authored intro to
-`app/catalog/intro.py`. Then:
+the lists in `app/catalog/extra.py`, a hand-authored intro to
+`app/catalog/intro.py`, or a guided lesson to `app/catalog/tutorial.py`. Then:
 
 ```powershell
 python judge.py verify
@@ -342,5 +363,8 @@ python judge.py generate
 Specs use declarative checks (`resource_exists`, `attr_ref`, `tagged`,
 `nested_path`, `no_wildcard_iam`, ...) so a new scenario rarely needs Python.
 The reference generator synthesises a complete solution from those checks and
-masks exactly one focus region for the starter. `verify` must stay green before
-workspaces are regenerated.
+masks exactly one focus region for the starter. Every spec also gets public
+`why`/`what`/`when`/`how` hints from `app/catalog/hints.py`; add a `hints` dict
+to a spec to override any section with hand-written guidance. `verify` fails if
+a challenge is missing a hint section, and must stay green before workspaces are
+regenerated.

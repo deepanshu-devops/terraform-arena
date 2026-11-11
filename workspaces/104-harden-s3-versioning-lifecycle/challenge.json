@@ -1,0 +1,89 @@
+{
+  "id": "harden-s3-versioning-lifecycle",
+  "number": 104,
+  "title": "Versioning + Lifecycle Expiry",
+  "difficulty": "Medium",
+  "points": 100,
+  "level": 3,
+  "level_name": "Level 3 - Real Infrastructure",
+  "tags": [
+    "aws",
+    "s3",
+    "lifecycle",
+    "cost"
+  ],
+  "scenario": "Protect against accidental overwrites while keeping cost down: enable versioning and expire stale objects after 30 days.",
+  "constraints": [
+    "aws_s3_bucket_versioning must enable versioning.",
+    "aws_s3_bucket_lifecycle_configuration must expire objects within 30 days.",
+    "Rule status must be Enabled."
+  ],
+  "variables": [
+    {
+      "name": "bucket_name",
+      "type": "string",
+      "validation": false
+    }
+  ],
+  "expected_resources": [
+    "aws_s3_bucket_versioning",
+    "aws_s3_bucket_lifecycle_configuration"
+  ],
+  "expected_outputs": [],
+  "starter": {
+    "versions.tf": "terraform {\n  required_version = \">= 1.5.0\"\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n  }\n}\n",
+    "variables.tf": "variable \"bucket_name\" {\n  description = \"Input variable bucket_name.\"\n  type        = string\n}\n\nvariable \"aws_region\" {\n  description = \"Input variable aws_region.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n",
+    "main.tf": "provider \"aws\" {\n  region = var.aws_region\n}\n\nresource \"aws_s3_bucket_versioning\" \"this\" {\n  # TODO - Complete the aws_s3_bucket_versioning resource.\n  # Add the arguments and nested blocks required for aws_s3_bucket_versioning.\n}\n\nresource \"aws_s3_bucket_lifecycle_configuration\" \"this\" {\n  bucket = var.bucket_name\n  rule {\n    status = \"Enabled\"\n    expiration {\n      days = 30\n    }\n  }\n}\n"
+  },
+  "focus": {
+    "file": "main.tf",
+    "kind": "resource",
+    "title": "Complete the aws_s3_bucket_versioning resource",
+    "todo": "Add the arguments and nested blocks required for aws_s3_bucket_versioning."
+  },
+  "hints": {
+    "why": "S3 is usually the first shared service in an AWS configuration. Bucket settings, versioning, encryption and public-access blocks are common review findings.",
+    "what": "Complete the marked TODO in `main.tf`. Add the arguments and nested blocks required for aws_s3_bucket_versioning. Use the visible constraints as your checklist before you run the tests.",
+    "when": "Use S3 when you need durable object storage for assets, logs, backups or static content, and lock down access from the start.",
+    "how": "Open `main.tf` and work inside the single TODO region. Change one requirement at a time: add the named block, argument or reference, then run the tests. When a check fails, match its wording to the constraints and fix only the block it names."
+  },
+  "allowlist": [
+    "aws_s3_bucket_versioning",
+    "aws_s3_bucket_lifecycle_configuration",
+    "aws_s3_bucket"
+  ],
+  "apply_sandbox": false,
+  "test_count": 6,
+  "test_manifest": [
+    {
+      "id": "ver",
+      "title": "aws_s3_bucket_versioning is provisioned",
+      "category": "Lifecycle",
+      "weight": 10
+    },
+    {
+      "id": "status",
+      "title": "Versioning is Enabled",
+      "category": "Lifecycle",
+      "weight": 10
+    },
+    {
+      "id": "life",
+      "title": "aws_s3_bucket_lifecycle_configuration is provisioned",
+      "category": "Lifecycle",
+      "weight": 10
+    },
+    {
+      "id": "expiry",
+      "title": "Objects expire within 30 days",
+      "category": "Lifecycle",
+      "weight": 12
+    },
+    {
+      "id": "noacl",
+      "title": "No public ACL",
+      "category": "Security",
+      "weight": 6
+    }
+  ]
+}

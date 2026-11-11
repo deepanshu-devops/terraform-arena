@@ -1,0 +1,70 @@
+{
+  "id": "tut-module-call",
+  "number": 23,
+  "title": "Tutorial: Call Your First Module",
+  "difficulty": "Easy",
+  "points": 71,
+  "level": 0,
+  "level_name": "Level 0 - HCL Foundations",
+  "tags": [
+    "terraform",
+    "tutorial",
+    "modules"
+  ],
+  "scenario": "A module is a reusable package of Terraform files with inputs and outputs. Calling one is just a module block: a name, a source and the inputs the module expects.",
+  "constraints": [
+    "Create a module block named storage.",
+    "Point source at ./modules/storage.",
+    "Pass var.bucket_name as bucket_name."
+  ],
+  "variables": [
+    {
+      "name": "bucket_name",
+      "type": "string",
+      "validation": false,
+      "default": "arena-tutorial-storage"
+    }
+  ],
+  "expected_resources": [],
+  "expected_outputs": [],
+  "starter": {
+    "variables.tf": "variable \"bucket_name\" {\n  description = \"Bucket name passed to the storage module.\"\n  type        = string\n  default     = \"arena-tutorial-storage\"\n}\n",
+    "main.tf": "module \"storage\" {\n  # TODO - Complete the module call.\n  # Add the module source and pass the bucket name input.\n}\n",
+    "modules/storage/main.tf": "# The local module is provided with the scenario.\nvariable \"bucket_name\" {\n  type = string\n}\n\nresource \"terraform_data\" \"storage\" {\n  input = var.bucket_name\n}\n"
+  },
+  "focus": {
+    "file": "main.tf",
+    "kind": "module",
+    "title": "Complete the module call",
+    "todo": "Add the module source and pass the bucket name input."
+  },
+  "hints": {
+    "why": "Modules are how Terraform code scales beyond a single file. A module call lets you reuse a tested component without copying its resources.",
+    "what": "Complete the module block so it loads the local storage module and passes the one input that module expects.",
+    "when": "Use a module when a group of resources is reused or when a team needs a stable interface. A local source is ideal while developing the module in the same repository.",
+    "how": "Look at the module block labels first. The source argument is a path, so it is a string. The other argument matches an input variable inside the module, so its value is an expression from the root configuration."
+  },
+  "allowlist": [],
+  "apply_sandbox": false,
+  "test_count": 4,
+  "test_manifest": [
+    {
+      "id": "source",
+      "title": "the module points at the local module",
+      "category": "Modularity",
+      "weight": 14
+    },
+    {
+      "id": "name",
+      "title": "the module is named storage",
+      "category": "Modularity",
+      "weight": 8
+    },
+    {
+      "id": "input",
+      "title": "the bucket name is passed into the module",
+      "category": "Modularity",
+      "weight": 8
+    }
+  ]
+}

@@ -45,6 +45,7 @@ class Challenge:
     level_name: str = ""
     focus: dict = field(default_factory=dict)
     reference: dict = field(default_factory=dict)
+    hints: dict = field(default_factory=dict)
 
     def public(self) -> dict:
         return {
@@ -63,6 +64,7 @@ class Challenge:
             "expected_outputs": self.expected_outputs,
             "starter": self.starter,
             "focus": self.focus,
+            "hints": self.hints,
             "allowlist": self.allowlist,
             "apply_sandbox": self.apply_sandbox,
             "test_count": len(self.tests) + 1,

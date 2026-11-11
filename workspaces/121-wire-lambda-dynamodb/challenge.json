@@ -1,0 +1,189 @@
+{
+  "id": "wire-lambda-dynamodb",
+  "number": 121,
+  "title": "Lambda Reading a DynamoDB Table",
+  "difficulty": "Hard",
+  "points": 140,
+  "level": 4,
+  "level_name": "Level 4 - Composition",
+  "tags": [
+    "aws",
+    "lambda",
+    "dynamodb",
+    "iam"
+  ],
+  "scenario": "Give a Lambda function least-privilege access to one DynamoDB table and inject the table name through its environment.",
+  "constraints": [
+    "Create the table and a dedicated IAM role/policy.",
+    "Scope the policy to the table ARN.",
+    "Lambda receives TABLE_NAME."
+  ],
+  "variables": [
+    {
+      "name": "table_name",
+      "type": "string",
+      "validation": false,
+      "default": "items"
+    },
+    {
+      "name": "lambda_runtime",
+      "type": "string",
+      "validation": false,
+      "default": "python3.12"
+    },
+    {
+      "name": "lambda_memory",
+      "type": "number",
+      "validation": false,
+      "default": 128
+    },
+    {
+      "name": "project_name",
+      "type": "string",
+      "validation": false,
+      "default": "terraform-practice"
+    },
+    {
+      "name": "environment",
+      "type": "string",
+      "validation": false,
+      "default": "dev"
+    },
+    {
+      "name": "aws_region",
+      "type": "string",
+      "validation": false,
+      "default": "us-east-1"
+    }
+  ],
+  "expected_resources": [
+    "aws_dynamodb_table",
+    "aws_iam_role",
+    "aws_iam_policy",
+    "aws_iam_role_policy_attachment",
+    "aws_lambda_function"
+  ],
+  "expected_outputs": [
+    "table_arn",
+    "lambda_arn"
+  ],
+  "starter": {
+    "versions.tf": "terraform {\n  required_version = \">= 1.5.0\"\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n  }\n}\n",
+    "variables.tf": "variable \"table_name\" {\n  description = \"Input variable table_name.\"\n  type        = string\n  default     = \"items\"\n}\n\nvariable \"lambda_runtime\" {\n  description = \"Input variable lambda_runtime.\"\n  type        = string\n  default     = \"python3.12\"\n}\n\nvariable \"lambda_memory\" {\n  description = \"Input variable lambda_memory.\"\n  type        = number\n  default     = 128\n}\n\nvariable \"project_name\" {\n  description = \"Input variable project_name.\"\n  type        = string\n  default     = \"terraform-practice\"\n}\n\nvariable \"environment\" {\n  description = \"Input variable environment.\"\n  type        = string\n  default     = \"dev\"\n}\n\nvariable \"aws_region\" {\n  description = \"Input variable aws_region.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n",
+    "main.tf": "provider \"aws\" {\n  region = var.aws_region\n}\n\nresource \"aws_dynamodb_table\" \"this\" {\n  name         = \"app-table\"\n  billing_mode = \"PAY_PER_REQUEST\"\n  hash_key     = \"id\"\n  attribute {\n    name = \"id\"\n    type = \"S\"\n  }\n  server_side_encryption {\n    enabled = true\n  }\n  point_in_time_recovery {\n    enabled = true\n  }\n}\n\nresource \"aws_iam_role\" \"this\" {\n  name = \"app-role\"\n  assume_role_policy = jsonencode({\n    Version = \"2012-10-17\"\n    Statement = [\n      {\n        Effect    = \"Allow\"\n        Principal = { Service = \"lambda.amazonaws.com\" }\n        Action    = \"sts:AssumeRole\"\n      }\n    ]\n  })\n}\n\nresource \"aws_iam_policy\" \"this\" {\n  name = \"app-policy\"\n  policy = jsonencode({\n    Version = \"2012-10-17\"\n    Statement = [\n      {\n        Effect   = \"Allow\"\n        Action   = [\"dynamodb:GetItem\", \"dynamodb:PutItem\", \"dynamodb:Query\"]\n        Resource = aws_dynamodb_table.this.arn\n      }\n    ]\n  })\n}\n\nresource \"aws_iam_role_policy_attachment\" \"this\" {\n  role       = aws_iam_role.this.name\n  policy_arn = aws_iam_policy.this.arn\n}\n\nresource \"aws_lambda_function\" \"this\" {\n  # TODO - Complete the aws_lambda_function resource.\n  # Add the arguments and nested blocks required for aws_lambda_function.\n}\n",
+    "outputs.tf": "output \"table_arn\" {\n  value = aws_dynamodb_table.this.arn\n}\n\noutput \"lambda_arn\" {\n  value = aws_lambda_function.this.arn\n}\n"
+  },
+  "focus": {
+    "file": "main.tf",
+    "kind": "resource",
+    "title": "Complete the aws_lambda_function resource",
+    "todo": "Add the arguments and nested blocks required for aws_lambda_function."
+  },
+  "hints": {
+    "why": "Lambda packages compute as a small, event-driven unit. The code artifact, execution role and trigger are the contract to get right.",
+    "what": "Complete the marked TODO in `main.tf`. Add the arguments and nested blocks required for aws_lambda_function. Use the visible constraints as your checklist before you run the tests.",
+    "when": "Use Lambda for short-lived event handlers or glue code where managing a server would add cost and operational noise.",
+    "how": "Open `main.tf` and work inside the single TODO region. Change one requirement at a time: add the named block, argument or reference, then run the tests. When a check fails, match its wording to the constraints and fix only the block it names."
+  },
+  "allowlist": [
+    "aws_dynamodb_table",
+    "aws_iam_role",
+    "aws_iam_policy",
+    "aws_iam_role_policy_attachment",
+    "aws_lambda_function"
+  ],
+  "apply_sandbox": false,
+  "test_count": 16,
+  "test_manifest": [
+    {
+      "id": "provider",
+      "title": "Required provider aws",
+      "category": "Providers",
+      "weight": 5
+    },
+    {
+      "id": "region",
+      "title": "aws.region -> var.aws_region",
+      "category": "Providers",
+      "weight": 4
+    },
+    {
+      "id": "table",
+      "title": "aws_dynamodb_table is provisioned",
+      "category": "Resources",
+      "weight": 10
+    },
+    {
+      "id": "billing",
+      "title": "aws_dynamodb_table.billing_mode = \"PAY_PER_REQUEST\"",
+      "category": "Resources",
+      "weight": 6
+    },
+    {
+      "id": "role",
+      "title": "aws_iam_role is provisioned",
+      "category": "Resources",
+      "weight": 8
+    },
+    {
+      "id": "trust",
+      "title": "Role trusts lambda.amazonaws.com",
+      "category": "Security",
+      "weight": 8
+    },
+    {
+      "id": "policy",
+      "title": "aws_iam_policy is provisioned",
+      "category": "Security",
+      "weight": 8
+    },
+    {
+      "id": "ddb",
+      "title": "Policy grants dynamodb actions",
+      "category": "Security",
+      "weight": 8
+    },
+    {
+      "id": "wild",
+      "title": "No wildcard IAM actions",
+      "category": "Security",
+      "weight": 8
+    },
+    {
+      "id": "attach",
+      "title": "aws_iam_role_policy_attachment is provisioned",
+      "category": "Resources",
+      "weight": 6
+    },
+    {
+      "id": "fn",
+      "title": "aws_lambda_function is provisioned",
+      "category": "Resources",
+      "weight": 10
+    },
+    {
+      "id": "fn-role",
+      "title": "aws_lambda_function.role -> aws_iam_role.",
+      "category": "Resources",
+      "weight": 6
+    },
+    {
+      "id": "env",
+      "title": "TABLE_NAME references the table",
+      "category": "Resources",
+      "weight": 8
+    },
+    {
+      "id": "out-table",
+      "title": "Output table_arn",
+      "category": "Outputs",
+      "weight": 5
+    },
+    {
+      "id": "out-fn",
+      "title": "Output lambda_arn",
+      "category": "Outputs",
+      "weight": 5
+    }
+  ]
+}

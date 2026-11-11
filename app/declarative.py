@@ -402,4 +402,5 @@ def build_challenge(spec: dict, number: int) -> Challenge:
         level_name=spec.get("level_name", ""),
         focus=spec.get("focus", {}),
         reference=spec.get("reference", {}),
+        hints=spec.get("hints", {}),
     )

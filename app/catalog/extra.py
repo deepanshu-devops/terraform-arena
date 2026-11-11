@@ -1,7 +1,8 @@
 """Security, wiring, language, module and Docker scenarios.
 
 Compiled together with ``specs.RESOURCES`` this yields 105 generated
-challenges (plus 15 level-0 intros and 5 hand-authored capstones = 125 total).
+challenges (plus 15 level-0 syntax intros, 10 guided tutorials and 5
+hand-authored capstones = 135 total).
 """
 from __future__ import annotations
 
@@ -1009,8 +1010,10 @@ DOCKER_SPECS = [
 
 def all_specs():
     from .intro import INTRO_SPECS
+    from .tutorial import TUTORIAL_SPECS
 
     specs = list(INTRO_SPECS)
+    specs.extend(TUTORIAL_SPECS)
     specs.extend(provision_spec(res) for res in RESOURCES)
     specs.extend(HARDEN_SPECS)
     specs.extend(WIRE_SPECS)

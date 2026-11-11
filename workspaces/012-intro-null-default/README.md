@@ -15,6 +15,17 @@ Variables can default to null to represent an optional value. Use coalesce() to 
 - Task: Add the fallback value
 - Use coalesce with the optional variable and a default string.
 
+## Hints
+
+**Why it matters:** HCL is the language Terraform evaluates. Small syntax mistakes here turn into confusing plan errors later, so slow, deliberate practice pays off.
+
+**What to do:** Complete the marked TODO in `main.tf`. Use coalesce with the optional variable and a default string. Use the visible constraints as your checklist before you run the tests.
+
+**When to use it:** Reach for this whenever you add a new block or argument by hand rather than copying generated code.
+
+**How to approach it:** Open `main.tf` and work inside the single TODO region. Change one requirement at a time: add the named block, argument or reference, then run the tests. When a check fails, match its wording to the constraints and fix only the block it names.
+
+
 ## Constraints
 
 - Declare nickname with a null default.

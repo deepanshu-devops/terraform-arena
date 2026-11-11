@@ -1,0 +1,164 @@
+{
+  "id": "wire-route53-cloudfront-acm",
+  "number": 123,
+  "title": "Route 53 + ACM + CloudFront",
+  "difficulty": "Hard",
+  "points": 150,
+  "level": 4,
+  "level_name": "Level 4 - Composition",
+  "tags": [
+    "aws",
+    "route53",
+    "cloudfront",
+    "acm",
+    "dns"
+  ],
+  "scenario": "Serve a domain through CloudFront with a DNS-validated certificate and an alias record.",
+  "constraints": [
+    "Create a hosted zone, ACM certificate and CloudFront distribution.",
+    "Create a Route 53 record in the zone.",
+    "Certificate validation is DNS."
+  ],
+  "variables": [
+    {
+      "name": "domain_name",
+      "type": "string",
+      "validation": false,
+      "default": "example.com"
+    },
+    {
+      "name": "record_name",
+      "type": "string",
+      "validation": false,
+      "default": "app"
+    },
+    {
+      "name": "project_name",
+      "type": "string",
+      "validation": false,
+      "default": "terraform-practice"
+    },
+    {
+      "name": "environment",
+      "type": "string",
+      "validation": false,
+      "default": "dev"
+    },
+    {
+      "name": "aws_region",
+      "type": "string",
+      "validation": false,
+      "default": "us-east-1"
+    }
+  ],
+  "expected_resources": [
+    "aws_route53_zone",
+    "aws_acm_certificate",
+    "aws_cloudfront_distribution",
+    "aws_route53_record"
+  ],
+  "expected_outputs": [
+    "zone_id",
+    "certificate_arn"
+  ],
+  "starter": {
+    "versions.tf": "terraform {\n  required_version = \">= 1.5.0\"\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n  }\n}\n",
+    "variables.tf": "variable \"domain_name\" {\n  description = \"Input variable domain_name.\"\n  type        = string\n  default     = \"example.com\"\n}\n\nvariable \"record_name\" {\n  description = \"Input variable record_name.\"\n  type        = string\n  default     = \"app\"\n}\n\nvariable \"project_name\" {\n  description = \"Input variable project_name.\"\n  type        = string\n  default     = \"terraform-practice\"\n}\n\nvariable \"environment\" {\n  description = \"Input variable environment.\"\n  type        = string\n  default     = \"dev\"\n}\n\nvariable \"aws_region\" {\n  description = \"Input variable aws_region.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n",
+    "main.tf": "provider \"aws\" {\n  region = var.aws_region\n}\n\nresource \"aws_route53_zone\" \"this\" {\n  name = \"example.com\"\n}\n\nresource \"aws_acm_certificate\" \"this\" {\n  domain_name       = \"example.com\"\n  validation_method = \"DNS\"\n}\n\nresource \"aws_cloudfront_distribution\" \"this\" {\n  # TODO - Complete the aws_cloudfront_distribution resource.\n  # Add the arguments and nested blocks required for aws_cloudfront_distribution.\n}\n\nresource \"aws_route53_record\" \"this\" {\n  name    = \"www.example.com\"\n  type    = \"A\"\n  zone_id = aws_route53_zone.this.zone_id\n  alias {\n    name    = aws_cloudfront_distribution.this.domain_name\n    zone_id = aws_cloudfront_distribution.this.hosted_zone_id\n  }\n}\n",
+    "outputs.tf": "output \"zone_id\" {\n  value = aws_route53_zone.this.zone_id\n}\n\noutput \"certificate_arn\" {\n  value = aws_acm_certificate.this.arn\n}\n"
+  },
+  "focus": {
+    "file": "main.tf",
+    "kind": "resource",
+    "title": "Complete the aws_cloudfront_distribution resource",
+    "todo": "Add the arguments and nested blocks required for aws_cloudfront_distribution."
+  },
+  "hints": {
+    "why": "DNS is the public name of the system. Managing records in Terraform keeps the name, certificate and endpoint changes together.",
+    "what": "Complete the marked TODO in `main.tf`. Add the arguments and nested blocks required for aws_cloudfront_distribution. Use the visible constraints as your checklist before you run the tests.",
+    "when": "Use Route 53 when a service needs a stable hostname or when DNS changes should be reviewed with the rest of the stack.",
+    "how": "Open `main.tf` and work inside the single TODO region. Change one requirement at a time: add the named block, argument or reference, then run the tests. When a check fails, match its wording to the constraints and fix only the block it names."
+  },
+  "allowlist": [
+    "aws_route53_zone",
+    "aws_acm_certificate",
+    "aws_cloudfront_distribution",
+    "aws_route53_record"
+  ],
+  "apply_sandbox": false,
+  "test_count": 13,
+  "test_manifest": [
+    {
+      "id": "provider",
+      "title": "Required provider aws",
+      "category": "Providers",
+      "weight": 5
+    },
+    {
+      "id": "region",
+      "title": "aws.region -> var.aws_region",
+      "category": "Providers",
+      "weight": 4
+    },
+    {
+      "id": "zone",
+      "title": "aws_route53_zone is provisioned",
+      "category": "Resources",
+      "weight": 8
+    },
+    {
+      "id": "acm",
+      "title": "aws_acm_certificate is provisioned",
+      "category": "Resources",
+      "weight": 8
+    },
+    {
+      "id": "dns",
+      "title": "aws_acm_certificate.validation_method = \"DNS\"",
+      "category": "Resources",
+      "weight": 6
+    },
+    {
+      "id": "cf",
+      "title": "aws_cloudfront_distribution is provisioned",
+      "category": "Resources",
+      "weight": 10
+    },
+    {
+      "id": "enabled",
+      "title": "aws_cloudfront_distribution.enabled = true",
+      "category": "Resources",
+      "weight": 6
+    },
+    {
+      "id": "cert",
+      "title": "CloudFront references the certificate",
+      "category": "Security",
+      "weight": 8
+    },
+    {
+      "id": "record",
+      "title": "aws_route53_record is provisioned",
+      "category": "Resources",
+      "weight": 8
+    },
+    {
+      "id": "record-zone",
+      "title": "aws_route53_record.zone_id -> aws_route53_zone.",
+      "category": "Resources",
+      "weight": 6
+    },
+    {
+      "id": "out-zone",
+      "title": "Output zone_id",
+      "category": "Outputs",
+      "weight": 5
+    },
+    {
+      "id": "out-cert",
+      "title": "Output certificate_arn",
+      "category": "Outputs",
+      "weight": 5
+    }
+  ]
+}

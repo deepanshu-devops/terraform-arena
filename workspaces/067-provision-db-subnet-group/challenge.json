@@ -1,0 +1,158 @@
+{
+  "id": "provision-db-subnet-group",
+  "number": 67,
+  "title": "Provision RDS Subnet Group",
+  "difficulty": "Easy",
+  "points": 50,
+  "level": 2,
+  "level_name": "Level 2 - First Resources",
+  "tags": [
+    "aws",
+    "rds",
+    "provisioning"
+  ],
+  "scenario": "Your platform team needs RDS Subnet Group for database placement across private subnets. Write a reusable Terraform configuration that provisions it, drives every input through variables, applies the standard tags, and exports the operational identifiers.",
+  "constraints": [
+    "Provider: aws (region from var.aws_region).",
+    "Create exactly one resource of type aws_db_subnet_group.",
+    "All configurable values must come from variables declared in variables.tf.",
+    "No hardcoded AWS credentials.",
+    "Code must pass terraform fmt conventions (2-space indents, trailing newline, no tabs).",
+    "Tag the resource with Project, Environment and ManagedBy = \"terraform\".",
+    "Expose outputs: subnet_group_name."
+  ],
+  "variables": [
+    {
+      "name": "subnet_group_name",
+      "type": "string",
+      "validation": false,
+      "default": "app-db-subnets"
+    },
+    {
+      "name": "subnet_ids",
+      "type": "list(string)",
+      "validation": false
+    },
+    {
+      "name": "environment",
+      "type": "string",
+      "validation": false,
+      "default": "dev"
+    },
+    {
+      "name": "project_name",
+      "type": "string",
+      "validation": false,
+      "default": "terraform-practice"
+    },
+    {
+      "name": "aws_region",
+      "type": "string",
+      "validation": false,
+      "default": "us-east-1"
+    }
+  ],
+  "expected_resources": [
+    "aws_db_subnet_group"
+  ],
+  "expected_outputs": [
+    "subnet_group_name"
+  ],
+  "starter": {
+    "versions.tf": "terraform {\n  required_version = \">= 1.5.0\"\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n  }\n}\n",
+    "variables.tf": "variable \"subnet_group_name\" {\n  description = \"Input variable subnet_group_name.\"\n  type        = string\n  default     = \"app-db-subnets\"\n}\n\nvariable \"subnet_ids\" {\n  description = \"Input variable subnet_ids.\"\n  type        = list(string)\n}\n\nvariable \"environment\" {\n  description = \"Input variable environment.\"\n  type        = string\n  default     = \"dev\"\n}\n\nvariable \"project_name\" {\n  description = \"Input variable project_name.\"\n  type        = string\n  default     = \"terraform-practice\"\n}\n\nvariable \"aws_region\" {\n  description = \"Input variable aws_region.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n",
+    "main.tf": "provider \"aws\" {\n  region = var.aws_region\n}\n\nresource \"aws_db_subnet_group\" \"this\" {\n  # TODO - Complete the aws_db_subnet_group resource.\n  # Add the arguments and nested blocks required for aws_db_subnet_group.\n}\n",
+    "outputs.tf": "output \"subnet_group_name\" {\n  value = aws_db_subnet_group.this.id\n}\n"
+  },
+  "focus": {
+    "file": "main.tf",
+    "kind": "resource",
+    "title": "Complete the aws_db_subnet_group resource",
+    "todo": "Add the arguments and nested blocks required for aws_db_subnet_group."
+  },
+  "hints": {
+    "why": "Managed databases carry availability, backup and network requirements. Terraform makes those choices reviewable before a database is created.",
+    "what": "Complete the marked TODO in `main.tf`. Add the arguments and nested blocks required for aws_db_subnet_group. Use the visible constraints as your checklist before you run the tests.",
+    "when": "Use a managed database service when you need backups, failover and patching handled by the provider rather than by an operator.",
+    "how": "Open `main.tf` and work inside the single TODO region. Change one requirement at a time: add the named block, argument or reference, then run the tests. When a check fails, match its wording to the constraints and fix only the block it names."
+  },
+  "allowlist": [
+    "aws_db_subnet_group"
+  ],
+  "apply_sandbox": false,
+  "test_count": 13,
+  "test_manifest": [
+    {
+      "id": "provider",
+      "title": "AWS provider + region variable",
+      "category": "Providers",
+      "weight": 5
+    },
+    {
+      "id": "region",
+      "title": "Provider region references var.aws_region",
+      "category": "Providers",
+      "weight": 4
+    },
+    {
+      "id": "res",
+      "title": "aws_db_subnet_group is provisioned",
+      "category": "Resources",
+      "weight": 14
+    },
+    {
+      "id": "a0",
+      "title": "name references var.subnet_group_name",
+      "category": "Resources",
+      "weight": 6
+    },
+    {
+      "id": "a1",
+      "title": "subnet_ids references var.subnet_ids",
+      "category": "Resources",
+      "weight": 6
+    },
+    {
+      "id": "tags",
+      "title": "Standard tags are applied",
+      "category": "Lifecycle",
+      "weight": 8
+    },
+    {
+      "id": "out-subnet_group_name",
+      "title": "Output subnet_group_name is exported",
+      "category": "Outputs",
+      "weight": 5
+    },
+    {
+      "id": "var-subnet_group_name",
+      "title": "Variable subnet_group_name is declared",
+      "category": "Variables",
+      "weight": 3
+    },
+    {
+      "id": "var-subnet_ids",
+      "title": "Variable subnet_ids is declared",
+      "category": "Variables",
+      "weight": 3
+    },
+    {
+      "id": "var-environment",
+      "title": "Variable environment is declared",
+      "category": "Variables",
+      "weight": 3
+    },
+    {
+      "id": "var-project_name",
+      "title": "Variable project_name is declared",
+      "category": "Variables",
+      "weight": 3
+    },
+    {
+      "id": "var-aws_region",
+      "title": "Variable aws_region is declared",
+      "category": "Variables",
+      "weight": 3
+    }
+  ]
+}

@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from ..catalog import load_catalog
+from ..catalog.hints import build_hints
 from ..catalog.reference import LEVEL_NAMES, canonicalize_files, mask_reference
 from ..evaluator import Challenge
 from . import asg, docker, s3, serverless, vpc
@@ -24,6 +25,15 @@ for _challenge in BUILTIN:
     _challenge.focus = FOCUS[_challenge.id]
     _challenge.starter = canonicalize_files(
         mask_reference(_challenge.reference, _challenge.focus)
+    )
+    _challenge.hints = build_hints(
+        {
+            "tags": _challenge.tags,
+            "constraints": _challenge.constraints,
+            "expected_resources": _challenge.expected_resources,
+            "hints": _challenge.hints,
+        },
+        _challenge.focus,
     )
 
 _REGISTRY: list[Challenge] | None = None

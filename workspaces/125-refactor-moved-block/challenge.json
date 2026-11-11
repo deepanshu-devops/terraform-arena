@@ -1,0 +1,62 @@
+{
+  "id": "refactor-moved-block",
+  "number": 125,
+  "title": "Refactor With a moved Block",
+  "difficulty": "Medium",
+  "points": 75,
+  "level": 5,
+  "level_name": "Level 5 - Modules & Capstones",
+  "tags": [
+    "terraform",
+    "refactor",
+    "state"
+  ],
+  "scenario": "Rename a resource address without destroying it by adding a moved block.",
+  "constraints": [
+    "Add a moved block.",
+    "from and to are set.",
+    "No resource replacement."
+  ],
+  "variables": [],
+  "expected_resources": [],
+  "expected_outputs": [],
+  "starter": {
+    "versions.tf": "terraform {\n  required_version = \">= 1.5.0\"\n}\n",
+    "main.tf": "resource \"aws_s3_bucket\" \"new\" {\n  bucket = \"app-assets\"\n}\n\nmoved {\n  # TODO - Complete the graded block.\n  # Complete this block using the challenge requirements.\n}\n"
+  },
+  "focus": {
+    "file": "main.tf",
+    "kind": "top",
+    "title": "Complete the moved block",
+    "todo": "Declare the old and new resource addresses so Terraform preserves state."
+  },
+  "hints": {
+    "why": "State is Terraform's record of what it manages. A remote, locked and encrypted backend protects that record when more than one person or automation runs Terraform.",
+    "what": "Complete the marked TODO in `main.tf`. Declare the old and new resource addresses so Terraform preserves state. Use the visible constraints as your checklist before you run the tests.",
+    "when": "Use a remote backend for any shared or production configuration. Local state is fine only for short-lived experiments.",
+    "how": "Open `main.tf` and work inside the single TODO region. Change one requirement at a time: add the named block, argument or reference, then run the tests. When a check fails, match its wording to the constraints and fix only the block it names."
+  },
+  "allowlist": [],
+  "apply_sandbox": false,
+  "test_count": 4,
+  "test_manifest": [
+    {
+      "id": "moved",
+      "title": "moved block present",
+      "category": "State",
+      "weight": 14
+    },
+    {
+      "id": "from",
+      "title": "from address set",
+      "category": "State",
+      "weight": 8
+    },
+    {
+      "id": "to",
+      "title": "to address set",
+      "category": "State",
+      "weight": 8
+    }
+  ]
+}

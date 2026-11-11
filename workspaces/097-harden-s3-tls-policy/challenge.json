@@ -1,0 +1,89 @@
+{
+  "id": "harden-s3-tls-policy",
+  "number": 97,
+  "title": "Deny S3 Requests Without TLS",
+  "difficulty": "Medium",
+  "points": 90,
+  "level": 3,
+  "level_name": "Level 3 - Real Infrastructure",
+  "tags": [
+    "aws",
+    "s3",
+    "security",
+    "iam"
+  ],
+  "scenario": "A bucket policy must deny every request that does not use TLS (aws:SecureTransport = false).",
+  "constraints": [
+    "Create an aws_s3_bucket_policy.",
+    "Deny when aws:SecureTransport is false.",
+    "No public-read ACL."
+  ],
+  "variables": [
+    {
+      "name": "bucket_name",
+      "type": "string",
+      "validation": false
+    }
+  ],
+  "expected_resources": [
+    "aws_s3_bucket",
+    "aws_s3_bucket_policy"
+  ],
+  "expected_outputs": [],
+  "starter": {
+    "versions.tf": "terraform {\n  required_version = \">= 1.5.0\"\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n  }\n}\n",
+    "variables.tf": "variable \"bucket_name\" {\n  description = \"Input variable bucket_name.\"\n  type        = string\n}\n\nvariable \"aws_region\" {\n  description = \"Input variable aws_region.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n",
+    "main.tf": "provider \"aws\" {\n  region = var.aws_region\n}\n\nresource \"aws_s3_bucket\" \"this\" {\n  bucket = \"app-assets\"\n}\n\nresource \"aws_s3_bucket_policy\" \"this\" {\n  # TODO - Complete the aws_s3_bucket_policy resource.\n  # Add the arguments and nested blocks required for aws_s3_bucket_policy.\n}\n"
+  },
+  "focus": {
+    "file": "main.tf",
+    "kind": "resource",
+    "title": "Complete the aws_s3_bucket_policy resource",
+    "todo": "Add the arguments and nested blocks required for aws_s3_bucket_policy."
+  },
+  "hints": {
+    "why": "S3 is usually the first shared service in an AWS configuration. Bucket settings, versioning, encryption and public-access blocks are common review findings.",
+    "what": "Complete the marked TODO in `main.tf`. Add the arguments and nested blocks required for aws_s3_bucket_policy. Use the visible constraints as your checklist before you run the tests.",
+    "when": "Use S3 when you need durable object storage for assets, logs, backups or static content, and lock down access from the start.",
+    "how": "Open `main.tf` and work inside the single TODO region. Change one requirement at a time: add the named block, argument or reference, then run the tests. When a check fails, match its wording to the constraints and fix only the block it names."
+  },
+  "allowlist": [
+    "aws_s3_bucket",
+    "aws_s3_bucket_policy",
+    "aws_s3_bucket_public_access_block"
+  ],
+  "apply_sandbox": false,
+  "test_count": 6,
+  "test_manifest": [
+    {
+      "id": "bucket",
+      "title": "aws_s3_bucket is provisioned",
+      "category": "Resources",
+      "weight": 10
+    },
+    {
+      "id": "policy",
+      "title": "aws_s3_bucket_policy is provisioned",
+      "category": "Security",
+      "weight": 12
+    },
+    {
+      "id": "tls",
+      "title": "Policy references aws:SecureTransport",
+      "category": "Security",
+      "weight": 10
+    },
+    {
+      "id": "deny",
+      "title": "Policy uses Deny",
+      "category": "Security",
+      "weight": 8
+    },
+    {
+      "id": "noacl",
+      "title": "No public ACL",
+      "category": "Security",
+      "weight": 6
+    }
+  ]
+}

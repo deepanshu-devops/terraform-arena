@@ -28,6 +28,7 @@ ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
 
 from app.challenges import all_challenges, get_challenge  # noqa: E402
+from app.catalog.hints import HINT_KEYS  # noqa: E402
 from app.evaluator import Challenge, evaluate  # noqa: E402
 from app.hcl import parse_files  # noqa: E402
 from app.workspace import (  # noqa: E402
@@ -315,6 +316,7 @@ def cmd_verify(args) -> int:
     parse_failures: list[tuple[str, list[dict]]] = []
     fmt_failures: list[tuple[str, list[str]]] = []
     marker_failures: list[tuple[str, str]] = []
+    hint_failures: list[tuple[str, list[str]]] = []
     crashes: list[tuple[str, str]] = []
 
     # The formatting lesson deliberately ships a badly formatted starter.
@@ -323,6 +325,9 @@ def cmd_verify(args) -> int:
     challenges = all_challenges()
     for challenge in challenges:
         cid = challenge.id
+        missing_hints = [key for key in HINT_KEYS if not (challenge.hints or {}).get(key)]
+        if missing_hints:
+            hint_failures.append((cid, missing_hints))
         try:
             if not challenge.reference:
                 marker_failures.append((cid, "missing reference"))
@@ -384,6 +389,9 @@ def cmd_verify(args) -> int:
     print(f"marker issues: {len(marker_failures)}")
     for cid, msg in marker_failures:
         print(f"  MARKER {cid}: {msg}")
+    print(f"missing hints: {len(hint_failures)}")
+    for cid, keys in hint_failures:
+        print(f"  HINT {cid}: missing {', '.join(keys)}")
     print(f"crashes: {len(crashes)}")
     for cid, tb in crashes:
         print(f"  CRASH {cid}")
@@ -395,6 +403,7 @@ def cmd_verify(args) -> int:
         + len(parse_failures)
         + len(fmt_failures)
         + len(marker_failures)
+        + len(hint_failures)
         + len(crashes)
     )
     return 0 if total == 0 else 1

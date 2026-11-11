@@ -1,0 +1,107 @@
+{
+  "id": "docker-container",
+  "number": 81,
+  "title": "Run an Nginx Container",
+  "difficulty": "Easy",
+  "points": 55,
+  "level": 2,
+  "level_name": "Level 2 - First Resources",
+  "tags": [
+    "docker",
+    "sandbox"
+  ],
+  "scenario": "Run an Nginx container that publishes port 80 on a configurable host port.",
+  "constraints": [
+    "Declare the docker provider.",
+    "Container image from var.image.",
+    "Ports block maps 80 -> var.host_port."
+  ],
+  "variables": [
+    {
+      "name": "container_name",
+      "type": "string",
+      "validation": false,
+      "default": "web"
+    },
+    {
+      "name": "image",
+      "type": "string",
+      "validation": false,
+      "default": "nginx:alpine"
+    },
+    {
+      "name": "host_port",
+      "type": "number",
+      "validation": false,
+      "default": 8080
+    }
+  ],
+  "expected_resources": [
+    "docker_container"
+  ],
+  "expected_outputs": [
+    "container_id"
+  ],
+  "starter": {
+    "versions.tf": "terraform {\n  required_version = \">= 1.5.0\"\n  required_providers {\n    docker = {\n      source  = \"kreuzwerker/docker\"\n      version = \"~> 3.0\"\n    }\n  }\n}\n",
+    "variables.tf": "variable \"container_name\" {\n  description = \"Input variable container_name.\"\n  type        = string\n  default     = \"web\"\n}\n\nvariable \"image\" {\n  description = \"Input variable image.\"\n  type        = string\n  default     = \"nginx:alpine\"\n}\n\nvariable \"host_port\" {\n  description = \"Input variable host_port.\"\n  type        = number\n  default     = 8080\n}\n",
+    "main.tf": "provider \"docker\" {\n  host = var.docker_host\n}\n\nresource \"docker_container\" \"this\" {\n  # TODO - Complete the docker_container resource.\n  # Add the arguments and nested blocks required for docker_container.\n}\n",
+    "outputs.tf": "output \"container_id\" {\n  value = docker_container.this.id\n}\n"
+  },
+  "focus": {
+    "file": "main.tf",
+    "kind": "resource",
+    "title": "Complete the docker_container resource",
+    "todo": "Add the arguments and nested blocks required for docker_container."
+  },
+  "hints": {
+    "why": "The Docker provider gives a fast local sandbox for learning Terraform's resource lifecycle without cloud credentials.",
+    "what": "Complete the marked TODO in `main.tf`. Add the arguments and nested blocks required for docker_container. Use the visible constraints as your checklist before you run the tests.",
+    "when": "Use local container resources for practice and integration tests, not as a replacement for production orchestration.",
+    "how": "Open `main.tf` and work inside the single TODO region. Change one requirement at a time: add the named block, argument or reference, then run the tests. When a check fails, match its wording to the constraints and fix only the block it names."
+  },
+  "allowlist": [
+    "docker_container",
+    "docker_image"
+  ],
+  "apply_sandbox": true,
+  "test_count": 7,
+  "test_manifest": [
+    {
+      "id": "provider",
+      "title": "Docker provider declared",
+      "category": "Providers",
+      "weight": 8
+    },
+    {
+      "id": "ctr",
+      "title": "docker_container is provisioned",
+      "category": "Resources",
+      "weight": 14
+    },
+    {
+      "id": "name",
+      "title": "docker_container.name -> var.container_name",
+      "category": "Resources",
+      "weight": 6
+    },
+    {
+      "id": "image",
+      "title": "docker_container.image -> var.image",
+      "category": "Resources",
+      "weight": 6
+    },
+    {
+      "id": "ports",
+      "title": "ports block present",
+      "category": "Resources",
+      "weight": 8
+    },
+    {
+      "id": "out",
+      "title": "Output container_id",
+      "category": "Outputs",
+      "weight": 5
+    }
+  ]
+}

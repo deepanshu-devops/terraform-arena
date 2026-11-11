@@ -1,0 +1,101 @@
+{
+  "id": "tut-for-each-first",
+  "number": 22,
+  "title": "Tutorial: Name Instances With for_each",
+  "difficulty": "Easy",
+  "points": 70,
+  "level": 0,
+  "level_name": "Level 0 - HCL Foundations",
+  "tags": [
+    "terraform",
+    "tutorial",
+    "for_each",
+    "aws",
+    "s3"
+  ],
+  "scenario": "for_each creates one instance per key in a map or set. Unlike count, each instance keeps a stable address even when the collection changes. Create one bucket for every map entry.",
+  "constraints": [
+    "Keep the aws_s3_bucket resource block.",
+    "Use for_each over var.bucket_names.",
+    "Read the bucket name from each.value.",
+    "Export a map of bucket ids."
+  ],
+  "variables": [
+    {
+      "name": "bucket_names",
+      "type": "map(string)",
+      "validation": false,
+      "default": {
+        "logs": "arena-tutorial-logs",
+        "assets": "arena-tutorial-assets"
+      }
+    },
+    {
+      "name": "aws_region",
+      "type": "string",
+      "validation": false,
+      "default": "us-east-1"
+    }
+  ],
+  "expected_resources": [
+    "aws_s3_bucket"
+  ],
+  "expected_outputs": [
+    "bucket_ids"
+  ],
+  "starter": {
+    "versions.tf": "terraform {\n  required_version = \">= 1.3.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n  }\n}\n",
+    "variables.tf": "variable \"bucket_names\" {\n  description = \"Map of logical name to bucket name.\"\n  type        = map(string)\n  default = {\n    logs   = \"arena-tutorial-logs\"\n    assets = \"arena-tutorial-assets\"\n  }\n}\n\nvariable \"aws_region\" {\n  description = \"Region for the demo resources.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n",
+    "main.tf": "provider \"aws\" {\n  region = var.aws_region\n}\n\nresource \"aws_s3_bucket\" \"this\" {\n  # TODO - Create named instances.\n  # Iterate over the map and use the current entry value as the bucket name.\n}\n",
+    "outputs.tf": "output \"bucket_ids\" {\n  value = { for name, bucket in aws_s3_bucket.this : name => bucket.id }\n}\n"
+  },
+  "focus": {
+    "file": "main.tf",
+    "kind": "resource",
+    "title": "Create named instances",
+    "todo": "Iterate over the map and use the current entry value as the bucket name."
+  },
+  "hints": {
+    "why": "for_each protects stable addresses. Adding or removing a key changes only that key's instance, while a count list can shift every later index.",
+    "what": "Complete the bucket body with a per-key iteration and a reference to the current map value. The output already shows how to reshape the resulting instances into a map.",
+    "when": "Use for_each when each instance has a meaningful key, especially when instances may be added or removed over time.",
+    "how": "Read the output expression first: it iterates with name and bucket. The resource body has the same idea but only needs one iteration argument and one value reference. Avoid indexing a list here; the input is a map."
+  },
+  "allowlist": [
+    "aws_s3_bucket"
+  ],
+  "apply_sandbox": false,
+  "test_count": 6,
+  "test_manifest": [
+    {
+      "id": "var",
+      "title": "bucket_names is declared as a map",
+      "category": "Variables",
+      "weight": 8
+    },
+    {
+      "id": "res",
+      "title": "the bucket resource exists",
+      "category": "Resources",
+      "weight": 10
+    },
+    {
+      "id": "each",
+      "title": "the resource uses per-key iteration",
+      "category": "Modularity",
+      "weight": 10
+    },
+    {
+      "id": "value",
+      "title": "each.value supplies the bucket name",
+      "category": "Modularity",
+      "weight": 10
+    },
+    {
+      "id": "out",
+      "title": "bucket_ids is exported",
+      "category": "Outputs",
+      "weight": 6
+    }
+  ]
+}
