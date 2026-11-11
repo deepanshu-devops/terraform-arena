@@ -1,0 +1,64 @@
+{
+  "id": "intro-provider-block",
+  "number": 6,
+  "title": "Provider and Version Blocks",
+  "difficulty": "Easy",
+  "points": 50,
+  "level": 0,
+  "level_name": "Level 0 - HCL Foundations",
+  "tags": [
+    "terraform",
+    "providers",
+    "versions"
+  ],
+  "scenario": "The terraform block declares required providers and versions. The provider block configures AWS. Complete the provider block so the region comes from a variable.",
+  "constraints": [
+    "Require hashicorp/aws in versions.tf.",
+    "Configure provider aws with region = var.aws_region.",
+    "Declare aws_region with a default of us-east-1."
+  ],
+  "variables": [
+    {
+      "name": "aws_region",
+      "type": "string",
+      "validation": false,
+      "default": "us-east-1"
+    }
+  ],
+  "expected_resources": [],
+  "expected_outputs": [],
+  "starter": {
+    "versions.tf": "terraform {\n  required_version = \">= 1.5.0\"\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n  }\n}\n",
+    "variables.tf": "variable \"aws_region\" {\n  description = \"AWS region.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n",
+    "main.tf": "provider \"aws\" {\n  # TODO - Complete the provider block.\n  # Set the provider region from the declared variable.\n}\n"
+  },
+  "focus": {
+    "file": "main.tf",
+    "kind": "top",
+    "title": "Complete the provider block",
+    "todo": "Set the provider region from the declared variable."
+  },
+  "allowlist": [],
+  "apply_sandbox": false,
+  "test_count": 4,
+  "test_manifest": [
+    {
+      "id": "req",
+      "title": "AWS provider is required",
+      "category": "Providers",
+      "weight": 12
+    },
+    {
+      "id": "provider",
+      "title": "provider region comes from a variable",
+      "category": "Providers",
+      "weight": 12
+    },
+    {
+      "id": "var",
+      "title": "aws_region is declared",
+      "category": "Variables",
+      "weight": 8
+    }
+  ]
+}

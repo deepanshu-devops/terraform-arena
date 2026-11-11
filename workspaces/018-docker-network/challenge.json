@@ -1,0 +1,77 @@
+{
+  "id": "docker-network",
+  "number": 18,
+  "title": "Create a Docker Network",
+  "difficulty": "Easy",
+  "points": 40,
+  "level": 2,
+  "level_name": "Level 2 - First Resources",
+  "tags": [
+    "docker",
+    "sandbox",
+    "networking"
+  ],
+  "scenario": "Create an isolated bridge network for containers.",
+  "constraints": [
+    "Declare the docker provider.",
+    "docker_network name from var.network_name.",
+    "Export network_id."
+  ],
+  "variables": [
+    {
+      "name": "network_name",
+      "type": "string",
+      "validation": false,
+      "default": "app-net"
+    }
+  ],
+  "expected_resources": [
+    "docker_network"
+  ],
+  "expected_outputs": [
+    "network_id"
+  ],
+  "starter": {
+    "versions.tf": "terraform {\n  required_version = \">= 1.5.0\"\n  required_providers {\n    docker = {\n      source  = \"kreuzwerker/docker\"\n      version = \"~> 3.0\"\n    }\n  }\n}\n",
+    "variables.tf": "variable \"network_name\" {\n  description = \"Input variable network_name.\"\n  type        = string\n  default     = \"app-net\"\n}\n",
+    "main.tf": "provider \"docker\" {\n  host = var.docker_host\n}\n\nresource \"docker_network\" \"this\" {\n  # TODO - Complete the docker_network resource.\n  # Add the arguments and nested blocks required for docker_network.\n}\n",
+    "outputs.tf": "output \"network_id\" {\n  value = docker_network.this.id\n}\n"
+  },
+  "focus": {
+    "file": "main.tf",
+    "kind": "resource",
+    "title": "Complete the docker_network resource",
+    "todo": "Add the arguments and nested blocks required for docker_network."
+  },
+  "allowlist": [
+    "docker_network"
+  ],
+  "apply_sandbox": false,
+  "test_count": 5,
+  "test_manifest": [
+    {
+      "id": "provider",
+      "title": "Docker provider declared",
+      "category": "Providers",
+      "weight": 8
+    },
+    {
+      "id": "net",
+      "title": "docker_network is provisioned",
+      "category": "Resources",
+      "weight": 14
+    },
+    {
+      "id": "name",
+      "title": "docker_network.name -> var.network_name",
+      "category": "Resources",
+      "weight": 6
+    },
+    {
+      "id": "out",
+      "title": "Output network_id",
+      "category": "Outputs",
+      "weight": 5
+    }
+  ]
+}

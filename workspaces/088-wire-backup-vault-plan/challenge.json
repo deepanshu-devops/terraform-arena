@@ -1,0 +1,128 @@
+{
+  "id": "wire-backup-vault-plan",
+  "number": 88,
+  "title": "AWS Backup Vault + Plan",
+  "difficulty": "Medium",
+  "points": 100,
+  "level": 4,
+  "level_name": "Level 4 - Composition",
+  "tags": [
+    "aws",
+    "backup",
+    "resilience"
+  ],
+  "scenario": "Create a backup vault and a nightly backup plan that targets it.",
+  "constraints": [
+    "Create aws_backup_vault.",
+    "Create aws_backup_plan with a cron rule.",
+    "Rule targets the vault."
+  ],
+  "variables": [
+    {
+      "name": "vault_name",
+      "type": "string",
+      "validation": false,
+      "default": "app-vault"
+    },
+    {
+      "name": "plan_name",
+      "type": "string",
+      "validation": false,
+      "default": "nightly-backup"
+    },
+    {
+      "name": "project_name",
+      "type": "string",
+      "validation": false,
+      "default": "terraform-practice"
+    },
+    {
+      "name": "environment",
+      "type": "string",
+      "validation": false,
+      "default": "dev"
+    },
+    {
+      "name": "aws_region",
+      "type": "string",
+      "validation": false,
+      "default": "us-east-1"
+    }
+  ],
+  "expected_resources": [
+    "aws_backup_vault",
+    "aws_backup_plan"
+  ],
+  "expected_outputs": [
+    "vault_arn",
+    "plan_arn"
+  ],
+  "starter": {
+    "versions.tf": "terraform {\n  required_version = \">= 1.5.0\"\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n  }\n}\n",
+    "variables.tf": "variable \"vault_name\" {\n  description = \"Input variable vault_name.\"\n  type        = string\n  default     = \"app-vault\"\n}\n\nvariable \"plan_name\" {\n  description = \"Input variable plan_name.\"\n  type        = string\n  default     = \"nightly-backup\"\n}\n\nvariable \"project_name\" {\n  description = \"Input variable project_name.\"\n  type        = string\n  default     = \"terraform-practice\"\n}\n\nvariable \"environment\" {\n  description = \"Input variable environment.\"\n  type        = string\n  default     = \"dev\"\n}\n\nvariable \"aws_region\" {\n  description = \"Input variable aws_region.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n",
+    "main.tf": "provider \"aws\" {\n  region = var.aws_region\n}\n\nresource \"aws_backup_vault\" \"this\" {\n  name = \"app-vault\"\n}\n\nresource \"aws_backup_plan\" \"this\" {\n  # TODO - Complete the aws_backup_plan resource.\n  # Add the arguments and nested blocks required for aws_backup_plan.\n}\n",
+    "outputs.tf": "output \"vault_arn\" {\n  value = aws_backup_vault.this.arn\n}\n\noutput \"plan_arn\" {\n  value = aws_backup_plan.this.arn\n}\n"
+  },
+  "focus": {
+    "file": "main.tf",
+    "kind": "resource",
+    "title": "Complete the aws_backup_plan resource",
+    "todo": "Add the arguments and nested blocks required for aws_backup_plan."
+  },
+  "allowlist": [
+    "aws_backup_vault",
+    "aws_backup_plan"
+  ],
+  "apply_sandbox": false,
+  "test_count": 9,
+  "test_manifest": [
+    {
+      "id": "provider",
+      "title": "Required provider aws",
+      "category": "Providers",
+      "weight": 5
+    },
+    {
+      "id": "region",
+      "title": "aws.region -> var.aws_region",
+      "category": "Providers",
+      "weight": 4
+    },
+    {
+      "id": "vault",
+      "title": "aws_backup_vault is provisioned",
+      "category": "Resources",
+      "weight": 10
+    },
+    {
+      "id": "plan",
+      "title": "aws_backup_plan is provisioned",
+      "category": "Resources",
+      "weight": 10
+    },
+    {
+      "id": "cron",
+      "title": "Nightly cron schedule",
+      "category": "Lifecycle",
+      "weight": 8
+    },
+    {
+      "id": "target",
+      "title": "Plan rule targets the vault",
+      "category": "Resources",
+      "weight": 8
+    },
+    {
+      "id": "out-vault",
+      "title": "Output vault_arn",
+      "category": "Outputs",
+      "weight": 5
+    },
+    {
+      "id": "out-plan",
+      "title": "Output plan_arn",
+      "category": "Outputs",
+      "weight": 5
+    }
+  ]
+}

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Terraform Arena</title>
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <button id="catalog-toggle" class="icon-btn catalog-toggle" type="button" aria-label="Open challenge list" aria-expanded="false" aria-controls="sidebar">&#9776;</button>
+    <div class="brand">
+      <span class="brand-mark">&lt;/&gt;</span>
+      <div>
+        <div class="brand-title">Terraform Arena</div>
+        <div class="brand-sub">117 hands-on IaC challenges, level 0 to 5</div>
+      </div>
+    </div>
+    <div class="top-stats">
+      <div class="stat"><span id="stat-solved">0</span><small>solved</small></div>
+      <div class="stat"><span id="stat-total">0</span><small>total</small></div>
+      <div class="stat"><span id="stat-avg">0</span><small>avg score</small></div>
+      <div class="stat"><span id="stat-subs">0</span><small>submissions</small></div>
+    </div>
+    <div class="top-right">
+      <span id="tf-status" class="pill pill-muted" title="Terraform CLI status">static engine</span>
+      <a class="ghost-btn" href="/docs" target="_blank" rel="noopener">API</a>
+    </div>
+  </header>
+
+  <div id="sidebar-backdrop" class="sidebar-backdrop" aria-hidden="true"></div>
+
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-head">
+        <input id="search" class="search" type="search" placeholder="Search 117 challenges..." />
+        <div class="chips" id="difficulty-chips">
+          <button class="chip active" data-diff="">All</button>
+          <button class="chip" data-diff="Easy">Easy</button>
+          <button class="chip" data-diff="Medium">Medium</button>
+          <button class="chip" data-diff="Hard">Hard</button>
+        </div>
+        <select id="level-filter" class="tag-filter" aria-label="Filter by level">
+          <option value="">All levels</option>
+        </select>
+        <select id="tag-filter" class="tag-filter" aria-label="Filter by tag">
+          <option value="">All tags</option>
+        </select>
+      </div>
+      <div id="challenge-list" class="challenge-list">
+        <div class="loading">Loading catalog...</div>
+      </div>
+    </aside>
+
+    <main class="workspace view-problem" id="workspace">
+      <div class="mobile-viewbar" id="view-switch" role="tablist" aria-label="Challenge panel">
+        <button class="view-btn active" type="button" data-view="problem" role="tab" aria-selected="true">Problem</button>
+        <button class="view-btn" type="button" data-view="code" role="tab" aria-selected="false">Code</button>
+      </div>
+      <section class="statement" id="statement">
+        <div class="empty-state">
+          <h2>Pick a challenge</h2>
+          <p>Select a challenge from the left to see the scenario and start coding.</p>
+        </div>
+      </section>
+
+      <section class="editor-panel">
+        <div class="editor-toolbar">
+          <div class="tabs" id="file-tabs"></div>
+          <div class="editor-tools">
+            <span id="save-state" class="save-state">autosaved locally</span>
+            <button id="reset-files" class="ghost-btn" title="Restore starter files">Reset</button>
+            <button id="submit-btn" class="primary-btn" disabled>Run tests</button>
+          </div>
+        </div>
+        <div class="editor-shell">
+          <div class="gutter" id="gutter">1</div>
+          <div class="code-wrap">
+            <pre class="highlight" id="highlight" aria-hidden="true"></pre>
+            <textarea id="code" class="code" spellcheck="false" autocomplete="off" autocapitalize="off"></textarea>
+          </div>
+        </div>
+        <div class="editor-footer">
+          <span id="cursor-pos">Ln 1, Col 1</span>
+          <span id="file-name">main.tf</span>
+          <span>Static analysis · no cloud calls</span>
+        </div>
+      </section>
+    </main>
+
+    <aside class="results-drawer" id="results-drawer" aria-hidden="true">
+      <div class="results-head">
+        <div>
+          <div id="verdict" class="verdict">-</div>
+          <div id="verdict-sub" class="verdict-sub"></div>
+        </div>
+        <button id="close-results" class="ghost-btn">Close</button>
+      </div>
+      <div class="results-tabs" id="results-tabs">
+        <button class="rtab active" data-rtab="tests">Tests</button>
+        <button class="rtab" data-rtab="security">Security</button>
+        <button class="rtab" data-rtab="formatting">Formatting</button>
+        <button class="rtab" data-rtab="variables">Variables</button>
+        <button class="rtab" data-rtab="drift">Drift</button>
+      </div>
+      <div class="results-body" id="results-body">
+        <div class="empty-state small">Run the tests to see the structured verdict.</div>
+      </div>
+    </aside>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

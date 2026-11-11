@@ -1,0 +1,141 @@
+{
+  "id": "provision-acm-certificate",
+  "number": 21,
+  "title": "Provision ACM Certificate",
+  "difficulty": "Easy",
+  "points": 50,
+  "level": 2,
+  "level_name": "Level 2 - First Resources",
+  "tags": [
+    "aws",
+    "acm",
+    "provisioning"
+  ],
+  "scenario": "Your platform team needs ACM Certificate for a DNS-validated TLS certificate. Write a reusable Terraform configuration that provisions it, drives every input through variables, applies the standard tags, and exports the operational identifiers.",
+  "constraints": [
+    "Provider: aws (region from var.aws_region).",
+    "Create exactly one resource of type aws_acm_certificate.",
+    "All configurable values must come from variables declared in variables.tf.",
+    "No hardcoded AWS credentials.",
+    "Code must pass terraform fmt conventions (2-space indents, trailing newline, no tabs).",
+    "Tag the resource with Project, Environment and ManagedBy = \"terraform\".",
+    "Expose outputs: certificate_arn."
+  ],
+  "variables": [
+    {
+      "name": "domain_name",
+      "type": "string",
+      "validation": false,
+      "default": "example.com"
+    },
+    {
+      "name": "environment",
+      "type": "string",
+      "validation": false,
+      "default": "dev"
+    },
+    {
+      "name": "project_name",
+      "type": "string",
+      "validation": false,
+      "default": "terraform-practice"
+    },
+    {
+      "name": "aws_region",
+      "type": "string",
+      "validation": false,
+      "default": "us-east-1"
+    }
+  ],
+  "expected_resources": [
+    "aws_acm_certificate"
+  ],
+  "expected_outputs": [
+    "certificate_arn"
+  ],
+  "starter": {
+    "versions.tf": "terraform {\n  required_version = \">= 1.5.0\"\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n  }\n}\n",
+    "variables.tf": "variable \"domain_name\" {\n  description = \"Input variable domain_name.\"\n  type        = string\n  default     = \"example.com\"\n}\n\nvariable \"environment\" {\n  description = \"Input variable environment.\"\n  type        = string\n  default     = \"dev\"\n}\n\nvariable \"project_name\" {\n  description = \"Input variable project_name.\"\n  type        = string\n  default     = \"terraform-practice\"\n}\n\nvariable \"aws_region\" {\n  description = \"Input variable aws_region.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n",
+    "main.tf": "provider \"aws\" {\n  region = var.aws_region\n}\n\nresource \"aws_acm_certificate\" \"this\" {\n  # TODO - Complete the aws_acm_certificate resource.\n  # Add the arguments and nested blocks required for aws_acm_certificate.\n}\n",
+    "outputs.tf": "output \"certificate_arn\" {\n  value = aws_acm_certificate.this.arn\n}\n"
+  },
+  "focus": {
+    "file": "main.tf",
+    "kind": "resource",
+    "title": "Complete the aws_acm_certificate resource",
+    "todo": "Add the arguments and nested blocks required for aws_acm_certificate."
+  },
+  "allowlist": [
+    "aws_acm_certificate"
+  ],
+  "apply_sandbox": false,
+  "test_count": 12,
+  "test_manifest": [
+    {
+      "id": "provider",
+      "title": "AWS provider + region variable",
+      "category": "Providers",
+      "weight": 5
+    },
+    {
+      "id": "region",
+      "title": "Provider region references var.aws_region",
+      "category": "Providers",
+      "weight": 4
+    },
+    {
+      "id": "res",
+      "title": "aws_acm_certificate is provisioned",
+      "category": "Resources",
+      "weight": 14
+    },
+    {
+      "id": "a0",
+      "title": "domain_name references var.domain_name",
+      "category": "Resources",
+      "weight": 6
+    },
+    {
+      "id": "a1",
+      "title": "validation_method is set correctly",
+      "category": "Resources",
+      "weight": 6
+    },
+    {
+      "id": "tags",
+      "title": "Standard tags are applied",
+      "category": "Lifecycle",
+      "weight": 8
+    },
+    {
+      "id": "out-certificate_arn",
+      "title": "Output certificate_arn is exported",
+      "category": "Outputs",
+      "weight": 5
+    },
+    {
+      "id": "var-domain_name",
+      "title": "Variable domain_name is declared",
+      "category": "Variables",
+      "weight": 3
+    },
+    {
+      "id": "var-environment",
+      "title": "Variable environment is declared",
+      "category": "Variables",
+      "weight": 3
+    },
+    {
+      "id": "var-project_name",
+      "title": "Variable project_name is declared",
+      "category": "Variables",
+      "weight": 3
+    },
+    {
+      "id": "var-aws_region",
+      "title": "Variable aws_region is declared",
+      "category": "Variables",
+      "weight": 3
+    }
+  ]
+}

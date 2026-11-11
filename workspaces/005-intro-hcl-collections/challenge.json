@@ -1,0 +1,66 @@
+{
+  "id": "intro-hcl-collections",
+  "number": 5,
+  "title": "Lists and Maps",
+  "difficulty": "Easy",
+  "points": 50,
+  "level": 0,
+  "level_name": "Level 0 - HCL Foundations",
+  "tags": [
+    "terraform",
+    "hcl",
+    "collections"
+  ],
+  "scenario": "Lists and maps are first-class HCL values. Define a list of subnet CIDRs and a map of tags in a locals block.",
+  "constraints": [
+    "Define a subnets list with two CIDR strings.",
+    "Define a tags map with Project and Environment keys."
+  ],
+  "variables": [],
+  "expected_resources": [],
+  "expected_outputs": [],
+  "starter": {
+    "main.tf": "locals {\n  # TODO - Complete the collections.\n  # Add the subnet list and the tag map.\n}\n"
+  },
+  "focus": {
+    "file": "main.tf",
+    "kind": "top",
+    "title": "Complete the collections",
+    "todo": "Add the subnet list and the tag map."
+  },
+  "allowlist": [],
+  "apply_sandbox": false,
+  "test_count": 6,
+  "test_manifest": [
+    {
+      "id": "subnets",
+      "title": "subnets list exists",
+      "category": "Syntax",
+      "weight": 10
+    },
+    {
+      "id": "cidr",
+      "title": "first CIDR is present",
+      "category": "Syntax",
+      "weight": 9
+    },
+    {
+      "id": "tags",
+      "title": "tags map exists",
+      "category": "Syntax",
+      "weight": 10
+    },
+    {
+      "id": "project",
+      "title": "Project key is present",
+      "category": "Syntax",
+      "weight": 8
+    },
+    {
+      "id": "environment",
+      "title": "Environment key is present",
+      "category": "Syntax",
+      "weight": 8
+    }
+  ]
+}

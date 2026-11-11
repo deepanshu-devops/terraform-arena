@@ -1,0 +1,16 @@
+variable "instance_type" {
+  description = "Input variable instance_type."
+  type        = string
+  default     = "t2.micro"
+}
+
+variable "subnet_id" {
+  description = "Input variable subnet_id."
+  type        = string
+}
+
+variable "aws_region" {
+  description = "Input variable aws_region."
+  type        = string
+  default     = "us-east-1"
+}

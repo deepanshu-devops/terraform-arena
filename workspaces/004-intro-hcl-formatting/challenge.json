@@ -1,0 +1,49 @@
+{
+  "id": "intro-hcl-formatting",
+  "number": 4,
+  "title": "Format HCL by Hand",
+  "difficulty": "Easy",
+  "points": 50,
+  "level": 0,
+  "level_name": "Level 0 - HCL Foundations",
+  "tags": [
+    "terraform",
+    "hcl",
+    "formatting"
+  ],
+  "scenario": "Terraform style is two spaces per level, no tabs, and a final newline. The block below works but is badly formatted. Fix it, or run terraform fmt, so the formatting check passes.",
+  "constraints": [
+    "Use two-space indentation.",
+    "Replace tabs with spaces.",
+    "Keep app_name defined as terraform-arena."
+  ],
+  "variables": [],
+  "expected_resources": [],
+  "expected_outputs": [],
+  "starter": {
+    "main.tf": "locals {\n\tapp_name = \"terraform-arena\"\n  }\n"
+  },
+  "focus": {
+    "file": "main.tf",
+    "kind": "top",
+    "title": "Fix the formatting",
+    "todo": "Replace the tab and correct the indentation."
+  },
+  "allowlist": [],
+  "apply_sandbox": false,
+  "test_count": 3,
+  "test_manifest": [
+    {
+      "id": "fmt",
+      "title": "Formatting is clean",
+      "category": "Formatting",
+      "weight": 20
+    },
+    {
+      "id": "app",
+      "title": "app_name is still defined",
+      "category": "Syntax",
+      "weight": 8
+    }
+  ]
+}

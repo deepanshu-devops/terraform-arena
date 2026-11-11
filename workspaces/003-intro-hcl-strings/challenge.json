@@ -1,0 +1,64 @@
+{
+  "id": "intro-hcl-strings",
+  "number": 3,
+  "title": "Strings and Interpolation",
+  "difficulty": "Easy",
+  "points": 45,
+  "level": 0,
+  "level_name": "Level 0 - HCL Foundations",
+  "tags": [
+    "terraform",
+    "hcl",
+    "strings"
+  ],
+  "scenario": "Strings are written in double quotes. Interpolation embeds an expression inside a string. Complete the greeting output.",
+  "constraints": [
+    "Create output \"greeting\".",
+    "The value must be \"Hello, ${var.app_name}!\"."
+  ],
+  "variables": [
+    {
+      "name": "app_name",
+      "type": "string",
+      "validation": false,
+      "default": "terraform-arena"
+    }
+  ],
+  "expected_resources": [],
+  "expected_outputs": [
+    "greeting"
+  ],
+  "starter": {
+    "variables.tf": "variable \"app_name\" {\n  description = \"Application name.\"\n  type        = string\n  default     = \"terraform-arena\"\n}\n",
+    "outputs.tf": "output \"greeting\" {\n  # TODO - Complete the greeting output.\n  # Write a quoted string that embeds the variable.\n}\n"
+  },
+  "focus": {
+    "file": "outputs.tf",
+    "kind": "top",
+    "title": "Complete the greeting output",
+    "todo": "Write a quoted string that embeds the variable."
+  },
+  "allowlist": [],
+  "apply_sandbox": false,
+  "test_count": 4,
+  "test_manifest": [
+    {
+      "id": "out",
+      "title": "greeting output exists",
+      "category": "Outputs",
+      "weight": 12
+    },
+    {
+      "id": "interp",
+      "title": "the value uses interpolation",
+      "category": "Syntax",
+      "weight": 12
+    },
+    {
+      "id": "hello",
+      "title": "the value starts with Hello",
+      "category": "Syntax",
+      "weight": 8
+    }
+  ]
+}

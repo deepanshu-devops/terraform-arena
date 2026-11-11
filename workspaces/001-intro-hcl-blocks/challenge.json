@@ -1,0 +1,55 @@
+{
+  "id": "intro-hcl-blocks",
+  "number": 1,
+  "title": "Your First HCL Block",
+  "difficulty": "Easy",
+  "points": 40,
+  "level": 0,
+  "level_name": "Level 0 - HCL Foundations",
+  "tags": [
+    "terraform",
+    "hcl",
+    "syntax"
+  ],
+  "scenario": "HCL is built from blocks. A block has a type (here locals), no labels, and a body of arguments. Complete the locals block so the configuration records the application name.",
+  "constraints": [
+    "Use a locals block.",
+    "Define app_name with the value \"terraform-arena\".",
+    "Keep the surrounding file valid HCL."
+  ],
+  "variables": [],
+  "expected_resources": [],
+  "expected_outputs": [],
+  "starter": {
+    "main.tf": "locals {\n  # TODO - Complete the graded block.\n  # Complete this block using the challenge requirements.\n}\n"
+  },
+  "focus": {
+    "file": "main.tf",
+    "kind": "top",
+    "title": "Complete the locals block",
+    "todo": "Add the application name argument inside the block."
+  },
+  "allowlist": [],
+  "apply_sandbox": false,
+  "test_count": 4,
+  "test_manifest": [
+    {
+      "id": "locals",
+      "title": "locals block exists",
+      "category": "Syntax",
+      "weight": 10
+    },
+    {
+      "id": "app",
+      "title": "app_name is defined",
+      "category": "Syntax",
+      "weight": 10
+    },
+    {
+      "id": "value",
+      "title": "app_name uses the requested value",
+      "category": "Syntax",
+      "weight": 10
+    }
+  ]
+}

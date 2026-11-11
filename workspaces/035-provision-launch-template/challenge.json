@@ -1,0 +1,158 @@
+{
+  "id": "provision-launch-template",
+  "number": 35,
+  "title": "Provision EC2 Launch Template",
+  "difficulty": "Easy",
+  "points": 50,
+  "level": 2,
+  "level_name": "Level 2 - First Resources",
+  "tags": [
+    "aws",
+    "ec2",
+    "provisioning"
+  ],
+  "scenario": "Your platform team needs EC2 Launch Template for a reusable, hardened instance blueprint. Write a reusable Terraform configuration that provisions it, drives every input through variables, applies the standard tags, and exports the operational identifiers.",
+  "constraints": [
+    "Provider: aws (region from var.aws_region).",
+    "Create exactly one resource of type aws_launch_template.",
+    "All configurable values must come from variables declared in variables.tf.",
+    "No hardcoded AWS credentials.",
+    "Code must pass terraform fmt conventions (2-space indents, trailing newline, no tabs).",
+    "Tag the resource with Project, Environment and ManagedBy = \"terraform\".",
+    "Expose outputs: launch_template_id."
+  ],
+  "variables": [
+    {
+      "name": "ami_id",
+      "type": "string",
+      "validation": false
+    },
+    {
+      "name": "instance_type",
+      "type": "string",
+      "validation": false,
+      "default": "t2.micro"
+    },
+    {
+      "name": "environment",
+      "type": "string",
+      "validation": false,
+      "default": "dev"
+    },
+    {
+      "name": "project_name",
+      "type": "string",
+      "validation": false,
+      "default": "terraform-practice"
+    },
+    {
+      "name": "aws_region",
+      "type": "string",
+      "validation": false,
+      "default": "us-east-1"
+    }
+  ],
+  "expected_resources": [
+    "aws_launch_template"
+  ],
+  "expected_outputs": [
+    "launch_template_id"
+  ],
+  "starter": {
+    "versions.tf": "terraform {\n  required_version = \">= 1.5.0\"\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n  }\n}\n",
+    "variables.tf": "variable \"ami_id\" {\n  description = \"Input variable ami_id.\"\n  type        = string\n}\n\nvariable \"instance_type\" {\n  description = \"Input variable instance_type.\"\n  type        = string\n  default     = \"t2.micro\"\n}\n\nvariable \"environment\" {\n  description = \"Input variable environment.\"\n  type        = string\n  default     = \"dev\"\n}\n\nvariable \"project_name\" {\n  description = \"Input variable project_name.\"\n  type        = string\n  default     = \"terraform-practice\"\n}\n\nvariable \"aws_region\" {\n  description = \"Input variable aws_region.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n",
+    "main.tf": "provider \"aws\" {\n  region = var.aws_region\n}\n\nresource \"aws_launch_template\" \"this\" {\n  # TODO - Complete the aws_launch_template resource.\n  # Add the arguments and nested blocks required for aws_launch_template.\n}\n",
+    "outputs.tf": "output \"launch_template_id\" {\n  value = aws_launch_template.this.id\n}\n"
+  },
+  "focus": {
+    "file": "main.tf",
+    "kind": "resource",
+    "title": "Complete the aws_launch_template resource",
+    "todo": "Add the arguments and nested blocks required for aws_launch_template."
+  },
+  "allowlist": [
+    "aws_launch_template"
+  ],
+  "apply_sandbox": false,
+  "test_count": 14,
+  "test_manifest": [
+    {
+      "id": "provider",
+      "title": "AWS provider + region variable",
+      "category": "Providers",
+      "weight": 5
+    },
+    {
+      "id": "region",
+      "title": "Provider region references var.aws_region",
+      "category": "Providers",
+      "weight": 4
+    },
+    {
+      "id": "res",
+      "title": "aws_launch_template is provisioned",
+      "category": "Resources",
+      "weight": 14
+    },
+    {
+      "id": "a0",
+      "title": "image_id references var.ami_id",
+      "category": "Resources",
+      "weight": 6
+    },
+    {
+      "id": "a1",
+      "title": "instance_type references var.instance_type",
+      "category": "Resources",
+      "weight": 6
+    },
+    {
+      "id": "imds",
+      "title": "IMDSv2 enforced",
+      "category": "Security",
+      "weight": 10
+    },
+    {
+      "id": "tags",
+      "title": "Standard tags are applied",
+      "category": "Lifecycle",
+      "weight": 8
+    },
+    {
+      "id": "out-launch_template_id",
+      "title": "Output launch_template_id is exported",
+      "category": "Outputs",
+      "weight": 5
+    },
+    {
+      "id": "var-ami_id",
+      "title": "Variable ami_id is declared",
+      "category": "Variables",
+      "weight": 3
+    },
+    {
+      "id": "var-instance_type",
+      "title": "Variable instance_type is declared",
+      "category": "Variables",
+      "weight": 3
+    },
+    {
+      "id": "var-environment",
+      "title": "Variable environment is declared",
+      "category": "Variables",
+      "weight": 3
+    },
+    {
+      "id": "var-project_name",
+      "title": "Variable project_name is declared",
+      "category": "Variables",
+      "weight": 3
+    },
+    {
+      "id": "var-aws_region",
+      "title": "Variable aws_region is declared",
+      "category": "Variables",
+      "weight": 3
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+"""Terraform Arena application package."""

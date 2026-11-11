@@ -1,0 +1,83 @@
+{
+  "id": "intro-file-layout",
+  "number": 7,
+  "title": "Split a Configuration Across Files",
+  "difficulty": "Easy",
+  "points": 55,
+  "level": 0,
+  "level_name": "Level 0 - HCL Foundations",
+  "tags": [
+    "terraform",
+    "files",
+    "layout"
+  ],
+  "scenario": "Terraform reads every .tf file in a directory as one configuration. The versions, variables and outputs files are complete; finish the resource in main.tf.",
+  "constraints": [
+    "Keep the provider and versions in versions.tf.",
+    "Use var.app_name for the bucket name.",
+    "bucket_id must reference the bucket."
+  ],
+  "variables": [
+    {
+      "name": "app_name",
+      "type": "string",
+      "validation": false,
+      "default": "terraform-arena"
+    },
+    {
+      "name": "aws_region",
+      "type": "string",
+      "validation": false,
+      "default": "us-east-1"
+    }
+  ],
+  "expected_resources": [
+    "aws_s3_bucket"
+  ],
+  "expected_outputs": [
+    "bucket_id"
+  ],
+  "starter": {
+    "versions.tf": "terraform {\n  required_version = \">= 1.5.0\"\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n  }\n}\n",
+    "variables.tf": "variable \"app_name\" {\n  description = \"Application name.\"\n  type        = string\n  default     = \"terraform-arena\"\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n",
+    "main.tf": "provider \"aws\" {\n  region = var.aws_region\n}\n\nresource \"aws_s3_bucket\" \"this\" {\n  # TODO - Complete the bucket resource.\n  # Set the bucket argument from the input variable.\n}\n",
+    "outputs.tf": "output \"bucket_id\" {\n  value = aws_s3_bucket.this.id\n}\n"
+  },
+  "focus": {
+    "file": "main.tf",
+    "kind": "resource",
+    "title": "Complete the bucket resource",
+    "todo": "Set the bucket argument from the input variable."
+  },
+  "allowlist": [
+    "aws_s3_bucket"
+  ],
+  "apply_sandbox": false,
+  "test_count": 5,
+  "test_manifest": [
+    {
+      "id": "var",
+      "title": "app_name is declared",
+      "category": "Variables",
+      "weight": 8
+    },
+    {
+      "id": "bucket",
+      "title": "bucket is provisioned",
+      "category": "Resources",
+      "weight": 10
+    },
+    {
+      "id": "name",
+      "title": "bucket name comes from the variable",
+      "category": "Resources",
+      "weight": 12
+    },
+    {
+      "id": "out",
+      "title": "bucket_id output",
+      "category": "Outputs",
+      "weight": 8
+    }
+  ]
+}

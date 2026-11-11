@@ -1,0 +1,89 @@
+{
+  "id": "lang-functions-merge",
+  "number": 9,
+  "title": "Compose Tags With merge()",
+  "difficulty": "Easy",
+  "points": 55,
+  "level": 1,
+  "level_name": "Level 1 - Terraform Language",
+  "tags": [
+    "terraform",
+    "functions",
+    "tags"
+  ],
+  "scenario": "Use merge() to combine a shared tag map with resource-specific tags.",
+  "constraints": [
+    "Use merge().",
+    "Keep Project, Environment, ManagedBy in the shared map.",
+    "Provision an S3 bucket."
+  ],
+  "variables": [
+    {
+      "name": "project_name",
+      "type": "string",
+      "validation": false,
+      "default": "terraform-practice"
+    },
+    {
+      "name": "environment",
+      "type": "string",
+      "validation": false,
+      "default": "dev"
+    }
+  ],
+  "expected_resources": [
+    "aws_s3_bucket"
+  ],
+  "expected_outputs": [
+    "bucket_id"
+  ],
+  "starter": {
+    "versions.tf": "terraform {\n  required_version = \">= 1.5.0\"\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n  }\n}\n",
+    "variables.tf": "variable \"project_name\" {\n  description = \"Input variable project_name.\"\n  type        = string\n  default     = \"terraform-practice\"\n}\n\nvariable \"environment\" {\n  description = \"Input variable environment.\"\n  type        = string\n  default     = \"dev\"\n}\n\nvariable \"aws_region\" {\n  description = \"Input variable aws_region.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n",
+    "main.tf": "provider \"aws\" {\n  region = var.aws_region\n}\n\nlocals {\n  # TODO - Complete the graded block.\n  # Complete this block using the challenge requirements.\n}\n\nresource \"aws_s3_bucket\" \"this\" {\n  bucket = \"app-assets\"\n  tags   = local.common_tags\n}\n",
+    "outputs.tf": "output \"bucket_id\" {\n  value = aws_s3_bucket.this.id\n}\n"
+  },
+  "focus": {
+    "file": "main.tf",
+    "kind": "top",
+    "title": "Complete the locals block",
+    "todo": "Build local.common_tags with merge() and reuse it on the bucket."
+  },
+  "allowlist": [
+    "aws_s3_bucket"
+  ],
+  "apply_sandbox": false,
+  "test_count": 6,
+  "test_manifest": [
+    {
+      "id": "bucket",
+      "title": "aws_s3_bucket is provisioned",
+      "category": "Resources",
+      "weight": 12
+    },
+    {
+      "id": "merge",
+      "title": "merge() is used",
+      "category": "Modularity",
+      "weight": 10
+    },
+    {
+      "id": "locals",
+      "title": "Shared tags live in locals",
+      "category": "Modularity",
+      "weight": 6
+    },
+    {
+      "id": "tags",
+      "title": "Standard tags applied",
+      "category": "Lifecycle",
+      "weight": 8
+    },
+    {
+      "id": "out",
+      "title": "Output bucket_id",
+      "category": "Outputs",
+      "weight": 5
+    }
+  ]
+}

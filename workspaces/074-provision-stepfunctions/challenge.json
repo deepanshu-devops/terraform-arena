@@ -1,0 +1,158 @@
+{
+  "id": "provision-stepfunctions",
+  "number": 74,
+  "title": "Provision Step Functions State Machine",
+  "difficulty": "Medium",
+  "points": 80,
+  "level": 3,
+  "level_name": "Level 3 - Real Infrastructure",
+  "tags": [
+    "aws",
+    "step-functions",
+    "provisioning"
+  ],
+  "scenario": "Your platform team needs Step Functions State Machine for an orchestration workflow for async jobs. Write a reusable Terraform configuration that provisions it, drives every input through variables, applies the standard tags, and exports the operational identifiers.",
+  "constraints": [
+    "Provider: aws (region from var.aws_region).",
+    "Create exactly one resource of type aws_stepfunctions_state_machine.",
+    "All configurable values must come from variables declared in variables.tf.",
+    "No hardcoded AWS credentials.",
+    "Code must pass terraform fmt conventions (2-space indents, trailing newline, no tabs).",
+    "Tag the resource with Project, Environment and ManagedBy = \"terraform\".",
+    "Expose outputs: state_machine_arn."
+  ],
+  "variables": [
+    {
+      "name": "state_machine_name",
+      "type": "string",
+      "validation": false,
+      "default": "order-flow"
+    },
+    {
+      "name": "role_arn",
+      "type": "string",
+      "validation": false
+    },
+    {
+      "name": "environment",
+      "type": "string",
+      "validation": false,
+      "default": "dev"
+    },
+    {
+      "name": "project_name",
+      "type": "string",
+      "validation": false,
+      "default": "terraform-practice"
+    },
+    {
+      "name": "aws_region",
+      "type": "string",
+      "validation": false,
+      "default": "us-east-1"
+    }
+  ],
+  "expected_resources": [
+    "aws_stepfunctions_state_machine"
+  ],
+  "expected_outputs": [
+    "state_machine_arn"
+  ],
+  "starter": {
+    "versions.tf": "terraform {\n  required_version = \">= 1.5.0\"\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n  }\n}\n",
+    "variables.tf": "variable \"state_machine_name\" {\n  description = \"Input variable state_machine_name.\"\n  type        = string\n  default     = \"order-flow\"\n}\n\nvariable \"role_arn\" {\n  description = \"Input variable role_arn.\"\n  type        = string\n}\n\nvariable \"environment\" {\n  description = \"Input variable environment.\"\n  type        = string\n  default     = \"dev\"\n}\n\nvariable \"project_name\" {\n  description = \"Input variable project_name.\"\n  type        = string\n  default     = \"terraform-practice\"\n}\n\nvariable \"aws_region\" {\n  description = \"Input variable aws_region.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n",
+    "main.tf": "provider \"aws\" {\n  region = var.aws_region\n}\n\nresource \"aws_stepfunctions_state_machine\" \"this\" {\n  # TODO - Complete the aws_stepfunctions_state_machine resource.\n  # Add the arguments and nested blocks required for aws_stepfunctions_state_machine.\n}\n",
+    "outputs.tf": "output \"state_machine_arn\" {\n  value = aws_stepfunctions_state_machine.this.arn\n}\n"
+  },
+  "focus": {
+    "file": "main.tf",
+    "kind": "resource",
+    "title": "Complete the aws_stepfunctions_state_machine resource",
+    "todo": "Add the arguments and nested blocks required for aws_stepfunctions_state_machine."
+  },
+  "allowlist": [
+    "aws_stepfunctions_state_machine"
+  ],
+  "apply_sandbox": false,
+  "test_count": 14,
+  "test_manifest": [
+    {
+      "id": "provider",
+      "title": "AWS provider + region variable",
+      "category": "Providers",
+      "weight": 5
+    },
+    {
+      "id": "region",
+      "title": "Provider region references var.aws_region",
+      "category": "Providers",
+      "weight": 4
+    },
+    {
+      "id": "res",
+      "title": "aws_stepfunctions_state_machine is provisioned",
+      "category": "Resources",
+      "weight": 14
+    },
+    {
+      "id": "a0",
+      "title": "name references var.state_machine_name",
+      "category": "Resources",
+      "weight": 6
+    },
+    {
+      "id": "a1",
+      "title": "role_arn references var.role_arn",
+      "category": "Resources",
+      "weight": 6
+    },
+    {
+      "id": "a2",
+      "title": "definition is present",
+      "category": "Resources",
+      "weight": 5
+    },
+    {
+      "id": "tags",
+      "title": "Standard tags are applied",
+      "category": "Lifecycle",
+      "weight": 8
+    },
+    {
+      "id": "out-state_machine_arn",
+      "title": "Output state_machine_arn is exported",
+      "category": "Outputs",
+      "weight": 5
+    },
+    {
+      "id": "var-state_machine_name",
+      "title": "Variable state_machine_name is declared",
+      "category": "Variables",
+      "weight": 3
+    },
+    {
+      "id": "var-role_arn",
+      "title": "Variable role_arn is declared",
+      "category": "Variables",
+      "weight": 3
+    },
+    {
+      "id": "var-environment",
+      "title": "Variable environment is declared",
+      "category": "Variables",
+      "weight": 3
+    },
+    {
+      "id": "var-project_name",
+      "title": "Variable project_name is declared",
+      "category": "Variables",
+      "weight": 3
+    },
+    {
+      "id": "var-aws_region",
+      "title": "Variable aws_region is declared",
+      "category": "Variables",
+      "weight": 3
+    }
+  ]
+}

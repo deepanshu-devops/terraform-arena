@@ -1,0 +1,157 @@
+{
+  "id": "provision-autoscaling-group",
+  "number": 28,
+  "title": "Provision Auto Scaling Group",
+  "difficulty": "Easy",
+  "points": 50,
+  "level": 2,
+  "level_name": "Level 2 - First Resources",
+  "tags": [
+    "aws",
+    "ec2",
+    "provisioning"
+  ],
+  "scenario": "Your platform team needs Auto Scaling Group for elastic capacity across subnets. Write a reusable Terraform configuration that provisions it, drives every input through variables, applies the standard tags, and exports the operational identifiers.",
+  "constraints": [
+    "Provider: aws (region from var.aws_region).",
+    "Create exactly one resource of type aws_autoscaling_group.",
+    "All configurable values must come from variables declared in variables.tf.",
+    "No hardcoded AWS credentials.",
+    "Code must pass terraform fmt conventions (2-space indents, trailing newline, no tabs).",
+    "Expose outputs: asg_name."
+  ],
+  "variables": [
+    {
+      "name": "asg_min",
+      "type": "number",
+      "validation": false,
+      "default": 1
+    },
+    {
+      "name": "asg_max",
+      "type": "number",
+      "validation": false,
+      "default": 2
+    },
+    {
+      "name": "asg_desired",
+      "type": "number",
+      "validation": false,
+      "default": 1
+    },
+    {
+      "name": "subnet_ids",
+      "type": "list(string)",
+      "validation": false
+    },
+    {
+      "name": "aws_region",
+      "type": "string",
+      "validation": false,
+      "default": "us-east-1"
+    }
+  ],
+  "expected_resources": [
+    "aws_autoscaling_group"
+  ],
+  "expected_outputs": [
+    "asg_name"
+  ],
+  "starter": {
+    "versions.tf": "terraform {\n  required_version = \">= 1.5.0\"\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n  }\n}\n",
+    "variables.tf": "variable \"asg_min\" {\n  description = \"Input variable asg_min.\"\n  type        = number\n  default     = 1\n}\n\nvariable \"asg_max\" {\n  description = \"Input variable asg_max.\"\n  type        = number\n  default     = 2\n}\n\nvariable \"asg_desired\" {\n  description = \"Input variable asg_desired.\"\n  type        = number\n  default     = 1\n}\n\nvariable \"subnet_ids\" {\n  description = \"Input variable subnet_ids.\"\n  type        = list(string)\n}\n\nvariable \"aws_region\" {\n  description = \"Input variable aws_region.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n",
+    "main.tf": "provider \"aws\" {\n  region = var.aws_region\n}\n\nresource \"aws_autoscaling_group\" \"this\" {\n  # TODO - Complete the aws_autoscaling_group resource.\n  # Add the arguments and nested blocks required for aws_autoscaling_group.\n}\n",
+    "outputs.tf": "output \"asg_name\" {\n  value = aws_autoscaling_group.this.id\n}\n"
+  },
+  "focus": {
+    "file": "main.tf",
+    "kind": "resource",
+    "title": "Complete the aws_autoscaling_group resource",
+    "todo": "Add the arguments and nested blocks required for aws_autoscaling_group."
+  },
+  "allowlist": [
+    "aws_autoscaling_group"
+  ],
+  "apply_sandbox": false,
+  "test_count": 14,
+  "test_manifest": [
+    {
+      "id": "provider",
+      "title": "AWS provider + region variable",
+      "category": "Providers",
+      "weight": 5
+    },
+    {
+      "id": "region",
+      "title": "Provider region references var.aws_region",
+      "category": "Providers",
+      "weight": 4
+    },
+    {
+      "id": "res",
+      "title": "aws_autoscaling_group is provisioned",
+      "category": "Resources",
+      "weight": 14
+    },
+    {
+      "id": "a0",
+      "title": "min_size references var.asg_min",
+      "category": "Resources",
+      "weight": 6
+    },
+    {
+      "id": "a1",
+      "title": "max_size references var.asg_max",
+      "category": "Resources",
+      "weight": 6
+    },
+    {
+      "id": "a2",
+      "title": "desired_capacity references var.asg_desired",
+      "category": "Resources",
+      "weight": 6
+    },
+    {
+      "id": "a3",
+      "title": "vpc_zone_identifier references var.subnet_ids",
+      "category": "Resources",
+      "weight": 6
+    },
+    {
+      "id": "out-asg_name",
+      "title": "Output asg_name is exported",
+      "category": "Outputs",
+      "weight": 5
+    },
+    {
+      "id": "var-asg_min",
+      "title": "Variable asg_min is declared",
+      "category": "Variables",
+      "weight": 3
+    },
+    {
+      "id": "var-asg_max",
+      "title": "Variable asg_max is declared",
+      "category": "Variables",
+      "weight": 3
+    },
+    {
+      "id": "var-asg_desired",
+      "title": "Variable asg_desired is declared",
+      "category": "Variables",
+      "weight": 3
+    },
+    {
+      "id": "var-subnet_ids",
+      "title": "Variable subnet_ids is declared",
+      "category": "Variables",
+      "weight": 3
+    },
+    {
+      "id": "var-aws_region",
+      "title": "Variable aws_region is declared",
+      "category": "Variables",
+      "weight": 3
+    }
+  ]
+}
