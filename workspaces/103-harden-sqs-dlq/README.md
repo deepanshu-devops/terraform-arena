@@ -19,11 +19,11 @@ Build a durable queue with a dead-letter queue for poison messages and server-si
 
 **Why it matters:** Queues decouple producers from consumers and absorb bursts. Visibility timeouts and retention settings are part of the reliability contract.
 
-**What to do:** Complete the marked TODO in `main.tf`. Add the queue name, server-side encryption and redrive policy pointing at the DLQ. Use the visible constraints as your checklist before you run the tests.
+**What to do:** Complete the marked region in `main.tf`. The work is inside `resource "aws_sqs_queue" "this"`. Add the queue name, server-side encryption and redrive policy pointing at the DLQ. Use the visible constraints as the checklist for names, values and references before you run the tests.
 
 **When to use it:** Use a queue when work can be processed asynchronously or when two components should not fail together.
 
-**How to approach it:** Open `main.tf` and work inside the single TODO region. Change one requirement at a time: add the named block, argument or reference, then run the tests. When a check fails, match its wording to the constraints and fix only the block it names.
+**How to approach it:** Open `main.tf` and work only inside `resource "aws_sqs_queue" "this"`. Use this code shape: name; sqs_managed_sse_enabled; redrive_policy. Use the already-declared references instead of hardcoded values: `var.queue_name`, `aws_sqs_queue.dlq.arn`. Keep the block header and braces, indent nested blocks by two spaces, and add one argument or nested block at a time. Run the tests after each small change so the first failure points at the next name to fix.
 
 
 ## Constraints

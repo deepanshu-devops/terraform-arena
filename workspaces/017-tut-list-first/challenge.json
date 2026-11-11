@@ -37,7 +37,7 @@
     "why": "Lists are the starting point for repetition in Terraform. Indexing teaches that positions matter; length teaches how a configuration can adapt when the list grows.",
     "what": "Add one local named environments. It should contain three strings in order, starting with dev and ending with prod. The two outputs are already wired to demonstrate indexing and length.",
     "when": "Use a list when values have a natural order or when every item is interchangeable. If each item needs a stable name, a map is usually a better fit.",
-    "how": "Write the list with square brackets and commas. Read the output blocks first to see exactly how the list is consumed, then fill in the middle so those expressions have something to reference."
+    "how": "Inside `locals`, add `environments = [...]` with three quoted strings in deployment order. The existing outputs already use `local.environments[0]` and `length(local.environments)`, so keep the local name exactly `environments`."
   },
   "allowlist": [],
   "apply_sandbox": false,

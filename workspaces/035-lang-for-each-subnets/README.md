@@ -19,11 +19,11 @@ Create subnets from a map with for_each so adding a subnet is just a map entry.
 
 **Why it matters:** for_each creates one instance per stable key. Adding or removing an entry changes only that instance, whereas an index-based list can shift every later instance when the order changes.
 
-**What to do:** Complete the marked TODO in `main.tf`. Use for_each over the subnet map and reference each.key/value. Use the visible constraints as your checklist before you run the tests.
+**What to do:** Complete the marked region in `main.tf`. The work is inside `resource "aws_subnet" "this"`. Use for_each over the subnet map and reference each.key/value. Use the visible constraints as the checklist for names, values and references before you run the tests.
 
 **When to use it:** Use for_each when each instance has a durable identity, usually from a map or a set of strings. Use count for identical instances where position is the identity.
 
-**How to approach it:** Open `main.tf` and work inside the single TODO region. Change one requirement at a time: add the named block, argument or reference, then run the tests. When a check fails, match its wording to the constraints and fix only the block it names.
+**How to approach it:** Open `main.tf` and work only inside `resource "aws_subnet" "this"`. Use this code shape: cidr_block; vpc_id; for_each; availability_zone. Use the already-declared references instead of hardcoded values: `each.value`, `var.vpc_id`, `var.subnets`, `each.key`. Keep the block header and braces, indent nested blocks by two spaces, and add one argument or nested block at a time. Run the tests after each small change so the first failure points at the next name to fix.
 
 
 ## Constraints

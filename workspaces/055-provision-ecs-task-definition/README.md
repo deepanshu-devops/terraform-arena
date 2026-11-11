@@ -19,11 +19,11 @@ Your platform team needs ECS Task Definition for a small Fargate task blueprint.
 
 **Why it matters:** Container services need a cluster, task definition and service wiring. Codifying them makes image and capacity changes reviewable.
 
-**What to do:** Complete the marked TODO in `main.tf`. Add the arguments and nested blocks required for aws_ecs_task_definition. Use the visible constraints as your checklist before you run the tests.
+**What to do:** Complete the marked region in `main.tf`. The work is inside `resource "aws_ecs_task_definition" "this"`. Add the arguments and nested blocks required for aws_ecs_task_definition. Use the visible constraints as the checklist for names, values and references before you run the tests.
 
 **When to use it:** Use ECS when you want managed container orchestration without adopting Kubernetes.
 
-**How to approach it:** Open `main.tf` and work inside the single TODO region. Change one requirement at a time: add the named block, argument or reference, then run the tests. When a check fails, match its wording to the constraints and fix only the block it names.
+**How to approach it:** Open `main.tf` and work only inside `resource "aws_ecs_task_definition" "this"`. Use this code shape: family; cpu; memory; network_mode; requires_compatibilities; container_definitions. Use the already-declared references instead of hardcoded values: `var.family`. Keep the block header and braces, indent nested blocks by two spaces, and add one argument or nested block at a time. Run the tests after each small change so the first failure points at the next name to fix.
 
 
 ## Constraints

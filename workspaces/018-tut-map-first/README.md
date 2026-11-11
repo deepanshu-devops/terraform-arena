@@ -23,7 +23,7 @@ A map gives every value a name. Instead of remembering an index, a caller looks 
 
 **When to use it:** Use a map when each item has a meaningful name, when the order should not matter, or when you want stable keys for for_each.
 
-**How to approach it:** Use curly braces for the map and separate entries with newlines or commas. Keep the keys unquoted if they are valid identifiers, and quote the values because instance sizes are strings.
+**How to approach it:** Inside `locals`, add `instance_types = { ... }` with `dev` and `prod` keys. Keep the keys unquoted because they are valid identifiers, and quote the instance-size values. The outputs already look up `local.instance_types["dev"]` and the whole map, so keep the local name `instance_types`.
 
 
 ## Constraints

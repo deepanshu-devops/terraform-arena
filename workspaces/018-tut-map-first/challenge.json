@@ -36,7 +36,7 @@
     "why": "Maps turn positional data into named data. That is what makes for_each and module inputs readable: the key documents what the value is for.",
     "what": "Create a local map named instance_types with dev and prod keys. The outputs show both a single-key lookup and the whole map.",
     "when": "Use a map when each item has a meaningful name, when the order should not matter, or when you want stable keys for for_each.",
-    "how": "Use curly braces for the map and separate entries with newlines or commas. Keep the keys unquoted if they are valid identifiers, and quote the values because instance sizes are strings."
+    "how": "Inside `locals`, add `instance_types = { ... }` with `dev` and `prod` keys. Keep the keys unquoted because they are valid identifiers, and quote the instance-size values. The outputs already look up `local.instance_types[\"dev\"]` and the whole map, so keep the local name `instance_types`."
   },
   "allowlist": [],
   "apply_sandbox": false,

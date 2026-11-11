@@ -23,7 +23,7 @@ count creates several instances of one resource block. Each instance gets an ind
 
 **When to use it:** Use count when the instances are interchangeable and the list order is stable. If each instance has a durable name, for_each is safer.
 
-**How to approach it:** Find the resource block and add the two arguments that depend on the list. One makes the number of instances, the other reads the current position. The output already shows how to collect every instance.
+**How to approach it:** In the `aws_s3_bucket` resource, add `count` using `length()` over `var.bucket_names`, then set `bucket` by indexing the same list with `count.index`. Keep the resource header unchanged; the existing output shows how all instances are collected.
 
 
 ## Constraints

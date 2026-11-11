@@ -19,11 +19,11 @@ Instantiate the same module once per environment using for_each over a map.
 
 **Why it matters:** Modules package a group of resources behind a small input/output contract. They turn copy-pasted infrastructure into something a team can version, review and reuse.
 
-**What to do:** Complete the marked TODO in `main.tf`. Instantiate the module once per environment with for_each. Use the visible constraints as your checklist before you run the tests.
+**What to do:** Complete the marked region in `main.tf`. The work is inside `module "this"`. Instantiate the module once per environment with for_each. Use the visible constraints as the checklist for names, values and references before you run the tests.
 
 **When to use it:** Use a module when the same group of resources appears more than once, when a team needs a supported interface, or when you want to test a component independently.
 
-**How to approach it:** Open `main.tf` and work inside the single TODO region. Change one requirement at a time: add the named block, argument or reference, then run the tests. When a check fails, match its wording to the constraints and fix only the block it names.
+**How to approach it:** Open `main.tf` and work only inside `module "this"`. Use this code shape: source; for_each; bucket_name; environment. Use the already-declared references instead of hardcoded values: `each.key`, `each.value`. Keep the block header and braces, indent nested blocks by two spaces, and add one argument or nested block at a time. Run the tests after each small change so the first failure points at the next name to fix.
 
 
 ## Constraints

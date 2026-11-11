@@ -19,11 +19,11 @@ Your platform team is standardising network foundations. Build a reusable VPC wi
 
 **Why it matters:** count is the simplest way to create a repeated resource from a collection. It teaches how Terraform addresses instances and why changing list order can be risky.
 
-**What to do:** Complete the marked TODO in `main.tf`. Create one subnet per CIDR, spread them across AZs, make them public and tag them. Use the visible constraints as your checklist before you run the tests.
+**What to do:** Complete the marked region in `main.tf`. The work is inside `resource "aws_subnet" "this"`. Create one subnet per CIDR, spread them across AZs, make them public and tag them. Use the visible constraints as the checklist for names, values and references before you run the tests.
 
 **When to use it:** Use count when instances are interchangeable and their position is stable. Prefer for_each when each instance has a meaningful name.
 
-**How to approach it:** Open `main.tf` and work inside the single TODO region. Change one requirement at a time: add the named block, argument or reference, then run the tests. When a check fails, match its wording to the constraints and fix only the block it names.
+**How to approach it:** Open `main.tf` and work only inside `resource "aws_subnet" "this"`. Use this code shape: count; vpc_id; cidr_block; availability_zone; map_public_ip_on_launch; tags. Use the already-declared references instead of hardcoded values: `var.public_subnet_cidrs`, `aws_vpc.this.id`, `var.availability_zones`, `var.project_name`, `var.environment`. Keep the block header and braces, indent nested blocks by two spaces, and add one argument or nested block at a time. Run the tests after each small change so the first failure points at the next name to fix.
 
 
 ## Constraints

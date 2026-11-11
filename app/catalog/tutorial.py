@@ -84,7 +84,7 @@ TUTORIAL_SPECS: list[dict] = [
             "Variables are the seam between a reusable configuration and the environment that calls it. Once a value is an input, changing environments does not require editing resource code.",
             "Complete the variable block in variables.tf. It needs a description, a string type and the default shown in the constraints. The output already shows how the caller reads it.",
             "Reach for an input variable when a value changes per environment, must be supplied securely, or should be controlled by whoever calls the configuration.",
-            "Start at the top of the variable block. Add the three arguments in the order description, type, default. Keep the quotes around the default because it is a string, then run the tests and compare the failures with the constraint list.",
+            "Start at the top of the `variable \"app_name\"` block. Add `description`, `type = string`, and `default`; keep the quotes around the default because it is a string. Run the tests and compare each failure with the constraint list.",
         ),
     },
     {
@@ -142,7 +142,7 @@ TUTORIAL_SPECS: list[dict] = [
             "Lists are the starting point for repetition in Terraform. Indexing teaches that positions matter; length teaches how a configuration can adapt when the list grows.",
             "Add one local named environments. It should contain three strings in order, starting with dev and ending with prod. The two outputs are already wired to demonstrate indexing and length.",
             "Use a list when values have a natural order or when every item is interchangeable. If each item needs a stable name, a map is usually a better fit.",
-            "Write the list with square brackets and commas. Read the output blocks first to see exactly how the list is consumed, then fill in the middle so those expressions have something to reference.",
+            "Inside `locals`, add `environments = [...]` with three quoted strings in deployment order. The existing outputs already use `local.environments[0]` and `length(local.environments)`, so keep the local name exactly `environments`.",
         ),
     },
     {
@@ -201,7 +201,7 @@ TUTORIAL_SPECS: list[dict] = [
             "Maps turn positional data into named data. That is what makes for_each and module inputs readable: the key documents what the value is for.",
             "Create a local map named instance_types with dev and prod keys. The outputs show both a single-key lookup and the whole map.",
             "Use a map when each item has a meaningful name, when the order should not matter, or when you want stable keys for for_each.",
-            "Use curly braces for the map and separate entries with newlines or commas. Keep the keys unquoted if they are valid identifiers, and quote the values because instance sizes are strings.",
+            "Inside `locals`, add `instance_types = { ... }` with `dev` and `prod` keys. Keep the keys unquoted because they are valid identifiers, and quote the instance-size values. The outputs already look up `local.instance_types[\"dev\"]` and the whole map, so keep the local name `instance_types`.",
         ),
     },
     {
@@ -268,7 +268,7 @@ TUTORIAL_SPECS: list[dict] = [
             "Functions make derived values declarative. A slug built from the same input every time is easier to trust than a value someone copied into the file.",
             "Compute two locals. The first should turn the input name into a lowercase string with spaces replaced by hyphens. The second should combine that slug with a version suffix using format().",
             "Use string functions when a value is composed from inputs and should update automatically. Avoid them when a plain literal is clearer.",
-            "Work inside out. First decide which function changes case, then which one replaces characters, then nest them. For the label, look at format() as a small template with placeholders and arguments.",
+            "Build `slug` first: nest the case-changing function outside the character-replacement function, and pass `var.app_name` as the innermost input. Build `label` with `format()`: the template comes first, followed by `local.slug` and the version suffix. Keep both local names exactly as the outputs expect.",
         ),
     },
     {
@@ -328,7 +328,7 @@ TUTORIAL_SPECS: list[dict] = [
             "for expressions are the bridge between a plain collection and the shape a resource or module needs. They remove the copy-paste step that causes drift.",
             "Create one source list and two derived locals. One derived value is a list of uppercase names; the other is a map from each name to an owner string.",
             "Use a for expression when you need to transform every item in a collection. Use a map comprehension when each result needs a key.",
-            "Write the source list first. Then read the output blocks to see the expected shapes. A list comprehension uses square brackets and a colon; a map comprehension uses braces and an arrow between key and value.",
+            "Start with `teams` as a list. Build `upper_teams` with a bracketed `for` expression over `local.teams` and apply the uppercase function to the loop variable. Build `team_owners` with a braced `for` expression that maps each team name to its owner string using an arrow. Keep the three local names the outputs expect.",
         ),
     },
     {
@@ -418,7 +418,7 @@ TUTORIAL_SPECS: list[dict] = [
             "count is the smallest step from one resource to many. It also reveals why Terraform addresses instances by index, which is useful when you later compare count with for_each.",
             "Complete the bucket resource body. It needs one argument that creates one instance per list entry and one argument that picks the matching name for the current instance.",
             "Use count when the instances are interchangeable and the list order is stable. If each instance has a durable name, for_each is safer.",
-            "Find the resource block and add the two arguments that depend on the list. One makes the number of instances, the other reads the current position. The output already shows how to collect every instance.",
+            "In the `aws_s3_bucket` resource, add `count` using `length()` over `var.bucket_names`, then set `bucket` by indexing the same list with `count.index`. Keep the resource header unchanged; the existing output shows how all instances are collected.",
         ),
     },
     {
@@ -515,7 +515,7 @@ TUTORIAL_SPECS: list[dict] = [
             "for_each protects stable addresses. Adding or removing a key changes only that key's instance, while a count list can shift every later index.",
             "Complete the bucket body with a per-key iteration and a reference to the current map value. The output already shows how to reshape the resulting instances into a map.",
             "Use for_each when each instance has a meaningful key, especially when instances may be added or removed over time.",
-            "Read the output expression first: it iterates with name and bucket. The resource body has the same idea but only needs one iteration argument and one value reference. Avoid indexing a list here; the input is a map.",
+            "Add `for_each` over the `var.bucket_names` map, then read the current item with `each.value` in the `bucket` argument. Do not use `count.index` here; the input is keyed, and the output already iterates with `name` and `bucket`.",
         ),
     },
     {
@@ -581,7 +581,7 @@ TUTORIAL_SPECS: list[dict] = [
             "Modules are how Terraform code scales beyond a single file. A module call lets you reuse a tested component without copying its resources.",
             "Complete the module block so it loads the local storage module and passes the one input that module expects.",
             "Use a module when a group of resources is reused or when a team needs a stable interface. A local source is ideal while developing the module in the same repository.",
-            "Look at the module block labels first. The source argument is a path, so it is a string. The other argument matches an input variable inside the module, so its value is an expression from the root configuration.",
+            "Inside `module \"storage\"`, set `source` to the local `./modules/storage` path as a quoted string. Pass `bucket_name = var.bucket_name`; the argument name must match the `variable` block inside the module.",
         ),
     },
     {
@@ -654,7 +654,7 @@ TUTORIAL_SPECS: list[dict] = [
             "Outputs are the contract between a module and its caller. They prevent a caller from depending on internal resource addresses, which the module should be free to change.",
             "Complete the root output value. The module is already called; the only missing piece is the dotted reference that reaches its exported storage_id.",
             "Use a module output when a caller needs an identifier or setting without knowing how the module implements it.",
-            "Read the module block to get the module's local name, then read the module's own outputs file to get the exported name. Combine them with dots in the root output value.",
+            "Inside the existing root `output` block, set `value` to the module output reference. Use the module label from the `module` block and the exported name `storage_id` from the module's `outputs.tf`, joined with dots.",
         ),
     },
     {
@@ -743,7 +743,7 @@ TUTORIAL_SPECS: list[dict] = [
             "This is the shape of a reusable environment pattern: a caller supplies a small list, a local derives stable keys, and a module creates one instance per key.",
             "Complete the environment_map local. Every environment should become a key whose value is a project-prefixed bucket name. The module call and output below are already wired.",
             "Use this composition when several environments need the same component and you want adding an environment to be a one-line change.",
-            "Read the module block to see the expected map type. Then build a map comprehension over the environment list, using each environment as the key and a quoted interpolation as the value. Keep the map keys stable; that is what makes for_each useful.",
+            "Inside `locals`, add `environment_map` as a braced `for` expression over `var.environments`. Use the loop variable as both the map key and the environment name in the value, and build each value from `var.project_name` plus that name. The module call already consumes `local.environment_map`.",
         ),
     },
 ]

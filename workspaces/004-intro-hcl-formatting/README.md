@@ -19,11 +19,11 @@ Terraform style is two spaces per level, no tabs, and a final newline. The block
 
 **Why it matters:** HCL is the language Terraform evaluates. Small syntax mistakes here turn into confusing plan errors later, so slow, deliberate practice pays off.
 
-**What to do:** Complete the marked TODO in `main.tf`. Replace the tab and correct the indentation. Use the visible constraints as your checklist before you run the tests.
+**What to do:** Complete the marked region in `main.tf`. Replace the tab and correct the indentation. Use the visible constraints as the checklist for names, values and references before you run the tests.
 
 **When to use it:** Reach for this whenever you add a new block or argument by hand rather than copying generated code.
 
-**How to approach it:** Open `main.tf` and work inside the single TODO region. Change one requirement at a time: add the named block, argument or reference, then run the tests. When a check fails, match its wording to the constraints and fix only the block it names.
+**How to approach it:** `main.tf` already contains the full configuration, so do not add or remove arguments. Replace tabs with two-space indentation, align each `=` within a block, and keep every closing brace aligned with its opening block. Run the tests, then fix the exact line named by the remaining formatting finding.
 
 
 ## Constraints

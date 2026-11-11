@@ -19,11 +19,11 @@ Your platform team needs Route 53 Hosted Zone for authoritative DNS for a domain
 
 **Why it matters:** DNS is the public name of the system. Managing records in Terraform keeps the name, certificate and endpoint changes together.
 
-**What to do:** Complete the marked TODO in `main.tf`. Add the arguments and nested blocks required for aws_route53_zone. Use the visible constraints as your checklist before you run the tests.
+**What to do:** Complete the marked region in `main.tf`. The work is inside `resource "aws_route53_zone" "this"`. Add the arguments and nested blocks required for aws_route53_zone. Use the visible constraints as the checklist for names, values and references before you run the tests.
 
 **When to use it:** Use Route 53 when a service needs a stable hostname or when DNS changes should be reviewed with the rest of the stack.
 
-**How to approach it:** Open `main.tf` and work inside the single TODO region. Change one requirement at a time: add the named block, argument or reference, then run the tests. When a check fails, match its wording to the constraints and fix only the block it names.
+**How to approach it:** Open `main.tf` and work only inside `resource "aws_route53_zone" "this"`. Use this code shape: name; tags. Use the already-declared references instead of hardcoded values: `var.domain_name`, `var.project_name`, `var.environment`. Keep the block header and braces, indent nested blocks by two spaces, and add one argument or nested block at a time. Run the tests after each small change so the first failure points at the next name to fix.
 
 
 ## Constraints

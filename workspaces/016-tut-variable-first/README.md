@@ -23,7 +23,7 @@ Welcome to the guided track. A variable is a named input: the caller can change 
 
 **When to use it:** Reach for an input variable when a value changes per environment, must be supplied securely, or should be controlled by whoever calls the configuration.
 
-**How to approach it:** Start at the top of the variable block. Add the three arguments in the order description, type, default. Keep the quotes around the default because it is a string, then run the tests and compare the failures with the constraint list.
+**How to approach it:** Start at the top of the `variable "app_name"` block. Add `description`, `type = string`, and `default`; keep the quotes around the default because it is a string. Run the tests and compare each failure with the constraint list.
 
 
 ## Constraints

@@ -38,7 +38,7 @@
     "why": "for expressions are the bridge between a plain collection and the shape a resource or module needs. They remove the copy-paste step that causes drift.",
     "what": "Create one source list and two derived locals. One derived value is a list of uppercase names; the other is a map from each name to an owner string.",
     "when": "Use a for expression when you need to transform every item in a collection. Use a map comprehension when each result needs a key.",
-    "how": "Write the source list first. Then read the output blocks to see the expected shapes. A list comprehension uses square brackets and a colon; a map comprehension uses braces and an arrow between key and value."
+    "how": "Start with `teams` as a list. Build `upper_teams` with a bracketed `for` expression over `local.teams` and apply the uppercase function to the loop variable. Build `team_owners` with a braced `for` expression that maps each team name to its owner string using an arrow. Keep the three local names the outputs expect."
   },
   "allowlist": [],
   "apply_sandbox": false,

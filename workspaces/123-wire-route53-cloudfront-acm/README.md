@@ -19,11 +19,11 @@ Serve a domain through CloudFront with a DNS-validated certificate and an alias 
 
 **Why it matters:** DNS is the public name of the system. Managing records in Terraform keeps the name, certificate and endpoint changes together.
 
-**What to do:** Complete the marked TODO in `main.tf`. Add the arguments and nested blocks required for aws_cloudfront_distribution. Use the visible constraints as your checklist before you run the tests.
+**What to do:** Complete the marked region in `main.tf`. The work is inside `resource "aws_cloudfront_distribution" "this"`. Add the arguments and nested blocks required for aws_cloudfront_distribution. Use the visible constraints as the checklist for names, values and references before you run the tests.
 
 **When to use it:** Use Route 53 when a service needs a stable hostname or when DNS changes should be reviewed with the rest of the stack.
 
-**How to approach it:** Open `main.tf` and work inside the single TODO region. Change one requirement at a time: add the named block, argument or reference, then run the tests. When a check fails, match its wording to the constraints and fix only the block it names.
+**How to approach it:** Open `main.tf` and work only inside `resource "aws_cloudfront_distribution" "this"`. Use this code shape: enabled; default_cache_behavior { viewer_protocol_policy }; viewer_certificate { minimum_protocol_version; acm_certificate_arn; ssl_support_method }. Use the already-declared references instead of hardcoded values: `aws_acm_certificate.this.arn`. Keep the block header and braces, indent nested blocks by two spaces, and add one argument or nested block at a time. Run the tests after each small change so the first failure points at the next name to fix.
 
 
 ## Constraints

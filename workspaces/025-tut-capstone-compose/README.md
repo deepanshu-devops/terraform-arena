@@ -23,7 +23,7 @@ This final tutorial step combines the ideas so far. Turn a list of environments 
 
 **When to use it:** Use this composition when several environments need the same component and you want adding an environment to be a one-line change.
 
-**How to approach it:** Read the module block to see the expected map type. Then build a map comprehension over the environment list, using each environment as the key and a quoted interpolation as the value. Keep the map keys stable; that is what makes for_each useful.
+**How to approach it:** Inside `locals`, add `environment_map` as a braced `for` expression over `var.environments`. Use the loop variable as both the map key and the environment name in the value, and build each value from `var.project_name` plus that name. The module call already consumes `local.environment_map`.
 
 
 ## Constraints

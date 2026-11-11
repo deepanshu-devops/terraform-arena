@@ -19,11 +19,11 @@ Your platform team needs CloudWatch CPU Alarm for alerting when CPU stays high. 
 
 **Why it matters:** Observability resources turn an invisible system into something you can alert on. Metrics, logs and alarms belong with the infrastructure they monitor.
 
-**What to do:** Complete the marked TODO in `main.tf`. Add the arguments and nested blocks required for aws_cloudwatch_metric_alarm. Use the visible constraints as your checklist before you run the tests.
+**What to do:** Complete the marked region in `main.tf`. The work is inside `resource "aws_cloudwatch_metric_alarm" "this"`. Add the arguments and nested blocks required for aws_cloudwatch_metric_alarm. Use the visible constraints as the checklist for names, values and references before you run the tests.
 
 **When to use it:** Add monitoring whenever a resource has a failure mode that an operator must notice quickly.
 
-**How to approach it:** Open `main.tf` and work inside the single TODO region. Change one requirement at a time: add the named block, argument or reference, then run the tests. When a check fails, match its wording to the constraints and fix only the block it names.
+**How to approach it:** Open `main.tf` and work only inside `resource "aws_cloudwatch_metric_alarm" "this"`. Use this code shape: alarm_name; comparison_operator; evaluation_periods; metric_name; namespace; period; statistic; threshold; tags; dimensions { InstanceId }. Use the already-declared references instead of hardcoded values: `var.alarm_name`, `var.project_name`, `var.environment`, `aws_instance.this.id`. Keep the block header and braces, indent nested blocks by two spaces, and add one argument or nested block at a time. Run the tests after each small change so the first failure points at the next name to fix.
 
 
 ## Constraints

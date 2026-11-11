@@ -23,7 +23,7 @@ Terraform's built-in functions transform values without hardcoding the result. B
 
 **When to use it:** Use string functions when a value is composed from inputs and should update automatically. Avoid them when a plain literal is clearer.
 
-**How to approach it:** Work inside out. First decide which function changes case, then which one replaces characters, then nest them. For the label, look at format() as a small template with placeholders and arguments.
+**How to approach it:** Build `slug` first: nest the case-changing function outside the character-replacement function, and pass `var.app_name` as the innermost input. Build `label` with `format()`: the template comes first, followed by `local.slug` and the version suffix. Keep both local names exactly as the outputs expect.
 
 
 ## Constraints

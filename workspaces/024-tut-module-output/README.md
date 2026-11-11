@@ -23,7 +23,7 @@ A module can expose values to its caller through outputs. The caller reads them 
 
 **When to use it:** Use a module output when a caller needs an identifier or setting without knowing how the module implements it.
 
-**How to approach it:** Read the module block to get the module's local name, then read the module's own outputs file to get the exported name. Combine them with dots in the root output value.
+**How to approach it:** Inside the existing root `output` block, set `value` to the module output reference. Use the module label from the `module` block and the exported name `storage_id` from the module's `outputs.tf`, joined with dots.
 
 
 ## Constraints

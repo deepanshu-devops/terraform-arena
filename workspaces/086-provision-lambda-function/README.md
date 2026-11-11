@@ -19,11 +19,11 @@ Your platform team needs Lambda Function for an event-driven Python function. Wr
 
 **Why it matters:** Lambda packages compute as a small, event-driven unit. The code artifact, execution role and trigger are the contract to get right.
 
-**What to do:** Complete the marked TODO in `main.tf`. Add the arguments and nested blocks required for aws_lambda_function. Use the visible constraints as your checklist before you run the tests.
+**What to do:** Complete the marked region in `main.tf`. The work is inside `resource "aws_lambda_function" "this"`. Add the arguments and nested blocks required for aws_lambda_function. Use the visible constraints as the checklist for names, values and references before you run the tests.
 
 **When to use it:** Use Lambda for short-lived event handlers or glue code where managing a server would add cost and operational noise.
 
-**How to approach it:** Open `main.tf` and work inside the single TODO region. Change one requirement at a time: add the named block, argument or reference, then run the tests. When a check fails, match its wording to the constraints and fix only the block it names.
+**How to approach it:** Open `main.tf` and work only inside `resource "aws_lambda_function" "this"`. Use this code shape: function_name; runtime; handler; filename; memory_size; tags; role; environment { variables }. Use the already-declared references instead of hardcoded values: `var.lambda_runtime`, `var.lambda_memory`, `var.project_name`, `var.environment`, `var.lambda_role_arn`. Keep the block header and braces, indent nested blocks by two spaces, and add one argument or nested block at a time. Run the tests after each small change so the first failure points at the next name to fix.
 
 
 ## Constraints

@@ -23,7 +23,7 @@ A list keeps values in order. Terraform can index a list, count it, or iterate o
 
 **When to use it:** Use a list when values have a natural order or when every item is interchangeable. If each item needs a stable name, a map is usually a better fit.
 
-**How to approach it:** Write the list with square brackets and commas. Read the output blocks first to see exactly how the list is consumed, then fill in the middle so those expressions have something to reference.
+**How to approach it:** Inside `locals`, add `environments = [...]` with three quoted strings in deployment order. The existing outputs already use `local.environments[0]` and `length(local.environments)`, so keep the local name exactly `environments`.
 
 
 ## Constraints

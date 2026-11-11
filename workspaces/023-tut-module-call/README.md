@@ -23,7 +23,7 @@ A module is a reusable package of Terraform files with inputs and outputs. Calli
 
 **When to use it:** Use a module when a group of resources is reused or when a team needs a stable interface. A local source is ideal while developing the module in the same repository.
 
-**How to approach it:** Look at the module block labels first. The source argument is a path, so it is a string. The other argument matches an input variable inside the module, so its value is an expression from the root configuration.
+**How to approach it:** Inside `module "storage"`, set `source` to the local `./modules/storage` path as a quoted string. Pass `bucket_name = var.bucket_name`; the argument name must match the `variable` block inside the module.
 
 
 ## Constraints

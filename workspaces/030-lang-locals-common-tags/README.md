@@ -19,11 +19,11 @@ Use a locals block to define common_tags and reuse it across the bucket instead 
 
 **Why it matters:** Locals give a name to derived values and shared fragments. They remove repetition without making a value a user-facing input.
 
-**What to do:** Complete the marked TODO in `main.tf`. Define local.common_tags and merge the standard tags into it. Use the visible constraints as your checklist before you run the tests.
+**What to do:** Complete the marked region in `main.tf`. The work is inside `locals`. Define local.common_tags and merge the standard tags into it. Use the visible constraints as the checklist for names, values and references before you run the tests.
 
 **When to use it:** Use locals for values computed from variables, constants reused in several places, or a common map such as tags. Do not use a local for something the caller must be able to change.
 
-**How to approach it:** Open `main.tf` and work inside the single TODO region. Change one requirement at a time: add the named block, argument or reference, then run the tests. When a check fails, match its wording to the constraints and fix only the block it names.
+**How to approach it:** Open `main.tf` and work only inside `locals`. Use this code shape: common_tags. Use the already-declared references instead of hardcoded values: `var.project_name`, `var.environment`. Keep the block header and braces, indent nested blocks by two spaces, and add one argument or nested block at a time. Run the tests after each small change so the first failure points at the next name to fix.
 
 
 ## Constraints

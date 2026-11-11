@@ -82,9 +82,9 @@
   },
   "hints": {
     "why": "A VPC is the network boundary for most AWS resources. CIDR planning, subnets and routing decisions affect everything deployed inside it.",
-    "what": "Complete the marked TODO in `main.tf`. Add the arguments and nested blocks required for aws_subnet. Use the visible constraints as your checklist before you run the tests.",
+    "what": "Complete the marked region in `main.tf`. The work is inside `resource \"aws_subnet\" \"this\"`. Add the arguments and nested blocks required for aws_subnet. Use the visible constraints as the checklist for names, values and references before you run the tests.",
     "when": "Design a VPC when you need isolated networking, predictable address space or control over public and private traffic.",
-    "how": "Open `main.tf` and work inside the single TODO region. Change one requirement at a time: add the named block, argument or reference, then run the tests. When a check fails, match its wording to the constraints and fix only the block it names."
+    "how": "Open `main.tf` and work only inside `resource \"aws_subnet\" \"this\"`. Use this code shape: cidr_block; tags; vpc_id; availability_zone; map_public_ip_on_launch. Use the already-declared references instead of hardcoded values: `var.project_name`, `var.environment`, `aws_vpc.this.id`, `var.availability_zone`. Keep the block header and braces, indent nested blocks by two spaces, and add one argument or nested block at a time. Run the tests after each small change so the first failure points at the next name to fix."
   },
   "allowlist": [
     "aws_vpc",

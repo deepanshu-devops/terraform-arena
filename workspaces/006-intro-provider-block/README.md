@@ -19,11 +19,11 @@ The terraform block declares required providers and versions. The provider block
 
 **Why it matters:** Providers tell Terraform which API to call and how to authenticate. Pinning the provider and keeping settings in variables makes a configuration portable and reproducible.
 
-**What to do:** Complete the marked TODO in `main.tf`. Set the provider region from the declared variable. Use the visible constraints as your checklist before you run the tests.
+**What to do:** Complete the marked region in `main.tf`. The work is inside `provider "aws"`. Set the provider region from the declared variable. Use the visible constraints as the checklist for names, values and references before you run the tests.
 
 **When to use it:** Configure a provider once per module and pass credentials through the environment or a secure mechanism, never through committed literals.
 
-**How to approach it:** Open `main.tf` and work inside the single TODO region. Change one requirement at a time: add the named block, argument or reference, then run the tests. When a check fails, match its wording to the constraints and fix only the block it names.
+**How to approach it:** Open `main.tf` and work only inside `provider "aws"`. Use this code shape: region. Use the already-declared references instead of hardcoded values: `var.aws_region`. Keep the block header and braces, indent nested blocks by two spaces, and add one argument or nested block at a time. Run the tests after each small change so the first failure points at the next name to fix.
 
 
 ## Constraints

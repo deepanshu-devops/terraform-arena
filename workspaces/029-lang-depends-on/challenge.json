@@ -50,7 +50,7 @@
   "starter": {
     "versions.tf": "terraform {\n  required_version = \">= 1.5.0\"\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n  }\n}\n",
     "variables.tf": "variable \"ami_id\" {\n  description = \"Input variable ami_id.\"\n  type        = string\n}\n\nvariable \"instance_type\" {\n  description = \"Input variable instance_type.\"\n  type        = string\n  default     = \"t2.micro\"\n}\n\nvariable \"subnet_id\" {\n  description = \"Input variable subnet_id.\"\n  type        = string\n}\n\nvariable \"vpc_id\" {\n  description = \"Input variable vpc_id.\"\n  type        = string\n}\n\nvariable \"aws_region\" {\n  description = \"Input variable aws_region.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n",
-    "main.tf": "provider \"aws\" {\n  region = var.aws_region\n}\n\nresource \"aws_instance\" \"this\" {\n  ami                    = \"ami-0123456789abcdef0\"\n  instance_type          = \"t3.micro\"\n  vpc_security_group_ids = [aws_security_group.this.id]\n  # TODO - Complete the graded block.\n  # Complete this block using the challenge requirements.\n  metadata_options {\n    http_tokens = \"required\"\n  }\n}\n\nresource \"aws_security_group\" \"this\" {\n  name        = \"app-sg\"\n  description = \"Application security group\"\n  ingress {\n    from_port   = 443\n    to_port     = 443\n    protocol    = \"tcp\"\n    cidr_blocks = [\"0.0.0.0/0\"]\n  }\n  egress {\n    from_port   = 0\n    to_port     = 0\n    protocol    = \"-1\"\n    cidr_blocks = [\"0.0.0.0/0\"]\n  }\n}\n",
+    "main.tf": "provider \"aws\" {\n  region = var.aws_region\n}\n\nresource \"aws_instance\" \"this\" {\n  ami           = \"ami-0123456789abcdef0\"\n  instance_type = \"t3.micro\"\n  # TODO - Complete the graded block.\n  # Complete this block using the challenge requirements.\n  vpc_security_group_ids = [aws_security_group.this.id]\n  metadata_options {\n    http_tokens = \"required\"\n  }\n}\n\nresource \"aws_security_group\" \"this\" {\n  name        = \"app-sg\"\n  description = \"Application security group\"\n  ingress {\n    from_port   = 443\n    to_port     = 443\n    protocol    = \"tcp\"\n    cidr_blocks = [\"0.0.0.0/0\"]\n  }\n  egress {\n    from_port   = 0\n    to_port     = 0\n    protocol    = \"-1\"\n    cidr_blocks = [\"0.0.0.0/0\"]\n  }\n}\n",
     "outputs.tf": "output \"instance_id\" {\n  value = aws_instance.this.id\n}\n"
   },
   "focus": {
@@ -61,9 +61,9 @@
   },
   "hints": {
     "why": "`aws_instance` is a real building block in production configurations. The exercise isolates one decision so you can recognise the same shape when it appears inside a larger module.",
-    "what": "Complete the marked TODO in `main.tf`. Make the instance wait for the security group with depends_on. Use the visible constraints as your checklist before you run the tests.",
+    "what": "Complete the marked region in `main.tf`. The work is inside `resource \"aws_instance\" \"this\"`. Make the instance wait for the security group with depends_on. Use the visible constraints as the checklist for names, values and references before you run the tests.",
     "when": "Use this pattern when the requirement is part of a reusable configuration that another person or environment must be able to reproduce.",
-    "how": "Open `main.tf` and work inside the single TODO region. Change one requirement at a time: add the named block, argument or reference, then run the tests. When a check fails, match its wording to the constraints and fix only the block it names."
+    "how": "Open `main.tf` and work only inside `resource \"aws_instance\" \"this\"`. Use this code shape: depends_on. Use the already-declared references instead of hardcoded values: `aws_security_group.this`. Keep the block header and braces, indent nested blocks by two spaces, and add one argument or nested block at a time. Run the tests after each small change so the first failure points at the next name to fix."
   },
   "allowlist": [
     "aws_instance",

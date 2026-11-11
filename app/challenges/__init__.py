@@ -31,6 +31,7 @@ for _challenge in BUILTIN:
             "tags": _challenge.tags,
             "constraints": _challenge.constraints,
             "expected_resources": _challenge.expected_resources,
+            "reference": _challenge.reference,
             "hints": _challenge.hints,
         },
         _challenge.focus,

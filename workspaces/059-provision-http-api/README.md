@@ -19,11 +19,11 @@ Your platform team needs HTTP API Gateway for a lightweight HTTP front door. Wri
 
 **Why it matters:** API Gateway is the front door for HTTP APIs. Routes, stages and integrations decide how requests reach backend compute.
 
-**What to do:** Complete the marked TODO in `main.tf`. Add the arguments and nested blocks required for aws_apigatewayv2_api. Use the visible constraints as your checklist before you run the tests.
+**What to do:** Complete the marked region in `main.tf`. The work is inside `resource "aws_apigatewayv2_api" "this"`. Add the arguments and nested blocks required for aws_apigatewayv2_api. Use the visible constraints as the checklist for names, values and references before you run the tests.
 
 **When to use it:** Use an API gateway when you need a managed public API surface, throttling or request routing.
 
-**How to approach it:** Open `main.tf` and work inside the single TODO region. Change one requirement at a time: add the named block, argument or reference, then run the tests. When a check fails, match its wording to the constraints and fix only the block it names.
+**How to approach it:** Open `main.tf` and work only inside `resource "aws_apigatewayv2_api" "this"`. Use this code shape: name; protocol_type; tags. Use the already-declared references instead of hardcoded values: `var.api_name`, `var.project_name`, `var.environment`. Keep the block header and braces, indent nested blocks by two spaces, and add one argument or nested block at a time. Run the tests after each small change so the first failure points at the next name to fix.
 
 
 ## Constraints

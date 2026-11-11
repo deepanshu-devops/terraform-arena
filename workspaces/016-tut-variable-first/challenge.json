@@ -43,7 +43,7 @@
     "why": "Variables are the seam between a reusable configuration and the environment that calls it. Once a value is an input, changing environments does not require editing resource code.",
     "what": "Complete the variable block in variables.tf. It needs a description, a string type and the default shown in the constraints. The output already shows how the caller reads it.",
     "when": "Reach for an input variable when a value changes per environment, must be supplied securely, or should be controlled by whoever calls the configuration.",
-    "how": "Start at the top of the variable block. Add the three arguments in the order description, type, default. Keep the quotes around the default because it is a string, then run the tests and compare the failures with the constraint list."
+    "how": "Start at the top of the `variable \"app_name\"` block. Add `description`, `type = string`, and `default`; keep the quotes around the default because it is a string. Run the tests and compare each failure with the constraint list."
   },
   "allowlist": [],
   "apply_sandbox": false,

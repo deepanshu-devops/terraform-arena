@@ -19,11 +19,11 @@ Your platform team needs CloudFront Distribution for a global CDN in front of an
 
 **Why it matters:** A CDN changes latency, caching and the public attack surface. Origin and cache settings are part of the application contract.
 
-**What to do:** Complete the marked TODO in `main.tf`. Add the arguments and nested blocks required for aws_cloudfront_distribution. Use the visible constraints as your checklist before you run the tests.
+**What to do:** Complete the marked region in `main.tf`. The work is inside `resource "aws_cloudfront_distribution" "this"`. Add the arguments and nested blocks required for aws_cloudfront_distribution. Use the visible constraints as the checklist for names, values and references before you run the tests.
 
 **When to use it:** Use CloudFront when content is served globally or when you need TLS, caching and origin protection in front of HTTP services.
 
-**How to approach it:** Open `main.tf` and work inside the single TODO region. Change one requirement at a time: add the named block, argument or reference, then run the tests. When a check fails, match its wording to the constraints and fix only the block it names.
+**How to approach it:** Open `main.tf` and work only inside `resource "aws_cloudfront_distribution" "this"`. Use this code shape: enabled; tags; default_cache_behavior { viewer_protocol_policy }; viewer_certificate { minimum_protocol_version }. Use the already-declared references instead of hardcoded values: `var.project_name`, `var.environment`. Keep the block header and braces, indent nested blocks by two spaces, and add one argument or nested block at a time. Run the tests after each small change so the first failure points at the next name to fix.
 
 
 ## Constraints

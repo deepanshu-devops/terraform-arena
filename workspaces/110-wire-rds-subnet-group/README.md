@@ -19,11 +19,11 @@ Place a small PostgreSQL instance in a DB subnet group and keep it private and e
 
 **Why it matters:** Managed databases carry availability, backup and network requirements. Terraform makes those choices reviewable before a database is created.
 
-**What to do:** Complete the marked TODO in `main.tf`. Add the arguments and nested blocks required for aws_db_instance. Use the visible constraints as your checklist before you run the tests.
+**What to do:** Complete the marked region in `main.tf`. The work is inside `resource "aws_db_instance" "this"`. Add the arguments and nested blocks required for aws_db_instance. Use the visible constraints as the checklist for names, values and references before you run the tests.
 
 **When to use it:** Use a managed database service when you need backups, failover and patching handled by the provider rather than by an operator.
 
-**How to approach it:** Open `main.tf` and work inside the single TODO region. Change one requirement at a time: add the named block, argument or reference, then run the tests. When a check fails, match its wording to the constraints and fix only the block it names.
+**How to approach it:** Open `main.tf` and work only inside `resource "aws_db_instance" "this"`. Use this code shape: identifier; engine; engine_version; instance_class; allocated_storage; skip_final_snapshot; db_subnet_group_name; storage_encrypted; publicly_accessible. Use the already-declared references instead of hardcoded values: `aws_db_subnet_group.this.name`. Keep the block header and braces, indent nested blocks by two spaces, and add one argument or nested block at a time. Run the tests after each small change so the first failure points at the next name to fix.
 
 
 ## Constraints

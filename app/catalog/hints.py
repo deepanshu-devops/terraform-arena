@@ -13,7 +13,10 @@ resources, so a challenge can never ship without hints.
 """
 from __future__ import annotations
 
+import re
 from typing import Any
+
+from ..hcl import Block, parse_files
 
 HINT_KEYS = ("why", "what", "when", "how")
 
@@ -321,11 +324,121 @@ _SERVICE_HINTS: dict[str, dict[str, str]] = {
 }
 
 
+_FOCUS_RE = re.compile(
+    r"#\s*arena:focus-start\s*\n(.*?)\n[ \t]*#\s*arena:focus-end",
+    re.S,
+)
+_REF_RE = re.compile(
+    r"(?<![\w.])(?:var|local|module|data)\.[A-Za-z_][\w-]*(?:\.[A-Za-z_][\w-]*)?"
+    r"|(?<![\w.])each\.(?:key|value)"
+    r"|(?<![\w.])(?:aws|docker)_[a-z0-9_]+\.[A-Za-z_][\w-]*(?:\.[A-Za-z_][\w-]*)?"
+)
+
+
 def _pick(mapping: dict[str, dict[str, str]], tags: list[str]) -> dict[str, str] | None:
     for tag in tags:
         if tag in mapping:
             return mapping[tag]
     return None
+
+
+def _normalise_newlines(text: str) -> str:
+    return text.replace("\r\n", "\n").replace("\r", "\n")
+
+
+def _focus_region(reference: dict[str, str] | None, file_name: str) -> str:
+    """Return the reference code between the focus markers, if present."""
+    if not reference:
+        return ""
+    text = _normalise_newlines(str(reference.get(file_name, "")))
+    match = _FOCUS_RE.search(text)
+    return match.group(1) if match else ""
+
+
+def _parse_region(region: str) -> Block | None:
+    """Parse the masked region as the body of a synthetic block.
+
+    Parsing instead of pattern-matching means maps and ``jsonencode({...})``
+    expressions are treated as values, not mistaken for nested HCL blocks.
+    """
+    if not region.strip():
+        return None
+    config = parse_files({"hint.tf": "hint {\n" + region + "\n}\n"})
+    return config.blocks[0] if config.blocks else None
+
+
+def _block_shape(block: Block) -> str:
+    """Describe names visible in a block without exposing their values."""
+    parts = [attr.name for attr in block.attrs]
+    groups: dict[tuple[str, str], int] = {}
+    order: list[tuple[str, str]] = []
+    for child in block.blocks:
+        inner = _block_shape(child)
+        key = (child.type, inner)
+        if key not in groups:
+            groups[key] = 0
+            order.append(key)
+        groups[key] += 1
+    for block_type, inner in order:
+        label = f"{block_type} {{ {inner} }}" if inner else f"{block_type} {{}}"
+        count = groups[(block_type, inner)]
+        if count > 1:
+            label += f" x{count}"
+        parts.append(label)
+    return "; ".join(parts)
+
+
+def _header_chain(text: str, marker_pos: int) -> list[str]:
+    """Return enclosing block headers, outermost first, for one focus marker."""
+    text = _normalise_newlines(text)
+    lines = text.splitlines()
+    marker_line = text.count("\n", 0, marker_pos)
+    if marker_line >= len(lines):
+        return []
+    indent = len(lines[marker_line]) - len(lines[marker_line].lstrip())
+    chain: list[str] = []
+    for index in range(marker_line - 1, -1, -1):
+        raw = lines[index]
+        stripped = raw.strip()
+        if not stripped or stripped.startswith(("#", "//")):
+            continue
+        if not stripped.endswith("{"):
+            continue
+        head = stripped.split("{", 1)[0].strip()
+        if not head or "=" in head:
+            continue
+        line_indent = len(raw) - len(raw.lstrip())
+        if line_indent < indent:
+            chain.append(stripped)
+            indent = line_indent
+    chain.reverse()
+    return chain
+
+
+def _subject(spec: dict, focus: dict[str, Any]) -> str:
+    """Name the masked code construct in a way the learner can locate."""
+    rtype = focus.get("rtype")
+    if focus.get("kind") == "resource" and rtype:
+        return f'`resource "{rtype}" "{focus.get("name") or "this"}"`'
+    reference = spec.get("reference") or {}
+    text = _normalise_newlines(str(reference.get(focus.get("file", "main.tf"), "")))
+    marker = text.find("# arena:focus-start")
+    if marker >= 0:
+        chain = _header_chain(text, marker)
+        if chain:
+            tail = chain[-2:] if len(chain) > 1 else chain
+            cleaned = [header.removesuffix("{").strip() for header in tail]
+            return " -> ".join(f"`{header}`" for header in cleaned)
+    return ""
+
+
+def _references_in(region: str) -> list[str]:
+    seen: list[str] = []
+    for match in _REF_RE.finditer(region):
+        value = match.group(0)
+        if value not in seen:
+            seen.append(value)
+    return seen
 
 
 def _fallback_why(spec: dict, tags: list[str]) -> str:
@@ -355,21 +468,56 @@ def _fallback_what(spec: dict, focus: dict[str, Any]) -> str:
     file_name = focus.get("file", "main.tf")
     title = focus.get("title") or "Complete the graded block"
     todo = focus.get("todo") or title
-    text = f"Complete the marked TODO in `{file_name}`. {todo}"
+    subject = _subject(spec, focus)
+    text = f"Complete the marked region in `{file_name}`."
+    if subject:
+        text += f" The work is inside {subject}."
+    text += f" {todo}"
     constraints = spec.get("constraints") or []
     if constraints:
-        text += " Use the visible constraints as your checklist before you run the tests."
+        text += (
+            " Use the visible constraints as the checklist for names, values and "
+            "references before you run the tests."
+        )
     return text
 
 
 def _fallback_how(spec: dict, focus: dict[str, Any]) -> str:
     file_name = focus.get("file", "main.tf")
-    return (
-        f"Open `{file_name}` and work inside the single TODO region. Change one "
-        "requirement at a time: add the named block, argument or reference, then run "
-        "the tests. When a check fails, match its wording to the constraints and fix "
-        "only the block it names."
+    tags = [str(tag).lower() for tag in spec.get("tags", [])]
+    if "formatting" in tags:
+        return (
+            f"`{file_name}` already contains the full configuration, so do not add "
+            "or remove arguments. Replace tabs with two-space indentation, align "
+            "each `=` within a block, and keep every closing brace aligned with its "
+            "opening block. Run the tests, then fix the exact line named by the "
+            "remaining formatting finding."
+        )
+
+    region = _focus_region(spec.get("reference"), file_name)
+    parsed = _parse_region(region)
+    shape = _block_shape(parsed) if parsed else ""
+    references = _references_in(region)
+    subject = _subject(spec, focus)
+
+    if subject:
+        parts = [f"Open `{file_name}` and work only inside {subject}."]
+    else:
+        parts = [f"Open `{file_name}` and work only inside the marked region."]
+    if shape:
+        parts.append(f"Use this code shape: {shape}.")
+    if references:
+        rendered = ", ".join(f"`{ref}`" for ref in references[:6])
+        parts.append(
+            "Use the already-declared references instead of hardcoded values: "
+            f"{rendered}."
+        )
+    parts.append(
+        "Keep the block header and braces, indent nested blocks by two spaces, and "
+        "add one argument or nested block at a time. Run the tests after each small "
+        "change so the first failure points at the next name to fix."
     )
+    return " ".join(parts)
 
 
 def build_hints(spec: dict, focus: dict[str, Any] | None = None) -> dict[str, str]:

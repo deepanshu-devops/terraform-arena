@@ -19,11 +19,11 @@ Your platform team needs ACM Certificate for a DNS-validated TLS certificate. Wr
 
 **Why it matters:** `aws_acm_certificate` is a real building block in production configurations. The exercise isolates one decision so you can recognise the same shape when it appears inside a larger module.
 
-**What to do:** Complete the marked TODO in `main.tf`. Add the arguments and nested blocks required for aws_acm_certificate. Use the visible constraints as your checklist before you run the tests.
+**What to do:** Complete the marked region in `main.tf`. The work is inside `resource "aws_acm_certificate" "this"`. Add the arguments and nested blocks required for aws_acm_certificate. Use the visible constraints as the checklist for names, values and references before you run the tests.
 
 **When to use it:** Use this pattern when the requirement is part of a reusable configuration that another person or environment must be able to reproduce.
 
-**How to approach it:** Open `main.tf` and work inside the single TODO region. Change one requirement at a time: add the named block, argument or reference, then run the tests. When a check fails, match its wording to the constraints and fix only the block it names.
+**How to approach it:** Open `main.tf` and work only inside `resource "aws_acm_certificate" "this"`. Use this code shape: domain_name; tags; validation_method. Use the already-declared references instead of hardcoded values: `var.domain_name`, `var.project_name`, `var.environment`. Keep the block header and braces, indent nested blocks by two spaces, and add one argument or nested block at a time. Run the tests after each small change so the first failure points at the next name to fix.
 
 
 ## Constraints

@@ -19,11 +19,11 @@ Expose a stateless web tier behind an Application Load Balancer. The fleet must 
 
 **Why it matters:** A load balancer is the stable entry point in front of changing compute. Listeners and target groups define how traffic reaches the application.
 
-**What to do:** Complete the marked TODO in `main.tf`. Wire the size variables, subnets, target group, launch template and propagated tags. Use the visible constraints as your checklist before you run the tests.
+**What to do:** Complete the marked region in `main.tf`. The work is inside `resource "aws_autoscaling_group" "this"`. Wire the size variables, subnets, target group, launch template and propagated tags. Use the visible constraints as the checklist for names, values and references before you run the tests.
 
 **When to use it:** Use a load balancer when traffic must be distributed, health-checked or terminated before reaching backend instances.
 
-**How to approach it:** Open `main.tf` and work inside the single TODO region. Change one requirement at a time: add the named block, argument or reference, then run the tests. When a check fails, match its wording to the constraints and fix only the block it names.
+**How to approach it:** Open `main.tf` and work only inside `resource "aws_autoscaling_group" "this"`. Use this code shape: name; min_size; max_size; desired_capacity; vpc_zone_identifier; target_group_arns; health_check_type; launch_template { id; version }; tag { key; value; propagate_at_launch } x3. Use the already-declared references instead of hardcoded values: `var.asg_min`, `var.asg_max`, `var.asg_desired`, `var.subnet_ids`, `aws_lb_target_group.this.arn`, `aws_launch_template.this.id`. Keep the block header and braces, indent nested blocks by two spaces, and add one argument or nested block at a time. Run the tests after each small change so the first failure points at the next name to fix.
 
 
 ## Constraints

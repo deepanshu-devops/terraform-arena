@@ -23,7 +23,7 @@ for_each creates one instance per key in a map or set. Unlike count, each instan
 
 **When to use it:** Use for_each when each instance has a meaningful key, especially when instances may be added or removed over time.
 
-**How to approach it:** Read the output expression first: it iterates with name and bucket. The resource body has the same idea but only needs one iteration argument and one value reference. Avoid indexing a list here; the input is a map.
+**How to approach it:** Add `for_each` over the `var.bucket_names` map, then read the current item with `each.value` in the `bucket` argument. Do not use `count.index` here; the input is keyed, and the output already iterates with `name` and `bucket`.
 
 
 ## Constraints

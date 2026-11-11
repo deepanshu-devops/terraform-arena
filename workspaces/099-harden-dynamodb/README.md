@@ -19,11 +19,11 @@ Enable encryption, point-in-time recovery and deletion protection on a DynamoDB 
 
 **Why it matters:** DynamoDB performance and cost depend on key design. Encoding that design in Terraform makes the access pattern explicit.
 
-**What to do:** Complete the marked TODO in `main.tf`. Add the arguments and nested blocks required for aws_dynamodb_table. Use the visible constraints as your checklist before you run the tests.
+**What to do:** Complete the marked region in `main.tf`. The work is inside `resource "aws_dynamodb_table" "this"`. Add the arguments and nested blocks required for aws_dynamodb_table. Use the visible constraints as the checklist for names, values and references before you run the tests.
 
 **When to use it:** Use DynamoDB for predictable key-based access at scale, especially when operational overhead must stay low.
 
-**How to approach it:** Open `main.tf` and work inside the single TODO region. Change one requirement at a time: add the named block, argument or reference, then run the tests. When a check fails, match its wording to the constraints and fix only the block it names.
+**How to approach it:** Open `main.tf` and work only inside `resource "aws_dynamodb_table" "this"`. Use this code shape: name; billing_mode; hash_key; deletion_protection_enabled; attribute { name; type }; server_side_encryption { enabled }; point_in_time_recovery { enabled }. Keep the block header and braces, indent nested blocks by two spaces, and add one argument or nested block at a time. Run the tests after each small change so the first failure points at the next name to fix.
 
 
 ## Constraints

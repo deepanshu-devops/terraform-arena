@@ -19,11 +19,11 @@ Expose a connection string but mark the output as sensitive so it is redacted in
 
 **Why it matters:** Outputs are the public surface of a configuration or module. They let callers and operators consume values without reaching into internal resource addresses.
 
-**What to do:** Complete the marked TODO in `outputs.tf`. Add the sensitive argument to the bucket_arn output. Use the visible constraints as your checklist before you run the tests.
+**What to do:** Complete the marked region in `outputs.tf`. The work is inside `output "bucket_arn"`. Add the sensitive argument to the bucket_arn output. Use the visible constraints as the checklist for names, values and references before you run the tests.
 
 **When to use it:** Export an identifier, endpoint or name when another configuration, a module consumer, or an operator needs it. Mark secrets sensitive.
 
-**How to approach it:** Open `outputs.tf` and work inside the single TODO region. Change one requirement at a time: add the named block, argument or reference, then run the tests. When a check fails, match its wording to the constraints and fix only the block it names.
+**How to approach it:** Open `outputs.tf` and work only inside `output "bucket_arn"`. Use this code shape: sensitive. Keep the block header and braces, indent nested blocks by two spaces, and add one argument or nested block at a time. Run the tests after each small change so the first failure points at the next name to fix.
 
 
 ## Constraints

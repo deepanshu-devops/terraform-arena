@@ -23,7 +23,7 @@ A for expression builds a new collection from an existing one. Use it to turn a 
 
 **When to use it:** Use a for expression when you need to transform every item in a collection. Use a map comprehension when each result needs a key.
 
-**How to approach it:** Write the source list first. Then read the output blocks to see the expected shapes. A list comprehension uses square brackets and a colon; a map comprehension uses braces and an arrow between key and value.
+**How to approach it:** Start with `teams` as a list. Build `upper_teams` with a bracketed `for` expression over `local.teams` and apply the uppercase function to the loop variable. Build `team_owners` with a braced `for` expression that maps each team name to its owner string using an arrow. Keep the three local names the outputs expect.
 
 
 ## Constraints

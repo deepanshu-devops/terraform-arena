@@ -3,11 +3,11 @@ provider "aws" {
 }
 
 resource "aws_instance" "this" {
-  ami                    = "ami-0123456789abcdef0"
-  instance_type          = "t3.micro"
-  vpc_security_group_ids = [aws_security_group.this.id]
+  ami           = "ami-0123456789abcdef0"
+  instance_type = "t3.micro"
   # TODO - Complete the graded block.
   # Complete this block using the challenge requirements.
+  vpc_security_group_ids = [aws_security_group.this.id]
   metadata_options {
     http_tokens = "required"
   }
