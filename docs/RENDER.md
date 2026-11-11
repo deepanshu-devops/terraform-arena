@@ -19,7 +19,10 @@ Start: uvicorn app.main:app --host 0.0.0.0 --port $PORT
 Health check: /api/health
 ```
 
-Every push to `main` triggers a new deploy because `autoDeploy` is enabled.
+Every push to `main` triggers a new deploy because `autoDeploy` is enabled. If a
+push does not start a deploy, open the service's **Events** tab and use
+**Manual Deploy > Deploy latest commit**. A paused or disconnected GitHub
+connection is the usual cause.
 
 ## What the deployed service runs
 
