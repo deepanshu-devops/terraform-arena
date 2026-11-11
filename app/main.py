@@ -248,7 +248,7 @@ def index():
     target = STATIC_DIR / "index.html"
     if not target.exists():
         return {"message": "UI not built. API is available at /docs."}
-    return FileResponse(target)
+    return FileResponse(target, headers={"Cache-Control": "no-cache"})
 
 
 @app.get("/health", include_in_schema=False)
