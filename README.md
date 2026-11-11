@@ -79,9 +79,12 @@ ARENA_HTTPS_ONLY=1
 
 Add the same redirect URI to the Google Cloud OAuth client. The **Profiles**
 drawer shows the signed-in learner's status and a leaderboard of every profile.
-Other learners' email addresses are never exposed. SQLite persistence can be
-made durable by setting `ARENA_DATA_DIR` to a mounted disk (for example
-`/var/data`); without a disk the host's filesystem is ephemeral.
+Other learners' email addresses are never exposed. Google proves identity only:
+progress is stored in the deployment's SQLite database, not in Google Drive or
+inside the Google account. SQLite persistence can be made durable by setting
+`ARENA_DATA_DIR` to a mounted disk (for example `/var/data`); without a disk the
+host's filesystem is ephemeral, so the free Render plan resets progress on a
+restart, redeploy, or spin-down.
 
 ---
 

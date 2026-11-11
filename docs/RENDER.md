@@ -56,6 +56,11 @@ are missing, the header shows the local profile instead of a sign-in button.
 
 Sessions use signed cookies and are scoped to the stable Google subject id.
 Google is used only for identity; every learner's progress remains in SQLite.
+Signing in does **not** write progress into the Google account or Google Drive.
+The Google subject id links the account to a row in the server database, so
+progress lasts only as long as that database lasts. On the free plan the
+database is ephemeral (see below); on a paid plan with a persistent disk it
+survives restarts and redeploys.
 
 ## Free-plan storage
 
