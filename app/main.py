@@ -251,6 +251,8 @@ def index():
     return FileResponse(target)
 
 
+@app.get("/health", include_in_schema=False)
+@app.get("/healthz", include_in_schema=False)
 @app.get("/api/health")
 def health():
     return {
