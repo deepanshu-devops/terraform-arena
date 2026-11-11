@@ -1,0 +1,66 @@
+{
+  "id": "intro-for-expression",
+  "number": 10,
+  "title": "For Expressions",
+  "difficulty": "Easy",
+  "points": 58,
+  "level": 0,
+  "level_name": "Level 0 - HCL Foundations",
+  "tags": [
+    "terraform",
+    "hcl",
+    "expressions"
+  ],
+  "scenario": "For expressions transform collections without a loop block. Build a list of upper-case names and a map from each name to its upper-case form.",
+  "constraints": [
+    "Use a list for expression with upper(name).",
+    "Use a map for expression with name => upper(name).",
+    "Derive both from var.names."
+  ],
+  "variables": [
+    {
+      "name": "names",
+      "type": "list(string)",
+      "validation": false,
+      "default": [
+        "web",
+        "api"
+      ]
+    }
+  ],
+  "expected_resources": [],
+  "expected_outputs": [],
+  "starter": {
+    "variables.tf": "variable \"names\" {\n  description = \"Service names.\"\n  type        = list(string)\n  default     = [\"web\", \"api\"]\n}\n",
+    "main.tf": "locals {\n  # TODO - Transform the names.\n  # Write list and map for expressions over var.names.\n}\n"
+  },
+  "focus": {
+    "file": "main.tf",
+    "kind": "top",
+    "title": "Transform the names",
+    "todo": "Write list and map for expressions over var.names."
+  },
+  "allowlist": [],
+  "apply_sandbox": false,
+  "test_count": 4,
+  "test_manifest": [
+    {
+      "id": "list",
+      "title": "list for expression is present",
+      "category": "Syntax",
+      "weight": 12
+    },
+    {
+      "id": "map",
+      "title": "map for expression is present",
+      "category": "Syntax",
+      "weight": 12
+    },
+    {
+      "id": "upper",
+      "title": "upper function is used",
+      "category": "Syntax",
+      "weight": 8
+    }
+  ]
+}

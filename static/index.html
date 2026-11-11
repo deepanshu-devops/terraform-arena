@@ -13,7 +13,7 @@
       <span class="brand-mark">&lt;/&gt;</span>
       <div>
         <div class="brand-title">Terraform Arena</div>
-        <div class="brand-sub">117 hands-on IaC challenges, level 0 to 5</div>
+        <div class="brand-sub">125 hands-on IaC challenges, level 0 to 5</div>
       </div>
     </div>
     <div class="top-stats">
@@ -24,7 +24,14 @@
     </div>
     <div class="top-right">
       <span id="tf-status" class="pill pill-muted" title="Terraform CLI status">static engine</span>
-      <a class="ghost-btn" href="/docs" target="_blank" rel="noopener">API</a>
+      <button id="profiles-btn" class="ghost-btn" type="button" title="Profiles and progress">Profiles</button>
+      <a class="ghost-btn api-link" href="/docs" target="_blank" rel="noopener">API</a>
+      <a id="login-btn" class="google-btn" href="/auth/google/login" hidden>Sign in</a>
+      <button id="profile-btn" class="profile-chip" type="button" hidden title="Open your profile">
+        <img id="profile-avatar" class="avatar-img" alt="" hidden />
+        <span id="profile-initial" class="avatar-fallback" aria-hidden="true">?</span>
+        <span id="profile-name" class="profile-chip-name">Profile</span>
+      </button>
     </div>
   </header>
 
@@ -33,7 +40,7 @@
   <div class="layout">
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-head">
-        <input id="search" class="search" type="search" placeholder="Search 117 challenges..." />
+        <input id="search" class="search" type="search" placeholder="Search 125 challenges..." />
         <div class="chips" id="difficulty-chips">
           <button class="chip active" data-diff="">All</button>
           <button class="chip" data-diff="Easy">Easy</button>
@@ -108,6 +115,30 @@
       </div>
     </aside>
   </div>
+
+  <div id="profiles-backdrop" class="profiles-backdrop" aria-hidden="true"></div>
+  <aside class="profiles-drawer" id="profiles-drawer" aria-hidden="true">
+    <div class="profiles-head">
+      <div>
+        <div class="section-title">Your arena</div>
+        <h2>Profiles &amp; progress</h2>
+      </div>
+      <button id="close-profiles" class="ghost-btn" type="button">Close</button>
+    </div>
+    <div class="profiles-body">
+      <div id="profile-self" class="profile-self">
+        <div class="empty-state small">Loading your profile...</div>
+      </div>
+      <div class="profiles-toolbar">
+        <div class="section-title">All profiles</div>
+        <button id="refresh-profiles" class="ghost-btn" type="button">Refresh</button>
+      </div>
+      <div id="profile-list" class="profile-list">
+        <div class="empty-state small">Sign in to see every learner's progress.</div>
+      </div>
+      <div id="profiles-note" class="profiles-note"></div>
+    </div>
+  </aside>
 
   <div id="toast" class="toast"></div>
 

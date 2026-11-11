@@ -1,0 +1,76 @@
+{
+  "id": "docker-image",
+  "number": 28,
+  "title": "Pull a Docker Image",
+  "difficulty": "Easy",
+  "points": 45,
+  "level": 2,
+  "level_name": "Level 2 - First Resources",
+  "tags": [
+    "docker",
+    "sandbox"
+  ],
+  "scenario": "Use the Docker provider to pull nginx:alpine as a managed image.",
+  "constraints": [
+    "Declare the docker provider.",
+    "docker_image name from var.image_name.",
+    "Export image_id."
+  ],
+  "variables": [
+    {
+      "name": "image_name",
+      "type": "string",
+      "validation": false,
+      "default": "nginx:alpine"
+    }
+  ],
+  "expected_resources": [
+    "docker_image"
+  ],
+  "expected_outputs": [
+    "image_id"
+  ],
+  "starter": {
+    "versions.tf": "terraform {\n  required_version = \">= 1.5.0\"\n  required_providers {\n    docker = {\n      source  = \"kreuzwerker/docker\"\n      version = \"~> 3.0\"\n    }\n  }\n}\n",
+    "variables.tf": "variable \"image_name\" {\n  description = \"Input variable image_name.\"\n  type        = string\n  default     = \"nginx:alpine\"\n}\n",
+    "main.tf": "provider \"docker\" {\n  host = var.docker_host\n}\n\nresource \"docker_image\" \"this\" {\n  # TODO - Complete the docker_image resource.\n  # Add the arguments and nested blocks required for docker_image.\n}\n",
+    "outputs.tf": "output \"image_id\" {\n  value = docker_image.this.id\n}\n"
+  },
+  "focus": {
+    "file": "main.tf",
+    "kind": "resource",
+    "title": "Complete the docker_image resource",
+    "todo": "Add the arguments and nested blocks required for docker_image."
+  },
+  "allowlist": [
+    "docker_image"
+  ],
+  "apply_sandbox": false,
+  "test_count": 5,
+  "test_manifest": [
+    {
+      "id": "provider",
+      "title": "Docker provider declared",
+      "category": "Providers",
+      "weight": 8
+    },
+    {
+      "id": "img",
+      "title": "docker_image is provisioned",
+      "category": "Resources",
+      "weight": 14
+    },
+    {
+      "id": "name",
+      "title": "docker_image.name -> var.image_name",
+      "category": "Resources",
+      "weight": 6
+    },
+    {
+      "id": "out",
+      "title": "Output image_id",
+      "category": "Outputs",
+      "weight": 5
+    }
+  ]
+}

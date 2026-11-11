@@ -21,9 +21,9 @@ Everything runs offline. No AWS calls are made by default.
 
 | | |
 | --- | --- |
-| Challenges | **117** (7 level-0 intros + 105 catalog scenarios + 5 capstones) |
+| Challenges | **125** (15 level-0 intros + 105 catalog scenarios + 5 capstones) |
 | Progression | Level 0 (HCL basics) through level 5 (capstones) |
-| Physical workspaces | `workspaces/001-...` through `workspaces/117-...` |
+| Physical workspaces | `workspaces/001-...` through `workspaces/125-...` |
 | Backend | Python 3.12 + FastAPI + SQLite |
 | Queue | ThreadPoolExecutor + `jobs` table (Celery/Redis-shaped) |
 | Evaluation | Custom HCL lexer/parser + rule engine |
@@ -59,6 +59,29 @@ The deployed service runs static grading only, keeps live AWS validation
 disabled, and stores progress in local SQLite. Render's free filesystem is
 ephemeral, so progress resets on redeploy or spin-down. See
 [`docs/RENDER.md`](docs/RENDER.md) for the full setup and limitations.
+
+### Google sign-in and profiles
+
+Google sign-in is optional. When `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`
+are set, the UI shows **Sign in** and stores each learner's progress against
+their stable Google subject id. Without credentials the app falls back to the
+offline `local` profile, so local development still works with no setup.
+
+Required environment variables in production:
+
+```text
+GOOGLE_CLIENT_ID=...
+GOOGLE_CLIENT_SECRET=...
+GOOGLE_REDIRECT_URI=https://your-host/auth/google/callback
+ARENA_SECRET_KEY=<long random value>
+ARENA_HTTPS_ONLY=1
+```
+
+Add the same redirect URI to the Google Cloud OAuth client. The **Profiles**
+drawer shows the signed-in learner's status and a leaderboard of every profile.
+Other learners' email addresses are never exposed. SQLite persistence can be
+made durable by setting `ARENA_DATA_DIR` to a mounted disk (for example
+`/var/data`); without a disk the host's filesystem is ephemeral.
 
 ---
 
@@ -148,12 +171,12 @@ The catalog is sorted by level, then points, then title. Numbering starts at 1.
 
 | Level | Name | Range | Focus |
 | --- | --- | --- | --- |
-| 0 | HCL Foundations | `001`-`007` | blocks, arguments, strings, formatting, collections, providers, file layout |
-| 1 | Terraform Language | `008`-`017` | variables, validation, locals, count, for_each, conditionals, data sources, lifecycle, depends_on |
-| 2 | First Resources | `018`-`063` | one resource at a time: S3, VPC, EC2, RDS, DynamoDB, Lambda, IAM, Docker and more |
-| 3 | Real Infrastructure | `064`-`086` | encryption, TLS, retention, IMDSv2, least privilege, public-access lockdown |
-| 4 | Composition | `087`-`106` | multi-resource wiring: ALB, Lambda, ECS, RDS, DNS, KMS, messaging, observability |
-| 5 | Modules & Capstones | `107`-`117` | modules, state, refactoring, import, plus the five full-capstone builds |
+| 0 | HCL Foundations | `001`-`015` | blocks, arguments, strings, formatting, collections, providers, locals, functions, conditionals, for/splat expressions, sensitive outputs, file layout |
+| 1 | Terraform Language | `016`-`025` | variables, validation, locals, count, for_each, conditionals, data sources, lifecycle, depends_on |
+| 2 | First Resources | `026`-`071` | one resource at a time: S3, VPC, EC2, RDS, DynamoDB, Lambda, IAM, Docker and more |
+| 3 | Real Infrastructure | `072`-`094` | encryption, TLS, retention, IMDSv2, least privilege, public-access lockdown |
+| 4 | Composition | `095`-`114` | multi-resource wiring: ALB, Lambda, ECS, RDS, DNS, KMS, messaging, observability |
+| 5 | Modules & Capstones | `115`-`125` | modules, state, refactoring, import, plus the five full-capstone builds |
 
 Themes recur across levels: S3 security, VPC design, EC2 hardening, RDS,
 DynamoDB, Lambda, API Gateway, IAM least privilege, KMS, messaging,
@@ -165,11 +188,11 @@ Open `workspaces/INDEX.md` for the full table with each focus block.
 
 | # | Challenge | Difficulty |
 | --- | --- | --- |
-| 112 | Docker Nginx Sandbox | Easy |
-| 114 | Secure S3 Bucket Provisioning | Easy |
-| 115 | Highly Available VPC Foundation | Medium |
-| 116 | Auto Scaling Web Tier | Hard |
-| 117 | Serverless Item API | Hard |
+| 120 | Docker Nginx Sandbox | Easy |
+| 122 | Secure S3 Bucket Provisioning | Easy |
+| 123 | Highly Available VPC Foundation | Medium |
+| 124 | Auto Scaling Web Tier | Hard |
+| 125 | Serverless Item API | Hard |
 
 Each capstone supplies every supporting file and masks one central resource
 body (bucket, container, subnet, Auto Scaling group, or Lambda function).
@@ -196,7 +219,7 @@ body (bucket, container, subnet, Auto Scaling group, or Lambda function).
 The result is `PASS` only when the syntax is clean, every required test passes,
 and the security policy is not violated.
 
-`python judge.py verify` is the developer gate: it checks that all 117 reference
+`python judge.py verify` is the developer gate: it checks that all 125 reference
 solutions pass, every masked starter fails, starters parse cleanly, and focus
 markers never leak into learner files.
 
@@ -253,6 +276,8 @@ No AWS resources are ever created by the default workflow.
 | Method | Path | Purpose |
 | --- | --- | --- |
 | GET | `/api/health` | health + Terraform status |
+| GET | `/api/auth/me` | signed-in profile + auth mode |
+| GET | `/api/profiles` | all learner profiles and progress |
 | GET | `/api/stats` | solved/attempted/submissions/average |
 | GET | `/api/challenges` | catalog with filters (`level`, `difficulty`, `tag`, `search`) |
 | GET | `/api/challenges/{number-or-id}` | public challenge statement + focus block |
@@ -262,6 +287,10 @@ No AWS resources are ever created by the default workflow.
 | GET | `/api/submissions/{id}` | full result |
 | GET | `/api/progress` | per-challenge progress |
 | GET | `/api/terraform/status` | CLI detection |
+
+OAuth routes: `/auth/google/login`, `/auth/google/callback`, and `/auth/logout`.
+In Google mode, submit, job polling, submissions, and profiles require a signed
+session; the catalog and challenge statements remain public.
 
 Interactive docs: <http://127.0.0.1:8000/docs>.
 
@@ -290,7 +319,7 @@ terraform-arena/
     workspace.py      workspace export helpers + safe starter refresh
     main.py           FastAPI app
   static/             HackerRank-style UI
-  workspaces/         117 folders of incomplete .tf files
+  workspaces/         125 folders of incomplete .tf files
   scripts/            workspace generator + Terraform installer + ref checks
   docs/               architecture blueprint + API notes
   judge.py            local CLI (list/show/start/test/test-all/verify/live)

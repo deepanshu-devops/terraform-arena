@@ -1,0 +1,94 @@
+{
+  "id": "harden-ec2-imdsv2",
+  "number": 88,
+  "title": "Enforce IMDSv2 on EC2",
+  "difficulty": "Medium",
+  "points": 90,
+  "level": 3,
+  "level_name": "Level 3 - Real Infrastructure",
+  "tags": [
+    "aws",
+    "ec2",
+    "security"
+  ],
+  "scenario": "The security team requires IMDSv2 on every instance launched by the template. Enforce tokens and limit hop count.",
+  "constraints": [
+    "Use aws_launch_template.",
+    "metadata_options.http_tokens = required.",
+    "metadata_options.http_endpoint = enabled."
+  ],
+  "variables": [
+    {
+      "name": "ami_id",
+      "type": "string",
+      "validation": false
+    },
+    {
+      "name": "instance_type",
+      "type": "string",
+      "validation": false,
+      "default": "t2.micro"
+    }
+  ],
+  "expected_resources": [
+    "aws_launch_template"
+  ],
+  "expected_outputs": [
+    "launch_template_id"
+  ],
+  "starter": {
+    "versions.tf": "terraform {\n  required_version = \">= 1.5.0\"\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n  }\n}\n",
+    "variables.tf": "variable \"ami_id\" {\n  description = \"Input variable ami_id.\"\n  type        = string\n}\n\nvariable \"instance_type\" {\n  description = \"Input variable instance_type.\"\n  type        = string\n  default     = \"t2.micro\"\n}\n\nvariable \"aws_region\" {\n  description = \"Input variable aws_region.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n",
+    "main.tf": "provider \"aws\" {\n  region = var.aws_region\n}\n\nresource \"aws_launch_template\" \"this\" {\n  # TODO - Complete the aws_launch_template resource.\n  # Add the arguments and nested blocks required for aws_launch_template.\n}\n",
+    "outputs.tf": "output \"launch_template_id\" {\n  value = aws_launch_template.this.id\n}\n"
+  },
+  "focus": {
+    "file": "main.tf",
+    "kind": "resource",
+    "title": "Complete the aws_launch_template resource",
+    "todo": "Add the arguments and nested blocks required for aws_launch_template."
+  },
+  "allowlist": [
+    "aws_launch_template"
+  ],
+  "apply_sandbox": false,
+  "test_count": 7,
+  "test_manifest": [
+    {
+      "id": "lt",
+      "title": "aws_launch_template is provisioned",
+      "category": "Resources",
+      "weight": 12
+    },
+    {
+      "id": "tokens",
+      "title": "http_tokens = required",
+      "category": "Security",
+      "weight": 12
+    },
+    {
+      "id": "endpoint",
+      "title": "http_endpoint = enabled",
+      "category": "Security",
+      "weight": 8
+    },
+    {
+      "id": "ami",
+      "title": "aws_launch_template.image_id -> var.ami_id",
+      "category": "Resources",
+      "weight": 6
+    },
+    {
+      "id": "itype",
+      "title": "aws_launch_template.instance_type -> var.instance_type",
+      "category": "Resources",
+      "weight": 6
+    },
+    {
+      "id": "out",
+      "title": "Output launch_template_id",
+      "category": "Outputs",
+      "weight": 5
+    }
+  ]
+}

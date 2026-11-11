@@ -1,0 +1,107 @@
+{
+  "id": "harden-alb-https",
+  "number": 107,
+  "title": "ALB HTTPS Listener + Redirect",
+  "difficulty": "Hard",
+  "points": 130,
+  "level": 4,
+  "level_name": "Level 4 - Composition",
+  "tags": [
+    "aws",
+    "alb",
+    "security",
+    "tls"
+  ],
+  "scenario": "Terminate TLS on the load balancer: an HTTPS listener on 443 with a certificate, and port 80 redirecting to HTTPS.",
+  "constraints": [
+    "Two listeners: 443 HTTPS and 80 HTTP.",
+    "443 uses certificate_arn.",
+    "80 redirects to HTTPS."
+  ],
+  "variables": [
+    {
+      "name": "lb_arn",
+      "type": "string",
+      "validation": false
+    },
+    {
+      "name": "target_group_arn",
+      "type": "string",
+      "validation": false
+    },
+    {
+      "name": "certificate_arn",
+      "type": "string",
+      "validation": false
+    }
+  ],
+  "expected_resources": [
+    "aws_lb_listener"
+  ],
+  "expected_outputs": [
+    "listener_arn"
+  ],
+  "starter": {
+    "versions.tf": "terraform {\n  required_version = \">= 1.5.0\"\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n  }\n}\n",
+    "variables.tf": "variable \"lb_arn\" {\n  description = \"Input variable lb_arn.\"\n  type        = string\n}\n\nvariable \"target_group_arn\" {\n  description = \"Input variable target_group_arn.\"\n  type        = string\n}\n\nvariable \"certificate_arn\" {\n  description = \"Input variable certificate_arn.\"\n  type        = string\n}\n\nvariable \"aws_region\" {\n  description = \"Input variable aws_region.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n",
+    "main.tf": "provider \"aws\" {\n  region = var.aws_region\n}\n\nresource \"aws_lb_listener\" \"https\" {\n  # TODO - Complete the graded block.\n  # Complete this block using the challenge requirements.\n}\n\nresource \"aws_lb_listener\" \"http\" {\n  port              = 80\n  protocol          = \"HTTP\"\n  load_balancer_arn = var.lb_arn\n  default_action {\n    type = \"redirect\"\n    redirect {\n      port        = \"443\"\n      protocol    = \"HTTPS\"\n      status_code = \"HTTP_301\"\n    }\n  }\n}\n",
+    "outputs.tf": "output \"listener_arn\" {\n  value = aws_lb_listener.this.id\n}\n"
+  },
+  "focus": {
+    "file": "main.tf",
+    "kind": "resource",
+    "title": "Complete the HTTPS listener",
+    "todo": "Configure the 443/HTTPS listener with the certificate and a forward action."
+  },
+  "allowlist": [
+    "aws_lb_listener",
+    "aws_lb",
+    "aws_lb_target_group"
+  ],
+  "apply_sandbox": false,
+  "test_count": 8,
+  "test_manifest": [
+    {
+      "id": "listener",
+      "title": "aws_lb_listener is provisioned",
+      "category": "Security",
+      "weight": 10
+    },
+    {
+      "id": "count",
+      "title": "Both 80 and 443 listeners",
+      "category": "Security",
+      "weight": 12
+    },
+    {
+      "id": "https",
+      "title": "HTTPS listener present",
+      "category": "Security",
+      "weight": 10
+    },
+    {
+      "id": "cert-ref",
+      "title": "aws_lb_listener.certificate_arn -> var.certificate_arn",
+      "category": "Resources",
+      "weight": 6
+    },
+    {
+      "id": "port",
+      "title": "aws_lb_listener.port = 443",
+      "category": "Security",
+      "weight": 6
+    },
+    {
+      "id": "cert",
+      "title": "Certificate wired into the listener",
+      "category": "Security",
+      "weight": 10
+    },
+    {
+      "id": "redirect",
+      "title": "HTTP redirects to HTTPS",
+      "category": "Security",
+      "weight": 10
+    }
+  ]
+}

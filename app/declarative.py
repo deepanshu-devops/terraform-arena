@@ -244,6 +244,26 @@ def run_check(cfg: Config, check: dict[str, Any]) -> tuple[bool, str]:
     if kind == "output_exists":
         return C.output_ok(cfg, check["name"])
 
+    if kind == "output_attr":
+        out = C.get_output(cfg, check["name"])
+        if not out:
+            return False, f"Output '{check['name']}' is not defined."
+        if check.get("equals") is not None:
+            return C.equals(out, check["attr"], check["equals"])
+        if C.present(out, check["attr"]):
+            return True, f"Output '{check['name']}' has {check['attr']}."
+        return False, f"Output '{check['name']}' must set {check['attr']}."
+
+    if kind == "var_attr":
+        var = C.get_var(cfg, check["name"])
+        if not var:
+            return False, f"Variable '{check['name']}' is not defined."
+        if check.get("equals") is not None:
+            return C.equals(var, check["attr"], check["equals"])
+        if C.present(var, check["attr"]):
+            return True, f"Variable '{check['name']}' has {check['attr']}."
+        return False, f"Variable '{check['name']}' must set {check['attr']}."
+
     if kind == "output_ref":
         ok, msg = C.output_ok(cfg, check["name"])
         if not ok:

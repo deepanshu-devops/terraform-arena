@@ -1,0 +1,134 @@
+{
+  "id": "provision-ecs-task-definition",
+  "number": 45,
+  "title": "Provision ECS Task Definition",
+  "difficulty": "Easy",
+  "points": 50,
+  "level": 2,
+  "level_name": "Level 2 - First Resources",
+  "tags": [
+    "aws",
+    "ecs",
+    "provisioning"
+  ],
+  "scenario": "Your platform team needs ECS Task Definition for a small Fargate task blueprint. Write a reusable Terraform configuration that provisions it, drives every input through variables, applies the standard tags, and exports the operational identifiers.",
+  "constraints": [
+    "Provider: aws (region from var.aws_region).",
+    "Create exactly one resource of type aws_ecs_task_definition.",
+    "All configurable values must come from variables declared in variables.tf.",
+    "No hardcoded AWS credentials.",
+    "Code must pass terraform fmt conventions (2-space indents, trailing newline, no tabs).",
+    "Expose outputs: task_definition_arn."
+  ],
+  "variables": [
+    {
+      "name": "family",
+      "type": "string",
+      "validation": false,
+      "default": "app-task"
+    },
+    {
+      "name": "container_image",
+      "type": "string",
+      "validation": false,
+      "default": "nginx:alpine"
+    },
+    {
+      "name": "aws_region",
+      "type": "string",
+      "validation": false,
+      "default": "us-east-1"
+    }
+  ],
+  "expected_resources": [
+    "aws_ecs_task_definition"
+  ],
+  "expected_outputs": [
+    "task_definition_arn"
+  ],
+  "starter": {
+    "versions.tf": "terraform {\n  required_version = \">= 1.5.0\"\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n  }\n}\n",
+    "variables.tf": "variable \"family\" {\n  description = \"Input variable family.\"\n  type        = string\n  default     = \"app-task\"\n}\n\nvariable \"container_image\" {\n  description = \"Input variable container_image.\"\n  type        = string\n  default     = \"nginx:alpine\"\n}\n\nvariable \"aws_region\" {\n  description = \"Input variable aws_region.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n",
+    "main.tf": "provider \"aws\" {\n  region = var.aws_region\n}\n\nresource \"aws_ecs_task_definition\" \"this\" {\n  # TODO - Complete the aws_ecs_task_definition resource.\n  # Add the arguments and nested blocks required for aws_ecs_task_definition.\n}\n",
+    "outputs.tf": "output \"task_definition_arn\" {\n  value = aws_ecs_task_definition.this.arn\n}\n"
+  },
+  "focus": {
+    "file": "main.tf",
+    "kind": "resource",
+    "title": "Complete the aws_ecs_task_definition resource",
+    "todo": "Add the arguments and nested blocks required for aws_ecs_task_definition."
+  },
+  "allowlist": [
+    "aws_ecs_task_definition"
+  ],
+  "apply_sandbox": false,
+  "test_count": 12,
+  "test_manifest": [
+    {
+      "id": "provider",
+      "title": "AWS provider + region variable",
+      "category": "Providers",
+      "weight": 5
+    },
+    {
+      "id": "region",
+      "title": "Provider region references var.aws_region",
+      "category": "Providers",
+      "weight": 4
+    },
+    {
+      "id": "res",
+      "title": "aws_ecs_task_definition is provisioned",
+      "category": "Resources",
+      "weight": 14
+    },
+    {
+      "id": "a0",
+      "title": "family references var.family",
+      "category": "Resources",
+      "weight": 6
+    },
+    {
+      "id": "a1",
+      "title": "cpu <= 256",
+      "category": "Lifecycle",
+      "weight": 5
+    },
+    {
+      "id": "a2",
+      "title": "memory <= 512",
+      "category": "Lifecycle",
+      "weight": 5
+    },
+    {
+      "id": "a3",
+      "title": "network_mode is set correctly",
+      "category": "Resources",
+      "weight": 6
+    },
+    {
+      "id": "out-task_definition_arn",
+      "title": "Output task_definition_arn is exported",
+      "category": "Outputs",
+      "weight": 5
+    },
+    {
+      "id": "var-family",
+      "title": "Variable family is declared",
+      "category": "Variables",
+      "weight": 3
+    },
+    {
+      "id": "var-container_image",
+      "title": "Variable container_image is declared",
+      "category": "Variables",
+      "weight": 3
+    },
+    {
+      "id": "var-aws_region",
+      "title": "Variable aws_region is declared",
+      "category": "Variables",
+      "weight": 3
+    }
+  ]
+}

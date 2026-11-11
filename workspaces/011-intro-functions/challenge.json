@@ -1,0 +1,69 @@
+{
+  "id": "intro-functions",
+  "number": 11,
+  "title": "Built-in Functions",
+  "difficulty": "Easy",
+  "points": 59,
+  "level": 0,
+  "level_name": "Level 0 - HCL Foundations",
+  "tags": [
+    "terraform",
+    "hcl",
+    "functions"
+  ],
+  "scenario": "Terraform ships with functions for strings, collections, numbers and encoding. Normalise a bucket name with lower() and take a short prefix with substr().",
+  "constraints": [
+    "Use lower() to build the bucket name.",
+    "Use substr() to derive a short name.",
+    "Reference local.bucket_name from the short name."
+  ],
+  "variables": [
+    {
+      "name": "project_name",
+      "type": "string",
+      "validation": false,
+      "default": "Terraform-Arena"
+    }
+  ],
+  "expected_resources": [],
+  "expected_outputs": [],
+  "starter": {
+    "variables.tf": "variable \"project_name\" {\n  description = \"Project name.\"\n  type        = string\n  default     = \"Terraform-Arena\"\n}\n",
+    "main.tf": "locals {\n  # TODO - Normalise the bucket name.\n  # Use lower and substr in the locals block.\n}\n"
+  },
+  "focus": {
+    "file": "main.tf",
+    "kind": "top",
+    "title": "Normalise the bucket name",
+    "todo": "Use lower and substr in the locals block."
+  },
+  "allowlist": [],
+  "apply_sandbox": false,
+  "test_count": 5,
+  "test_manifest": [
+    {
+      "id": "lower",
+      "title": "lower function is used",
+      "category": "Syntax",
+      "weight": 10
+    },
+    {
+      "id": "substr",
+      "title": "substr function is used",
+      "category": "Syntax",
+      "weight": 10
+    },
+    {
+      "id": "reference",
+      "title": "short name references the bucket name",
+      "category": "Syntax",
+      "weight": 10
+    },
+    {
+      "id": "suffix",
+      "title": "bucket suffix is present",
+      "category": "Syntax",
+      "weight": 6
+    }
+  ]
+}

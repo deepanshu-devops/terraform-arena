@@ -1,0 +1,66 @@
+{
+  "id": "intro-sensitive-output",
+  "number": 14,
+  "title": "Sensitive Outputs",
+  "difficulty": "Easy",
+  "points": 62,
+  "level": 0,
+  "level_name": "Level 0 - HCL Foundations",
+  "tags": [
+    "terraform",
+    "hcl",
+    "outputs",
+    "security"
+  ],
+  "scenario": "Outputs can carry secrets. Mark a token output sensitive so Terraform redacts it in plan and apply output while still making the value available to the caller.",
+  "constraints": [
+    "Declare an output named session_token.",
+    "Set value to var.session_token.",
+    "Mark the output sensitive."
+  ],
+  "variables": [
+    {
+      "name": "session_token",
+      "type": "string",
+      "validation": false,
+      "default": "demo-token"
+    }
+  ],
+  "expected_resources": [],
+  "expected_outputs": [
+    "session_token"
+  ],
+  "starter": {
+    "variables.tf": "variable \"session_token\" {\n  description = \"Demo session token.\"\n  type        = string\n  default     = \"demo-token\"\n}\n",
+    "outputs.tf": "output \"session_token\" {\n  # TODO - Complete the sensitive output.\n  # Set the value from the variable and mark the output sensitive.\n}\n"
+  },
+  "focus": {
+    "file": "outputs.tf",
+    "kind": "top",
+    "title": "Complete the sensitive output",
+    "todo": "Set the value from the variable and mark the output sensitive."
+  },
+  "allowlist": [],
+  "apply_sandbox": false,
+  "test_count": 4,
+  "test_manifest": [
+    {
+      "id": "out",
+      "title": "session_token output exists",
+      "category": "Outputs",
+      "weight": 10
+    },
+    {
+      "id": "ref",
+      "title": "output uses the variable",
+      "category": "Outputs",
+      "weight": 10
+    },
+    {
+      "id": "sensitive",
+      "title": "output is marked sensitive",
+      "category": "Security",
+      "weight": 10
+    }
+  ]
+}

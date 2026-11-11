@@ -1,0 +1,63 @@
+{
+  "id": "intro-null-default",
+  "number": 12,
+  "title": "Optional Values With coalesce",
+  "difficulty": "Easy",
+  "points": 60,
+  "level": 0,
+  "level_name": "Level 0 - HCL Foundations",
+  "tags": [
+    "terraform",
+    "hcl",
+    "functions"
+  ],
+  "scenario": "Variables can default to null to represent an optional value. Use coalesce() to fall back to a friendly default when the caller does not provide a nickname.",
+  "constraints": [
+    "Declare nickname with a null default.",
+    "Use coalesce(var.nickname, \"learner\") in a local value.",
+    "Name the local display_name."
+  ],
+  "variables": [
+    {
+      "name": "nickname",
+      "type": "string",
+      "validation": false,
+      "default": null
+    }
+  ],
+  "expected_resources": [],
+  "expected_outputs": [],
+  "starter": {
+    "variables.tf": "variable \"nickname\" {\n  description = \"Optional display name.\"\n  type        = string\n  default     = null\n}\n",
+    "main.tf": "locals {\n  # TODO - Add the fallback value.\n  # Use coalesce with the optional variable and a default string.\n}\n"
+  },
+  "focus": {
+    "file": "main.tf",
+    "kind": "top",
+    "title": "Add the fallback value",
+    "todo": "Use coalesce with the optional variable and a default string."
+  },
+  "allowlist": [],
+  "apply_sandbox": false,
+  "test_count": 4,
+  "test_manifest": [
+    {
+      "id": "null",
+      "title": "nickname defaults to null",
+      "category": "Variables",
+      "weight": 8
+    },
+    {
+      "id": "coalesce",
+      "title": "coalesce is used",
+      "category": "Syntax",
+      "weight": 12
+    },
+    {
+      "id": "local",
+      "title": "display_name local is defined",
+      "category": "Syntax",
+      "weight": 8
+    }
+  ]
+}

@@ -1,0 +1,163 @@
+{
+  "id": "wire-alb-target-listener",
+  "number": 106,
+  "title": "Wire an ALB to a Target Group",
+  "difficulty": "Medium",
+  "points": 120,
+  "level": 4,
+  "level_name": "Level 4 - Composition",
+  "tags": [
+    "aws",
+    "alb",
+    "load-balancing"
+  ],
+  "scenario": "Put an application load balancer in front of a target group and forward HTTP/80 traffic to it.",
+  "constraints": [
+    "ALB is application type and spans var.subnet_ids.",
+    "Target group listens on HTTP/80.",
+    "Listener forwards to the target group."
+  ],
+  "variables": [
+    {
+      "name": "subnet_ids",
+      "type": "list(string)",
+      "validation": false
+    },
+    {
+      "name": "security_group_ids",
+      "type": "list(string)",
+      "validation": false
+    },
+    {
+      "name": "vpc_id",
+      "type": "string",
+      "validation": false
+    },
+    {
+      "name": "project_name",
+      "type": "string",
+      "validation": false,
+      "default": "terraform-practice"
+    },
+    {
+      "name": "environment",
+      "type": "string",
+      "validation": false,
+      "default": "dev"
+    },
+    {
+      "name": "aws_region",
+      "type": "string",
+      "validation": false,
+      "default": "us-east-1"
+    }
+  ],
+  "expected_resources": [
+    "aws_lb",
+    "aws_lb_target_group",
+    "aws_lb_listener"
+  ],
+  "expected_outputs": [
+    "alb_dns_name",
+    "target_group_arn"
+  ],
+  "starter": {
+    "versions.tf": "terraform {\n  required_version = \">= 1.5.0\"\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n  }\n}\n",
+    "variables.tf": "variable \"subnet_ids\" {\n  description = \"Input variable subnet_ids.\"\n  type        = list(string)\n}\n\nvariable \"security_group_ids\" {\n  description = \"Input variable security_group_ids.\"\n  type        = list(string)\n}\n\nvariable \"vpc_id\" {\n  description = \"Input variable vpc_id.\"\n  type        = string\n}\n\nvariable \"project_name\" {\n  description = \"Input variable project_name.\"\n  type        = string\n  default     = \"terraform-practice\"\n}\n\nvariable \"environment\" {\n  description = \"Input variable environment.\"\n  type        = string\n  default     = \"dev\"\n}\n\nvariable \"aws_region\" {\n  description = \"Input variable aws_region.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n",
+    "main.tf": "provider \"aws\" {\n  region = var.aws_region\n}\n\nresource \"aws_lb\" \"this\" {\n  name               = \"app-alb\"\n  load_balancer_type = \"application\"\n  subnets            = var.subnet_ids\n}\n\nresource \"aws_lb_target_group\" \"this\" {\n  name     = \"app-tg\"\n  port     = 80\n  protocol = \"HTTP\"\n  vpc_id   = var.vpc_id\n  health_check {\n    path = \"/\"\n  }\n}\n\nresource \"aws_lb_listener\" \"this\" {\n  # TODO - Complete the aws_lb_listener resource.\n  # Add the arguments and nested blocks required for aws_lb_listener.\n}\n",
+    "outputs.tf": "output \"alb_dns_name\" {\n  value = aws_lb.this.arn\n}\n\noutput \"target_group_arn\" {\n  value = aws_lb_target_group.this.arn\n}\n"
+  },
+  "focus": {
+    "file": "main.tf",
+    "kind": "resource",
+    "title": "Complete the aws_lb_listener resource",
+    "todo": "Add the arguments and nested blocks required for aws_lb_listener."
+  },
+  "allowlist": [
+    "aws_lb",
+    "aws_lb_target_group",
+    "aws_lb_listener"
+  ],
+  "apply_sandbox": false,
+  "test_count": 14,
+  "test_manifest": [
+    {
+      "id": "provider",
+      "title": "Required provider aws",
+      "category": "Providers",
+      "weight": 5
+    },
+    {
+      "id": "region",
+      "title": "aws.region -> var.aws_region",
+      "category": "Providers",
+      "weight": 4
+    },
+    {
+      "id": "lb",
+      "title": "aws_lb is provisioned",
+      "category": "Resources",
+      "weight": 12
+    },
+    {
+      "id": "lb-type",
+      "title": "aws_lb.load_balancer_type = \"application\"",
+      "category": "Resources",
+      "weight": 8
+    },
+    {
+      "id": "lb-subnets",
+      "title": "aws_lb.subnets -> var.subnet_ids",
+      "category": "Resources",
+      "weight": 6
+    },
+    {
+      "id": "tg",
+      "title": "aws_lb_target_group is provisioned",
+      "category": "Resources",
+      "weight": 10
+    },
+    {
+      "id": "tg-port",
+      "title": "aws_lb_target_group.port = 80",
+      "category": "Resources",
+      "weight": 6
+    },
+    {
+      "id": "tg-vpc",
+      "title": "aws_lb_target_group.vpc_id -> var.vpc_id",
+      "category": "Resources",
+      "weight": 6
+    },
+    {
+      "id": "listener",
+      "title": "aws_lb_listener is provisioned",
+      "category": "Resources",
+      "weight": 10
+    },
+    {
+      "id": "listener-lb",
+      "title": "aws_lb_listener.load_balancer_arn -> aws_lb.",
+      "category": "Resources",
+      "weight": 6
+    },
+    {
+      "id": "fwd",
+      "title": "Listener forwards to target group",
+      "category": "Resources",
+      "weight": 8
+    },
+    {
+      "id": "out-dns",
+      "title": "Output alb_dns_name",
+      "category": "Outputs",
+      "weight": 5
+    },
+    {
+      "id": "out-tg",
+      "title": "Output target_group_arn",
+      "category": "Outputs",
+      "weight": 5
+    }
+  ]
+}

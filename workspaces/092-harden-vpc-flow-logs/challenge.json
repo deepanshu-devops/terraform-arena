@@ -1,0 +1,101 @@
+{
+  "id": "harden-vpc-flow-logs",
+  "number": 92,
+  "title": "Enable VPC Flow Logs",
+  "difficulty": "Medium",
+  "points": 100,
+  "level": 3,
+  "level_name": "Level 3 - Real Infrastructure",
+  "tags": [
+    "aws",
+    "vpc",
+    "observability",
+    "security"
+  ],
+  "scenario": "Send ALL VPC traffic to CloudWatch Logs so the security team can investigate anomalies.",
+  "constraints": [
+    "Create a CloudWatch log group and a flow log.",
+    "traffic_type = ALL.",
+    "Flow log targets the VPC."
+  ],
+  "variables": [
+    {
+      "name": "vpc_id",
+      "type": "string",
+      "validation": false
+    }
+  ],
+  "expected_resources": [
+    "aws_vpc",
+    "aws_cloudwatch_log_group",
+    "aws_flow_log"
+  ],
+  "expected_outputs": [
+    "flow_log_id"
+  ],
+  "starter": {
+    "versions.tf": "terraform {\n  required_version = \">= 1.5.0\"\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n  }\n}\n",
+    "variables.tf": "variable \"vpc_id\" {\n  description = \"Input variable vpc_id.\"\n  type        = string\n}\n\nvariable \"aws_region\" {\n  description = \"Input variable aws_region.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"environment\" {\n  description = \"Input variable environment.\"\n  type        = string\n  default     = \"dev\"\n}\n\nvariable \"project_name\" {\n  description = \"Input variable project_name.\"\n  type        = string\n  default     = \"terraform-practice\"\n}\n",
+    "main.tf": "provider \"aws\" {\n  region = var.aws_region\n}\n\nresource \"aws_vpc\" \"this\" {\n  cidr_block = \"10.0.0.0/16\"\n  tags = {\n    Project     = var.project_name\n    Environment = var.environment\n    ManagedBy   = \"terraform\"\n  }\n}\n\nresource \"aws_cloudwatch_log_group\" \"this\" {\n  name              = \"/aws/app\"\n  retention_in_days = 14\n}\n\nresource \"aws_flow_log\" \"this\" {\n  # TODO - Complete the aws_flow_log resource.\n  # Add the arguments and nested blocks required for aws_flow_log.\n}\n",
+    "outputs.tf": "output \"flow_log_id\" {\n  value = aws_flow_log.this.id\n}\n"
+  },
+  "focus": {
+    "file": "main.tf",
+    "kind": "resource",
+    "title": "Complete the aws_flow_log resource",
+    "todo": "Add the arguments and nested blocks required for aws_flow_log."
+  },
+  "allowlist": [
+    "aws_vpc",
+    "aws_cloudwatch_log_group",
+    "aws_flow_log",
+    "aws_iam_role",
+    "aws_iam_role_policy"
+  ],
+  "apply_sandbox": false,
+  "test_count": 8,
+  "test_manifest": [
+    {
+      "id": "vpc",
+      "title": "aws_vpc is provisioned",
+      "category": "Resources",
+      "weight": 8
+    },
+    {
+      "id": "lg",
+      "title": "aws_cloudwatch_log_group is provisioned",
+      "category": "Observability",
+      "weight": 8
+    },
+    {
+      "id": "flow",
+      "title": "aws_flow_log is provisioned",
+      "category": "Observability",
+      "weight": 12
+    },
+    {
+      "id": "traffic",
+      "title": "aws_flow_log.traffic_type = \"ALL\"",
+      "category": "Observability",
+      "weight": 10
+    },
+    {
+      "id": "dest",
+      "title": "Flow log uses the log group",
+      "category": "Observability",
+      "weight": 8
+    },
+    {
+      "id": "tags",
+      "title": "VPC tagged",
+      "category": "Lifecycle",
+      "weight": 6
+    },
+    {
+      "id": "out",
+      "title": "Output flow_log_id",
+      "category": "Outputs",
+      "weight": 5
+    }
+  ]
+}

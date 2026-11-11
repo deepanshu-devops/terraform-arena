@@ -1,0 +1,94 @@
+{
+  "id": "lang-data-sources",
+  "number": 22,
+  "title": "Discover an AMI With a Data Source",
+  "difficulty": "Easy",
+  "points": 60,
+  "level": 1,
+  "level_name": "Level 1 - Terraform Language",
+  "tags": [
+    "terraform",
+    "data-sources",
+    "ec2"
+  ],
+  "scenario": "Discover the latest Amazon Linux AMI with a data source and use it to launch an instance.",
+  "constraints": [
+    "Use data.aws_ami.",
+    "image_id references the data source.",
+    "Instance type from a variable."
+  ],
+  "variables": [
+    {
+      "name": "instance_type",
+      "type": "string",
+      "validation": false,
+      "default": "t2.micro"
+    },
+    {
+      "name": "subnet_id",
+      "type": "string",
+      "validation": false
+    }
+  ],
+  "expected_resources": [
+    "aws_instance"
+  ],
+  "expected_outputs": [
+    "instance_id"
+  ],
+  "starter": {
+    "versions.tf": "terraform {\n  required_version = \">= 1.5.0\"\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n  }\n}\n",
+    "variables.tf": "variable \"instance_type\" {\n  description = \"Input variable instance_type.\"\n  type        = string\n  default     = \"t2.micro\"\n}\n\nvariable \"subnet_id\" {\n  description = \"Input variable subnet_id.\"\n  type        = string\n}\n\nvariable \"aws_region\" {\n  description = \"Input variable aws_region.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n",
+    "main.tf": "provider \"aws\" {\n  region = var.aws_region\n}\n\ndata \"aws_ami\" \"latest\" {\n  # TODO - Complete the graded block.\n  # Complete this block using the challenge requirements.\n}\n\nresource \"aws_instance\" \"this\" {\n  ami           = data.aws_ami.latest.id\n  instance_type = var.instance_type\n  metadata_options {\n    http_tokens = \"required\"\n  }\n}\n",
+    "outputs.tf": "output \"instance_id\" {\n  value = aws_instance.this.id\n}\n"
+  },
+  "focus": {
+    "file": "main.tf",
+    "kind": "top",
+    "title": "Complete the aws_ami data source",
+    "todo": "Add most_recent, owners and a filter so the newest Amazon Linux image is discovered."
+  },
+  "allowlist": [
+    "aws_instance"
+  ],
+  "apply_sandbox": false,
+  "test_count": 7,
+  "test_manifest": [
+    {
+      "id": "ec2",
+      "title": "aws_instance is provisioned",
+      "category": "Resources",
+      "weight": 12
+    },
+    {
+      "id": "data",
+      "title": "data.aws_ami is used",
+      "category": "Modularity",
+      "weight": 10
+    },
+    {
+      "id": "recent",
+      "title": "Newest AMI is selected",
+      "category": "Modularity",
+      "weight": 6
+    },
+    {
+      "id": "ami",
+      "title": "aws_instance.ami -> data.aws_ami.",
+      "category": "Resources",
+      "weight": 6
+    },
+    {
+      "id": "itype",
+      "title": "aws_instance.instance_type -> var.instance_type",
+      "category": "Resources",
+      "weight": 6
+    },
+    {
+      "id": "out",
+      "title": "Output instance_id",
+      "category": "Outputs",
+      "weight": 5
+    }
+  ]
+}

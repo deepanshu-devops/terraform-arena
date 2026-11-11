@@ -1,0 +1,187 @@
+{
+  "id": "ha-vpc-foundation",
+  "number": 123,
+  "title": "Highly Available VPC Foundation",
+  "difficulty": "Medium",
+  "points": 150,
+  "level": 5,
+  "level_name": "Level 5 - Modules & Capstones",
+  "tags": [
+    "aws",
+    "vpc",
+    "networking",
+    "count",
+    "for_each"
+  ],
+  "scenario": "Your platform team is standardising network foundations. Build a reusable VPC with two public subnets spread across distinct availability zones, an internet gateway, a public route table with a default route, and associations for every subnet. Everything must be parameterized so the same code can be reused per environment.",
+  "constraints": [
+    "Provider: AWS (hashicorp/aws) with region from var.aws_region.",
+    "vpc_cidr must default to 10.0.0.0/16 and be validated as a CIDR.",
+    "Create exactly one aws_vpc with DNS support and DNS hostnames enabled.",
+    "Create at least two aws_subnet resources across distinct AZs (use count/for_each, not copy-paste).",
+    "Subnet CIDRs must be derived from variables (cidrsubnet or a CIDR list) \u2014 no magic literals.",
+    "Public subnets must set map_public_ip_on_launch = true.",
+    "Attach one internet gateway and one route table with a 0.0.0.0/0 default route to the gateway.",
+    "Create a route table association for every public subnet.",
+    "Tag VPC, subnets, gateway and route table with Project, Environment, ManagedBy = \"terraform\".",
+    "Outputs: vpc_id, public_subnet_ids, internet_gateway_id."
+  ],
+  "variables": [
+    {
+      "name": "vpc_cidr",
+      "type": "string",
+      "default": "10.0.0.0/16",
+      "validation": true
+    },
+    {
+      "name": "public_subnet_cidrs",
+      "type": "list(string)",
+      "default": [
+        "10.0.1.0/24",
+        "10.0.2.0/24"
+      ]
+    },
+    {
+      "name": "availability_zones",
+      "type": "list(string)",
+      "default": [
+        "us-east-1a",
+        "us-east-1b"
+      ]
+    },
+    {
+      "name": "aws_region",
+      "type": "string",
+      "default": "us-east-1"
+    },
+    {
+      "name": "project_name",
+      "type": "string",
+      "default": "terraform-practice"
+    },
+    {
+      "name": "environment",
+      "type": "string",
+      "default": "dev",
+      "validation": true
+    }
+  ],
+  "expected_resources": [
+    "aws_vpc",
+    "aws_subnet",
+    "aws_internet_gateway",
+    "aws_route_table",
+    "aws_route_table_association"
+  ],
+  "expected_outputs": [
+    "vpc_id",
+    "public_subnet_ids",
+    "internet_gateway_id"
+  ],
+  "starter": {
+    "versions.tf": "terraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n  }\n}\n",
+    "variables.tf": "variable \"vpc_cidr\" {\n  description = \"VPC CIDR block.\"\n  type        = string\n  default     = \"10.0.0.0/16\"\n\n  validation {\n    condition     = can(cidrnetmask(var.vpc_cidr))\n    error_message = \"vpc_cidr must be a valid IPv4 CIDR.\"\n  }\n}\n\nvariable \"public_subnet_cidrs\" {\n  description = \"Public subnet CIDR blocks.\"\n  type        = list(string)\n  default     = [\"10.0.1.0/24\", \"10.0.2.0/24\"]\n}\n\nvariable \"availability_zones\" {\n  description = \"Availability zones for the public subnets.\"\n  type        = list(string)\n  default     = [\"us-east-1a\", \"us-east-1b\"]\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"project_name\" {\n  description = \"Project name used for tags.\"\n  type        = string\n  default     = \"terraform-practice\"\n}\n\nvariable \"environment\" {\n  description = \"Deployment environment.\"\n  type        = string\n  default     = \"dev\"\n\n  validation {\n    condition     = contains([\"dev\", \"staging\", \"prod\"], var.environment)\n    error_message = \"Environment must be dev, staging or prod.\"\n  }\n}\n",
+    "main.tf": "provider \"aws\" {\n  region = var.aws_region\n}\n\nresource \"aws_vpc\" \"this\" {\n  cidr_block           = var.vpc_cidr\n  enable_dns_support   = true\n  enable_dns_hostnames = true\n\n  tags = {\n    Project     = var.project_name\n    Environment = var.environment\n    ManagedBy   = \"terraform\"\n  }\n}\n\nresource \"aws_subnet\" \"this\" {\n  # TODO - Complete the public subnet definition.\n  # Create one subnet per CIDR, spread them across AZs, make them public and tag them.\n}\n\nresource \"aws_internet_gateway\" \"this\" {\n  vpc_id = aws_vpc.this.id\n\n  tags = {\n    Project     = var.project_name\n    Environment = var.environment\n    ManagedBy   = \"terraform\"\n  }\n}\n\nresource \"aws_route_table\" \"this\" {\n  vpc_id = aws_vpc.this.id\n\n  route {\n    cidr_block = \"0.0.0.0/0\"\n    gateway_id = aws_internet_gateway.this.id\n  }\n\n  tags = {\n    Project     = var.project_name\n    Environment = var.environment\n    ManagedBy   = \"terraform\"\n  }\n}\n\nresource \"aws_route_table_association\" \"this\" {\n  count          = length(var.public_subnet_cidrs)\n  subnet_id      = aws_subnet.this[count.index].id\n  route_table_id = aws_route_table.this.id\n}\n",
+    "outputs.tf": "output \"vpc_id\" {\n  description = \"VPC id.\"\n  value       = aws_vpc.this.id\n}\n\noutput \"public_subnet_ids\" {\n  description = \"Public subnet ids.\"\n  value       = aws_subnet.this[*].id\n}\n\noutput \"internet_gateway_id\" {\n  description = \"Internet gateway id.\"\n  value       = aws_internet_gateway.this.id\n}\n"
+  },
+  "focus": {
+    "kind": "resource",
+    "file": "main.tf",
+    "rtype": "aws_subnet",
+    "name": "this",
+    "title": "Complete the public subnet definition",
+    "todo": "Create one subnet per CIDR, spread them across AZs, make them public and tag them."
+  },
+  "allowlist": [
+    "aws_vpc",
+    "aws_subnet",
+    "aws_internet_gateway",
+    "aws_route_table",
+    "aws_route_table_association",
+    "aws_security_group",
+    "aws_eip",
+    "aws_nat_gateway"
+  ],
+  "apply_sandbox": false,
+  "test_count": 14,
+  "test_manifest": [
+    {
+      "id": "vpc-provider",
+      "title": "AWS provider + region variable",
+      "category": "Providers",
+      "weight": 6
+    },
+    {
+      "id": "vpc-cidr-var",
+      "title": "vpc_cidr default + CIDR validation",
+      "category": "Variables",
+      "weight": 8
+    },
+    {
+      "id": "vpc-resource",
+      "title": "VPC with DNS support/hostnames",
+      "category": "Resources",
+      "weight": 7
+    },
+    {
+      "id": "vpc-subnets",
+      "title": "Two+ subnets with variable-derived CIDRs",
+      "category": "Resources",
+      "weight": 9
+    },
+    {
+      "id": "vpc-azs",
+      "title": "Subnets spread across AZs",
+      "category": "Lifecycle",
+      "weight": 8
+    },
+    {
+      "id": "vpc-public",
+      "title": "Public subnets auto-assign IPs",
+      "category": "Security",
+      "weight": 6
+    },
+    {
+      "id": "vpc-igw",
+      "title": "Internet gateway attached",
+      "category": "Resources",
+      "weight": 6
+    },
+    {
+      "id": "vpc-route",
+      "title": "Default route to internet gateway",
+      "category": "Resources",
+      "weight": 8
+    },
+    {
+      "id": "vpc-assoc",
+      "title": "Association for every subnet",
+      "category": "Resources",
+      "weight": 9
+    },
+    {
+      "id": "vpc-outputs",
+      "title": "Required outputs exposed",
+      "category": "Outputs",
+      "weight": 6
+    },
+    {
+      "id": "vpc-tags",
+      "title": "Consistent resource tags",
+      "category": "Lifecycle",
+      "weight": 6
+    },
+    {
+      "id": "vpc-ssh",
+      "title": "No world-open SSH ingress",
+      "category": "Security",
+      "weight": 5
+    },
+    {
+      "id": "vpc-usage",
+      "title": "Variables wired into resources",
+      "category": "Modularity",
+      "weight": 5
+    }
+  ]
+}

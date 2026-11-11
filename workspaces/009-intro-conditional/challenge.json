@@ -1,0 +1,69 @@
+{
+  "id": "intro-conditional",
+  "number": 9,
+  "title": "Conditional Expressions",
+  "difficulty": "Easy",
+  "points": 57,
+  "level": 0,
+  "level_name": "Level 0 - HCL Foundations",
+  "tags": [
+    "terraform",
+    "hcl",
+    "expressions"
+  ],
+  "scenario": "A conditional expression chooses one of two values: condition ? true_value : false_value. Use the environment variable to pick a production flag and a log-retention period.",
+  "constraints": [
+    "Treat \"prod\" as production.",
+    "Set log retention to 30 days in production and 7 otherwise.",
+    "Derive both values in the locals block."
+  ],
+  "variables": [
+    {
+      "name": "environment",
+      "type": "string",
+      "validation": false,
+      "default": "dev"
+    }
+  ],
+  "expected_resources": [],
+  "expected_outputs": [],
+  "starter": {
+    "variables.tf": "variable \"environment\" {\n  description = \"Deployment environment.\"\n  type        = string\n  default     = \"dev\"\n}\n",
+    "main.tf": "locals {\n  # TODO - Add the conditional locals.\n  # Compare the environment and choose retention values.\n}\n"
+  },
+  "focus": {
+    "file": "main.tf",
+    "kind": "top",
+    "title": "Add the conditional locals",
+    "todo": "Compare the environment and choose retention values."
+  },
+  "allowlist": [],
+  "apply_sandbox": false,
+  "test_count": 5,
+  "test_manifest": [
+    {
+      "id": "condition",
+      "title": "production condition is present",
+      "category": "Syntax",
+      "weight": 12
+    },
+    {
+      "id": "flag",
+      "title": "is_production local is defined",
+      "category": "Syntax",
+      "weight": 8
+    },
+    {
+      "id": "retention",
+      "title": "retention local is defined",
+      "category": "Syntax",
+      "weight": 8
+    },
+    {
+      "id": "days",
+      "title": "both retention values are present",
+      "category": "Syntax",
+      "weight": 8
+    }
+  ]
+}

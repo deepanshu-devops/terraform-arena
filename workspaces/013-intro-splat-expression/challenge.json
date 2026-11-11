@@ -1,0 +1,56 @@
+{
+  "id": "intro-splat-expression",
+  "number": 13,
+  "title": "Splat Expressions",
+  "difficulty": "Easy",
+  "points": 61,
+  "level": 0,
+  "level_name": "Level 0 - HCL Foundations",
+  "tags": [
+    "terraform",
+    "hcl",
+    "expressions"
+  ],
+  "scenario": "Splat expressions extract one attribute from every object in a list, and index syntax reads a single object. Build a list of names and the first instance's private IP.",
+  "constraints": [
+    "Use var.instances[*].name for the name list.",
+    "Use var.instances[0].private_ip for the primary IP.",
+    "Keep both values in the locals block."
+  ],
+  "variables": [],
+  "expected_resources": [],
+  "expected_outputs": [],
+  "starter": {
+    "variables.tf": "variable \"instances\" {\n  description = \"Instance metadata.\"\n  type = list(object({\n    name       = string\n    private_ip = string\n  }))\n  default = [\n    { name = \"web\", private_ip = \"10.0.1.10\" },\n    { name = \"api\", private_ip = \"10.0.2.10\" },\n  ]\n}\n",
+    "main.tf": "locals {\n  # TODO - Extract instance attributes.\n  # Use a splat for every name and index for the first IP.\n}\n"
+  },
+  "focus": {
+    "file": "main.tf",
+    "kind": "top",
+    "title": "Extract instance attributes",
+    "todo": "Use a splat for every name and index for the first IP."
+  },
+  "allowlist": [],
+  "apply_sandbox": false,
+  "test_count": 4,
+  "test_manifest": [
+    {
+      "id": "names",
+      "title": "splat expression is present",
+      "category": "Syntax",
+      "weight": 12
+    },
+    {
+      "id": "index",
+      "title": "index expression is present",
+      "category": "Syntax",
+      "weight": 12
+    },
+    {
+      "id": "local",
+      "title": "instance_names local is defined",
+      "category": "Syntax",
+      "weight": 8
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 """Security, wiring, language, module and Docker scenarios.
 
 Compiled together with ``specs.RESOURCES`` this yields 105 generated
-challenges (plus 7 level-0 intros and 5 hand-authored capstones = 117 total).
+challenges (plus 15 level-0 intros and 5 hand-authored capstones = 125 total).
 """
 from __future__ import annotations
 

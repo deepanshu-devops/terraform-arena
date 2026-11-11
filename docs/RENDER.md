@@ -29,6 +29,31 @@ Every push to `main` triggers a new deploy because `autoDeploy` is enabled.
 - No AWS credentials or secrets are stored in the repository or Render config.
 - SQLite lives on the service's local filesystem.
 
+## Google sign-in
+
+Google sign-in is optional. The app disables it automatically when credentials
+are absent and keeps using the offline `local` profile. To enable it:
+
+1. Create an OAuth 2.0 **Web application** client in
+   <https://console.cloud.google.com/apis/credentials>.
+2. Add the authorized redirect URI:
+   `https://terraform-arena.onrender.com/auth/google/callback` (or your custom
+   domain).
+3. In the Render service, open **Environment** and set:
+   - `GOOGLE_CLIENT_ID`
+   - `GOOGLE_CLIENT_SECRET`
+   - `GOOGLE_REDIRECT_URI` (same value as the Google redirect URI)
+   - `ARENA_SECRET_KEY` (a long random value; used to sign session cookies)
+   - `ARENA_HTTPS_ONLY=1`
+4. Save the environment changes. Render restarts the service automatically.
+
+The Blueprint declares `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` with
+`sync: false`, so they are managed in the dashboard and never committed. If they
+are missing, the header shows the local profile instead of a sign-in button.
+
+Sessions use signed cookies and are scoped to the stable Google subject id.
+Google is used only for identity; every learner's progress remains in SQLite.
+
 ## Free-plan storage
 
 Render's free web service has an ephemeral filesystem. Progress and submission
@@ -36,8 +61,8 @@ history in `data/arena.db` survive while the instance is running, but reset when
 the service spins down, redeploys, or is restarted.
 
 For durable progress, upgrade to a paid instance and mount a persistent disk at
-`/var/data`, then change the app's data directory to that path. The current
-build keeps the free, zero-configuration setup.
+`/var/data`, then set `ARENA_DATA_DIR=/var/data`. The app creates `arena.db`
+inside that directory. The free, zero-configuration setup remains the default.
 
 ## Manual service setup
 
@@ -49,7 +74,8 @@ If you prefer not to use the Blueprint:
 4. Start command: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
 5. Set `PYTHON_VERSION=3.12.10`, `ARENA_TERRAFORM=0`, and
    `ARENA_ALLOW_APPLY=0`.
-6. Health check path: `/api/health`.
+6. Optional: set the Google variables listed above and `ARENA_SECRET_KEY`.
+7. Health check path: `/api/health`.
 
 ## Verify
 
@@ -59,5 +85,5 @@ After the deploy finishes, open the service URL and check:
 GET /api/health
 ```
 
-Expected values include `"ok": true`, `"challenges": 117`, and
-`"apply_enabled": false`.
+Expected values include `"ok": true`, `"challenges": 125`, and
+`"live": { "apply_enabled": false }`.

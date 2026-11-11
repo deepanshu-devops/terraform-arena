@@ -492,7 +492,7 @@ def build_parser() -> argparse.ArgumentParser:
     p_all.add_argument("--dir")
     p_all.set_defaults(func=cmd_test_all)
 
-    p_gen = sub.add_parser("generate", help="Write all 117 workspace folders")
+    p_gen = sub.add_parser("generate", help="Write all 125 workspace folders")
     p_gen.add_argument("--force", action="store_true")
     p_gen.set_defaults(func=cmd_generate)
 

@@ -1,0 +1,179 @@
+{
+  "id": "docker-nginx-sandbox",
+  "number": 120,
+  "title": "Docker Nginx Sandbox",
+  "difficulty": "Easy",
+  "points": 100,
+  "level": 5,
+  "level_name": "Level 5 - Modules & Capstones",
+  "tags": [
+    "docker",
+    "sandbox",
+    "providers",
+    "outputs"
+  ],
+  "scenario": "Before shipping AWS challenges to a live judge, you must prove the workflow on a zero-cost local sandbox. Using the Docker provider, provision an Nginx container that publishes port 80 on a configurable host port, restarts unless stopped, and carries operational labels. This challenge can be applied and destroyed against your local Docker daemon \u2014 no cloud bill.",
+  "constraints": [
+    "Provider: kreuzwerker/docker declared in required_providers.",
+    "Docker provider host must reference var.docker_host (default: npipe:////./pipe/docker_engine).",
+    "container_name must be a validated lowercase/hyphen string.",
+    "host_port must be a number defaulting to 8080 with validation 1024\u201365535.",
+    "image_name must default to nginx:alpine.",
+    "The container must publish internal port 80 on var.host_port.",
+    "restart policy must be unless-stopped.",
+    "privileged must be false; mounting docker.sock and host networking are blocked.",
+    "Container must carry labels: Project, Environment, ManagedBy = \"terraform\".",
+    "Outputs must expose container_id, container_name and url."
+  ],
+  "variables": [
+    {
+      "name": "docker_host",
+      "type": "string",
+      "default": "npipe:////./pipe/docker_engine"
+    },
+    {
+      "name": "container_name",
+      "type": "string",
+      "default": "tf-arena-nginx",
+      "validation": true
+    },
+    {
+      "name": "host_port",
+      "type": "number",
+      "default": 8080,
+      "validation": true
+    },
+    {
+      "name": "image_name",
+      "type": "string",
+      "default": "nginx:alpine"
+    },
+    {
+      "name": "project_name",
+      "type": "string",
+      "default": "terraform-practice"
+    },
+    {
+      "name": "environment",
+      "type": "string",
+      "default": "dev"
+    }
+  ],
+  "expected_resources": [
+    "docker_image",
+    "docker_container"
+  ],
+  "expected_outputs": [
+    "container_id",
+    "container_name",
+    "url"
+  ],
+  "starter": {
+    "versions.tf": "terraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    docker = {\n      source  = \"kreuzwerker/docker\"\n      version = \"~> 3.0\"\n    }\n  }\n}\n",
+    "variables.tf": "variable \"docker_host\" {\n  description = \"Docker daemon endpoint.\"\n  type        = string\n  default     = \"npipe:////./pipe/docker_engine\"\n}\n\nvariable \"container_name\" {\n  description = \"Container name.\"\n  type        = string\n  default     = \"tf-arena-nginx\"\n\n  validation {\n    condition     = can(regex(\"^[a-z][a-z0-9-]*$\", var.container_name))\n    error_message = \"Use lowercase letters, numbers and hyphens.\"\n  }\n}\n\nvariable \"host_port\" {\n  description = \"Host port.\"\n  type        = number\n  default     = 8080\n\n  validation {\n    condition     = var.host_port >= 1024 && var.host_port <= 65535\n    error_message = \"Use a port between 1024 and 65535.\"\n  }\n}\n\nvariable \"image_name\" {\n  description = \"Container image.\"\n  type        = string\n  default     = \"nginx:alpine\"\n}\n\nvariable \"project_name\" {\n  description = \"Project name used for labels.\"\n  type        = string\n  default     = \"terraform-practice\"\n}\n\nvariable \"environment\" {\n  description = \"Deployment environment.\"\n  type        = string\n  default     = \"dev\"\n}\n",
+    "main.tf": "provider \"docker\" {\n  host = var.docker_host\n}\n\nresource \"docker_image\" \"this\" {\n  name = var.image_name\n}\n\nresource \"docker_container\" \"this\" {\n  # TODO - Complete the Nginx container.\n  # Wire the name, image, restart policy, published port and operational labels.\n}\n",
+    "outputs.tf": "output \"container_id\" {\n  description = \"Container id.\"\n  value       = docker_container.this.id\n}\n\noutput \"container_name\" {\n  description = \"Container name.\"\n  value       = docker_container.this.name\n}\n\noutput \"url\" {\n  description = \"Local URL for the published port.\"\n  value       = \"http://localhost:${var.host_port}\"\n}\n"
+  },
+  "focus": {
+    "kind": "resource",
+    "file": "main.tf",
+    "rtype": "docker_container",
+    "name": "this",
+    "title": "Complete the Nginx container",
+    "todo": "Wire the name, image, restart policy, published port and operational labels."
+  },
+  "allowlist": [
+    "docker_image",
+    "docker_container",
+    "docker_network",
+    "docker_volume"
+  ],
+  "apply_sandbox": true,
+  "test_count": 15,
+  "test_manifest": [
+    {
+      "id": "docker-provider",
+      "title": "Docker provider declared",
+      "category": "Providers",
+      "weight": 7
+    },
+    {
+      "id": "docker-host",
+      "title": "Provider host from var.docker_host",
+      "category": "Providers",
+      "weight": 7
+    },
+    {
+      "id": "docker-name-var",
+      "title": "container_name validated",
+      "category": "Variables",
+      "weight": 7
+    },
+    {
+      "id": "docker-port-var",
+      "title": "host_port default + range validation",
+      "category": "Variables",
+      "weight": 8
+    },
+    {
+      "id": "docker-image-var",
+      "title": "image_name defaults to nginx:alpine",
+      "category": "Variables",
+      "weight": 5
+    },
+    {
+      "id": "docker-image",
+      "title": "docker_image resource wired to variable",
+      "category": "Resources",
+      "weight": 7
+    },
+    {
+      "id": "docker-container",
+      "title": "docker_container wired correctly",
+      "category": "Resources",
+      "weight": 8
+    },
+    {
+      "id": "docker-ports",
+      "title": "Port 80 published on var.host_port",
+      "category": "Resources",
+      "weight": 8
+    },
+    {
+      "id": "docker-restart",
+      "title": "restart = unless-stopped",
+      "category": "Lifecycle",
+      "weight": 6
+    },
+    {
+      "id": "docker-privileged",
+      "title": "Container not privileged",
+      "category": "Security",
+      "weight": 7
+    },
+    {
+      "id": "docker-socket",
+      "title": "No docker.sock mount / host network",
+      "category": "Security",
+      "weight": 8
+    },
+    {
+      "id": "docker-labels",
+      "title": "Operational labels present",
+      "category": "Lifecycle",
+      "weight": 7
+    },
+    {
+      "id": "docker-outputs",
+      "title": "Required outputs exposed",
+      "category": "Outputs",
+      "weight": 6
+    },
+    {
+      "id": "docker-usage",
+      "title": "Variables wired into resources",
+      "category": "Modularity",
+      "weight": 5
+    }
+  ]
+}

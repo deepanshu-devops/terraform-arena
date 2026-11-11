@@ -1,0 +1,91 @@
+{
+  "id": "lang-for-each-subnets",
+  "number": 25,
+  "title": "Create Subnets With for_each",
+  "difficulty": "Medium",
+  "points": 95,
+  "level": 1,
+  "level_name": "Level 1 - Terraform Language",
+  "tags": [
+    "terraform",
+    "for_each",
+    "networking"
+  ],
+  "scenario": "Create subnets from a map with for_each so adding a subnet is just a map entry.",
+  "constraints": [
+    "Use for_each over a map variable.",
+    "Reference each.key/each.value.",
+    "One resource block."
+  ],
+  "variables": [
+    {
+      "name": "vpc_id",
+      "type": "string",
+      "validation": false
+    },
+    {
+      "name": "subnets",
+      "type": "map(string)",
+      "validation": false,
+      "default": {
+        "public-a": "10.0.1.0/24",
+        "public-b": "10.0.2.0/24"
+      }
+    }
+  ],
+  "expected_resources": [
+    "aws_subnet"
+  ],
+  "expected_outputs": [
+    "subnet_ids"
+  ],
+  "starter": {
+    "versions.tf": "terraform {\n  required_version = \">= 1.5.0\"\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n  }\n}\n",
+    "variables.tf": "variable \"vpc_id\" {\n  description = \"Input variable vpc_id.\"\n  type        = string\n}\n\nvariable \"subnets\" {\n  description = \"Input variable subnets.\"\n  type        = map(string)\n  default     = { public-a = \"10.0.1.0/24\", public-b = \"10.0.2.0/24\" }\n}\n\nvariable \"aws_region\" {\n  description = \"Input variable aws_region.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n",
+    "main.tf": "provider \"aws\" {\n  region = var.aws_region\n}\n\nresource \"aws_subnet\" \"this\" {\n  # TODO - Complete the graded block.\n  # Complete this block using the challenge requirements.\n}\n",
+    "outputs.tf": "output \"subnet_ids\" {\n  value = aws_subnet.this.id\n}\n"
+  },
+  "focus": {
+    "file": "main.tf",
+    "kind": "resource",
+    "title": "Complete the aws_subnet block",
+    "todo": "Use for_each over the subnet map and reference each.key/value."
+  },
+  "allowlist": [
+    "aws_subnet"
+  ],
+  "apply_sandbox": false,
+  "test_count": 6,
+  "test_manifest": [
+    {
+      "id": "subnet",
+      "title": "aws_subnet is provisioned",
+      "category": "Resources",
+      "weight": 12
+    },
+    {
+      "id": "fe",
+      "title": "Subnet uses for_each",
+      "category": "Modularity",
+      "weight": 10
+    },
+    {
+      "id": "each",
+      "title": "each.key/each.value is used",
+      "category": "Modularity",
+      "weight": 10
+    },
+    {
+      "id": "vpc",
+      "title": "aws_subnet.vpc_id -> var.vpc_id",
+      "category": "Resources",
+      "weight": 6
+    },
+    {
+      "id": "out",
+      "title": "Output subnet_ids",
+      "category": "Outputs",
+      "weight": 5
+    }
+  ]
+}

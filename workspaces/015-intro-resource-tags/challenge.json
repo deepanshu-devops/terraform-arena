@@ -1,0 +1,68 @@
+{
+  "id": "intro-resource-tags",
+  "number": 15,
+  "title": "Resource Arguments and Tags",
+  "difficulty": "Easy",
+  "points": 63,
+  "level": 0,
+  "level_name": "Level 0 - HCL Foundations",
+  "tags": [
+    "terraform",
+    "hcl",
+    "resources",
+    "tags"
+  ],
+  "scenario": "Resources are blocks with a type and a name. Complete an S3 bucket so the bucket name comes from a variable and the resource carries a Project tag.",
+  "constraints": [
+    "Keep the aws_s3_bucket resource.",
+    "Set bucket from var.bucket_name.",
+    "Add a tags map with Project = \"arena\"."
+  ],
+  "variables": [
+    {
+      "name": "bucket_name",
+      "type": "string",
+      "validation": false,
+      "default": "terraform-arena-logs"
+    }
+  ],
+  "expected_resources": [
+    "aws_s3_bucket"
+  ],
+  "expected_outputs": [],
+  "starter": {
+    "variables.tf": "variable \"bucket_name\" {\n  description = \"Bucket name.\"\n  type        = string\n  default     = \"terraform-arena-logs\"\n}\n",
+    "main.tf": "resource \"aws_s3_bucket\" \"this\" {\n  # TODO - Complete the bucket resource.\n  # Set the bucket argument and add the Project tag.\n}\n"
+  },
+  "focus": {
+    "file": "main.tf",
+    "kind": "resource",
+    "title": "Complete the bucket resource",
+    "todo": "Set the bucket argument and add the Project tag."
+  },
+  "allowlist": [
+    "aws_s3_bucket"
+  ],
+  "apply_sandbox": false,
+  "test_count": 4,
+  "test_manifest": [
+    {
+      "id": "bucket",
+      "title": "bucket is provisioned",
+      "category": "Resources",
+      "weight": 10
+    },
+    {
+      "id": "name",
+      "title": "bucket name comes from the variable",
+      "category": "Resources",
+      "weight": 12
+    },
+    {
+      "id": "tags",
+      "title": "Project tag is present",
+      "category": "Security",
+      "weight": 8
+    }
+  ]
+}

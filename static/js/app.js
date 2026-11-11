@@ -7,11 +7,16 @@ const state = {
   view: "problem",
   result: null,
   jobId: null,
+  jobChallengeId: null,
   polling: null,
   search: "",
   difficulty: "",
   level: "",
   tag: "",
+  auth: null,
+  challengeSeq: 0,
+  loadingChallenge: false,
+  stats: null,
 };
 
 const $ = (id) => document.getElementById(id);
@@ -47,16 +52,28 @@ function closeCatalog() {
   $("sidebar-backdrop").setAttribute("aria-hidden", "true");
 }
 
-async function api(path, options) {
+async function api(path, options = {}) {
   const response = await fetch(path, {
     headers: { "Content-Type": "application/json" },
     ...options,
   });
-  if (!response.ok) {
-    const text = await response.text();
-    throw new Error(text || response.statusText);
+  const text = await response.text();
+  let data = null;
+  try {
+    data = text ? JSON.parse(text) : null;
+  } catch (_) {
+    data = null;
   }
-  return response.json();
+  if (!response.ok) {
+    const detail =
+      data && typeof data.detail === "string"
+        ? data.detail
+        : text || response.statusText || `HTTP ${response.status}`;
+    const error = new Error(detail);
+    error.status = response.status;
+    throw error;
+  }
+  return data;
 }
 
 function toast(message) {
@@ -64,14 +81,226 @@ function toast(message) {
   el.textContent = message;
   el.classList.add("show");
   clearTimeout(toast._timer);
-  toast._timer = setTimeout(() => el.classList.remove("show"), 2600);
+  toast._timer = setTimeout(() => el.classList.remove("show"), 3200);
 }
 
 function escapeHtml(text) {
-  return text
+  return String(text ?? "")
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;");
+}
+
+function escapeAttr(text) {
+  return escapeHtml(text).replaceAll('"', "&quot;");
+}
+
+function initials(name) {
+  const words = String(name || "?").trim().split(/\s+/).filter(Boolean);
+  const value = words.slice(0, 2).map((word) => word[0]).join("");
+  return (value || "?").toUpperCase();
+}
+
+function avatarHtml(name, url, extraClass = "") {
+  const cls = extraClass ? ` ${extraClass}` : "";
+  if (url) {
+    return `<img class="avatar-img${cls}" src="${escapeAttr(url)}" alt="" loading="lazy" referrerpolicy="no-referrer" />`;
+  }
+  return `<span class="avatar-fallback${cls}" aria-hidden="true">${escapeHtml(initials(name))}</span>`;
+}
+
+function setProfileAvatarElement(img, fallback, name, url) {
+  if (url) {
+    img.src = url;
+    img.hidden = false;
+    fallback.hidden = true;
+  } else {
+    img.removeAttribute("src");
+    img.hidden = true;
+    fallback.hidden = false;
+    fallback.textContent = initials(name);
+  }
+}
+
+function clearAuthErrorFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const error = params.get("auth_error");
+  if (!error) return;
+  toast(`Google sign-in failed: ${error}`);
+  params.delete("auth_error");
+  const query = params.toString();
+  const next = window.location.pathname + (query ? `?${query}` : "") + window.location.hash;
+  window.history.replaceState({}, document.title, next);
+}
+
+/* --------------------------------- auth ---------------------------------- */
+function renderAuth(me) {
+  state.auth = me;
+  const login = $("login-btn");
+  const chip = $("profile-btn");
+  if (!login || !chip) return;
+
+  const user = me && me.user;
+  if (user) {
+    login.hidden = true;
+    chip.hidden = false;
+    const display = user.display_name || "Profile";
+    $("profile-name").textContent = display;
+    setProfileAvatarElement($("profile-avatar"), $("profile-initial"), display, user.avatar_url);
+    chip.title = me.auth_enabled
+      ? `Signed in with Google as ${display}`
+      : "Local profile (Google sign-in is not configured)";
+  } else {
+    login.hidden = !(me && me.auth_enabled);
+    chip.hidden = true;
+  }
+}
+
+async function loadAuth() {
+  try {
+    const me = await api("/api/auth/me");
+    renderAuth(me);
+    return me;
+  } catch (error) {
+    renderAuth({ auth_enabled: false, authenticated: false, user: null, mode: "local" });
+    return state.auth;
+  }
+}
+
+function openProfiles() {
+  $("profiles-drawer").classList.add("open");
+  $("profiles-drawer").setAttribute("aria-hidden", "false");
+  $("profiles-backdrop").classList.add("open");
+  $("profiles-backdrop").setAttribute("aria-hidden", "false");
+  refreshProfiles();
+}
+
+function closeProfiles() {
+  $("profiles-drawer").classList.remove("open");
+  $("profiles-drawer").setAttribute("aria-hidden", "true");
+  $("profiles-backdrop").classList.remove("open");
+  $("profiles-backdrop").setAttribute("aria-hidden", "true");
+}
+
+function renderProfileSelf(me, stats) {
+  const panel = $("profile-self");
+  const user = me && me.user;
+  if (!user) {
+    panel.innerHTML = `
+      <div class="signin-card">
+        <div class="signin-title">Sign in to keep your progress</div>
+        <p>Use your Google account to save solved challenges, scores and submission history
+        across visits. Other learners only see your display name, avatar and progress.</p>
+        <a class="google-btn" href="/auth/google/login">Sign in with Google</a>
+      </div>`;
+    return;
+  }
+
+  const s = stats || state.stats || {};
+  const byDifficulty = (s.by_difficulty || [])
+    .map(
+      (row) => `
+      <div class="diff-progress-row">
+        <span class="diff ${escapeAttr(row.difficulty)}">${escapeHtml(row.difficulty)}</span>
+        <span class="diff-progress-track"><span style="width:${row.total ? Math.round((row.solved / row.total) * 100) : 0}%"></span></span>
+        <span class="diff-progress-value">${row.solved || 0}/${row.total || 0}</span>
+      </div>`,
+    )
+    .join("");
+
+  const signOut = me.auth_enabled
+    ? '<a class="ghost-btn signout-btn" href="/auth/logout">Sign out</a>'
+    : '<span class="local-badge">Local profile</span>';
+
+  panel.innerHTML = `
+    <div class="profile-self-card">
+      <div class="profile-self-head">
+        ${avatarHtml(user.display_name, user.avatar_url, "avatar-lg")}
+        <div class="profile-self-main">
+          <div class="profile-self-name">${escapeHtml(user.display_name || "Learner")}</div>
+          ${user.email ? `<div class="profile-self-email">${escapeHtml(user.email)}</div>` : ""}
+          <div class="profile-self-provider">${
+            me.auth_enabled ? "Google account" : "Google sign-in is not configured on this deployment"
+          }</div>
+        </div>
+        ${signOut}
+      </div>
+      <div class="profile-stat-grid">
+        <div><strong>${s.solved || 0}</strong><small>solved</small></div>
+        <div><strong>${s.attempted || 0}</strong><small>attempted</small></div>
+        <div><strong>${s.average_score || 0}</strong><small>avg score</small></div>
+        <div><strong>${s.submissions || 0}</strong><small>submissions</small></div>
+      </div>
+      ${byDifficulty ? `<div class="section-title">Progress by difficulty</div><div class="diff-progress">${byDifficulty}</div>` : ""}
+    </div>`;
+}
+
+function renderProfileList(data) {
+  const list = $("profile-list");
+  const note = $("profiles-note");
+  const items = (data && data.items) || [];
+  if (!items.length) {
+    list.innerHTML = '<div class="empty-state small">No profiles yet. Be the first to solve a challenge.</div>';
+  } else {
+    list.innerHTML = items
+      .map(
+        (profile, index) => `
+        <div class="profile-row${profile.is_self ? " self" : ""}">
+          <div class="profile-rank">${index + 1}</div>
+          ${avatarHtml(profile.display_name, profile.avatar_url)}
+          <div class="profile-row-main">
+            <div class="profile-row-name">
+              ${escapeHtml(profile.display_name)}
+              ${profile.is_self ? '<span class="you-tag">you</span>' : ""}
+            </div>
+            <div class="profile-row-meta">
+              ${profile.email ? `${escapeHtml(profile.email)} · ` : ""}
+              ${profile.solved || 0} solved · ${profile.attempted || 0} attempted · ${profile.submissions || 0} submissions
+            </div>
+          </div>
+          <div class="profile-row-score"><strong>${profile.solved || 0}</strong><small>solved</small></div>
+        </div>`,
+      )
+      .join("");
+  }
+  note.textContent =
+    "Only display names, avatars and progress are shared. Email addresses are visible only to the signed-in owner.";
+}
+
+async function refreshProfiles() {
+  const me = await loadAuth();
+  const self = $("profile-self");
+  self.innerHTML = '<div class="empty-state small">Loading your profile...</div>';
+  $("profile-list").innerHTML = '<div class="empty-state small">Loading profiles...</div>';
+  $("profiles-note").textContent = "";
+
+  if (!me || !me.authenticated) {
+    renderProfileSelf(me, null);
+    $("profile-list").innerHTML =
+      '<div class="empty-state small">Sign in with Google to compare progress with every learner.</div>';
+    $("profiles-note").textContent = me && me.auth_enabled
+      ? "Google sign-in is enabled on this deployment."
+      : "Google sign-in is not configured. The local profile is used when credentials are absent.";
+    return;
+  }
+
+  try {
+    const stats = await api("/api/stats");
+    state.stats = stats;
+    renderProfileSelf(me, stats);
+  } catch (error) {
+    renderProfileSelf(me, null);
+  }
+
+  try {
+    const data = await api("/api/profiles?limit=200");
+    renderProfileList(data);
+  } catch (error) {
+    $("profile-list").innerHTML = `<div class="empty-state small">Could not load profiles: ${escapeHtml(
+      error.message,
+    )}</div>`;
+    $("profiles-note").textContent = "";
+  }
 }
 
 const KEYWORDS =
@@ -112,6 +341,10 @@ function highlight(code) {
 async function loadCatalog() {
   const data = await api("/api/challenges?limit=500");
   state.challenges = data.items;
+  const count = data.total || state.challenges.length;
+  const brandSub = document.querySelector(".brand-sub");
+  if (brandSub) brandSub.textContent = `${count} hands-on IaC challenges, level 0 to 5`;
+  $("search").placeholder = `Search ${count} challenges...`;
 
   const levels = new Map();
   state.challenges.forEach((c) => {
@@ -158,7 +391,7 @@ async function loadCatalog() {
   }
 
   renderList();
-  if (!state.current && state.challenges.length) {
+  if (!state.current && !state.loadingChallenge && state.challenges.length) {
     selectChallenge(state.challenges[0].number);
   }
 }
@@ -211,18 +444,50 @@ function renderList() {
 
 /* ------------------------------ challenge ------------------------------- */
 async function selectChallenge(key, fromList = false) {
+  const seq = ++state.challengeSeq;
+
+  // Flush edits into the *old* challenge before detaching it.  Every file
+  // write below is guarded by state.current, so an event that arrives while
+  // the next request is in flight cannot leak old code into the new editor.
+  if (state.current) saveActiveFile();
+
+  // Detach the previous challenge completely: stop its poll loop and ignore
+  // any in-flight result, so old code/results cannot appear in the new editor.
+  clearTimeout(state.polling);
+  state.polling = null;
+  state.jobId = null;
+  state.current = null;
+  state.files = {};
+  state.activeFile = "main.tf";
+  state.result = null;
+  state.jobChallengeId = null;
+  state.loadingChallenge = true;
+  closeResults();
+  $("code").value = "";
+  $("file-tabs").innerHTML = "";
+  $("file-name").textContent = "loading...";
+  $("submit-btn").disabled = true;
+  $("submit-btn").textContent = "Run tests";
+  refreshEditor();
+
+  if (fromList) closeCatalog();
+  if (isMobile()) setView("problem");
+
   try {
     const challenge = await api(`/api/challenges/${encodeURIComponent(key)}`);
+    if (seq !== state.challengeSeq) return; // a newer selection won the race
+    state.loadingChallenge = false;
     state.current = challenge;
     state.result = null;
-    closeResults();
-    if (fromList) closeCatalog();
-    if (isMobile()) setView("problem");
+    state.jobChallengeId = null;
     renderStatement(challenge);
     setupFiles(challenge);
     renderList();
     $("submit-btn").disabled = false;
   } catch (error) {
+    if (seq !== state.challengeSeq) return;
+    state.loadingChallenge = false;
+    $("file-name").textContent = "main.tf";
     toast(`Could not load challenge: ${error.message}`);
   }
 }
@@ -313,18 +578,23 @@ function storageKey(challenge) {
 }
 
 function setupFiles(challenge) {
-  let files = {};
+  let saved = {};
   try {
-    const saved = localStorage.getItem(storageKey(challenge));
-    if (saved) files = JSON.parse(saved);
+    const raw = localStorage.getItem(storageKey(challenge));
+    if (raw) saved = JSON.parse(raw);
   } catch (_) {
-    files = {};
+    saved = {};
   }
-  for (const [name, content] of Object.entries(challenge.starter)) {
-    if (!(name in files)) files[name] = content;
+  if (!saved || typeof saved !== "object") saved = {};
+
+  // Build from the starter allowlist only.  This drops stale files from a
+  // previous challenge as well as anything malformed in localStorage.
+  const files = {};
+  for (const [name, content] of Object.entries(challenge.starter || {})) {
+    files[name] = typeof saved[name] === "string" ? saved[name] : content;
   }
   state.files = files;
-  state.activeFile = Object.keys(challenge.starter)[0] || Object.keys(files)[0] || "main.tf";
+  state.activeFile = Object.keys(files)[0] || "main.tf";
   renderTabs();
   loadActiveFile();
 }
@@ -355,10 +625,12 @@ function loadActiveFile() {
 }
 
 function saveActiveFile() {
+  // Guard every write: while a challenge switch is in flight state.current is
+  // null, and an input event from the old editor must be a no-op.
+  if (!state.current) return;
+  if (!(state.activeFile in state.files)) return;
   state.files[state.activeFile] = $("code").value;
-  if (state.current) {
-    localStorage.setItem(storageKey(state.current), JSON.stringify(state.files));
-  }
+  localStorage.setItem(storageKey(state.current), JSON.stringify(state.files));
   const el = $("save-state");
   el.textContent = "autosaved locally";
 }
@@ -531,8 +803,15 @@ function renderResultTab(tab) {
 /* -------------------------------- submit -------------------------------- */
 async function submit() {
   if (!state.current) return;
+  if (state.auth && state.auth.auth_enabled && !state.auth.authenticated) {
+    openProfiles();
+    toast("Sign in with Google to submit and save your progress.");
+    return;
+  }
   persistAll();
 
+  const challenge = state.current;
+  const seq = state.challengeSeq;
   const button = $("submit-btn");
   button.disabled = true;
   button.textContent = "Running...";
@@ -545,26 +824,54 @@ async function submit() {
     const response = await api("/api/submit", {
       method: "POST",
       body: JSON.stringify({
-        challenge: String(state.current.number),
+        challenge: String(challenge.number),
         files: state.files,
       }),
     });
+    if (seq !== state.challengeSeq) {
+      // The learner moved to another challenge while this request was queued.
+      // The submission is still recorded, but its result must not touch the
+      // new challenge's editor or verdict panel.
+      toast("Previous submission queued. Reopen that challenge to see its result.");
+      refreshStats();
+      loadCatalog();
+      finishSubmit();
+      return;
+    }
     state.jobId = response.job_id;
-    pollJob(response.job_id);
+    state.jobChallengeId = response.challenge_id;
+    pollJob(response.job_id, response.challenge_id);
   } catch (error) {
+    if (seq !== state.challengeSeq) {
+      finishSubmit();
+      return;
+    }
     button.disabled = false;
     button.textContent = "Run tests";
-    toast(`Submission failed: ${error.message}`);
+    if (error.status === 401) {
+      openProfiles();
+      toast("Sign in with Google to submit and save your progress.");
+    } else {
+      toast(`Submission failed: ${error.message}`);
+    }
   }
 }
 
-function pollJob(jobId) {
+function pollJob(jobId, challengeId) {
   clearTimeout(state.polling);
   state.polling = setTimeout(async () => {
+    if (state.jobId !== jobId) return;
     try {
       const job = await api(`/api/jobs/${jobId}`);
+      if (state.jobId !== jobId) return;
       if (job.state === "done" && job.result) {
-        renderResults(job.result);
+        const stillCurrent = state.current && state.current.id === challengeId;
+        if (stillCurrent) {
+          renderResults(job.result);
+          state.current.progress = job.result.progress || state.current.progress;
+        } else {
+          toast("Submission finished. Reopen that challenge to see the result.");
+        }
         refreshStats();
         loadCatalog();
         finishSubmit();
@@ -574,9 +881,10 @@ function pollJob(jobId) {
       } else {
         $("verdict-sub").textContent =
           job.state === "running" ? "Evaluating submission..." : "Queued...";
-        pollJob(jobId);
+        pollJob(jobId, challengeId);
       }
     } catch (error) {
+      if (state.jobId !== jobId) return;
       toast(`Polling failed: ${error.message}`);
       finishSubmit();
     }
@@ -585,19 +893,21 @@ function pollJob(jobId) {
 
 function finishSubmit() {
   const button = $("submit-btn");
-  button.disabled = false;
+  button.disabled = !state.current;
   button.textContent = "Run tests";
 }
 
 async function refreshStats() {
   try {
     const stats = await api("/api/stats");
+    state.stats = stats;
     $("stat-solved").textContent = stats.solved;
     $("stat-total").textContent = stats.total_challenges;
     $("stat-avg").textContent = stats.average_score;
     $("stat-subs").textContent = stats.submissions;
+    return stats;
   } catch (_) {
-    /* ignore */
+    return null;
   }
 }
 
@@ -650,6 +960,11 @@ $("code").addEventListener("keydown", (event) => {
 
 $("submit-btn").addEventListener("click", submit);
 $("close-results").addEventListener("click", closeResults);
+$("profiles-btn").addEventListener("click", openProfiles);
+$("profile-btn").addEventListener("click", openProfiles);
+$("close-profiles").addEventListener("click", closeProfiles);
+$("profiles-backdrop").addEventListener("click", closeProfiles);
+$("refresh-profiles").addEventListener("click", refreshProfiles);
 
 $("catalog-toggle").addEventListener("click", () => {
   if ($("sidebar").classList.contains("open")) closeCatalog();
@@ -673,6 +988,7 @@ document.addEventListener("keydown", (event) => {
   if (event.key === "Escape") {
     closeCatalog();
     closeResults();
+    closeProfiles();
   }
 });
 
@@ -724,6 +1040,8 @@ window.addEventListener("beforeunload", () => {
 (async function boot() {
   try {
     setView("problem");
+    clearAuthErrorFromUrl();
+    await loadAuth();
     await refreshStats();
     await loadTerraformStatus();
     await loadCatalog();
