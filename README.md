@@ -49,6 +49,17 @@ python judge.py generate
 python -m uvicorn app.main:app --reload --port 8000
 ```
 
+### Deploy on Render
+
+The repository includes a free-plan Render Blueprint:
+
+[Deploy Terraform Arena](https://render.com/deploy?repo=https://github.com/deepanshu-devops/terraform-arena)
+
+The deployed service runs static grading only, keeps live AWS validation
+disabled, and stores progress in local SQLite. Render's free filesystem is
+ephemeral, so progress resets on redeploy or spin-down. See
+[`docs/RENDER.md`](docs/RENDER.md) for the full setup and limitations.
+
 ---
 
 ## How a challenge works
