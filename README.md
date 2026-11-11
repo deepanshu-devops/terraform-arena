@@ -39,7 +39,7 @@ cd terraform-arena
 .\run.ps1
 ```
 
-Then open <http://127.0.0.1:8000>.
+Then open <https://terraform-arena.onrender.com>.
 
 Manual start:
 
